@@ -4,6 +4,8 @@
   imports = [
     ./neovim.nix
     ./shell.nix
+    ./hyprland.nix
+    ./kitty.nix
   ];
 
   home.username = "pedro";
