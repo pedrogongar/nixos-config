@@ -103,11 +103,9 @@
       })
 
       -- LSP
-      local lspconfig = require("lspconfig")
       local capabilities = require("cmp_nvim_lsp").default_capabilities()
 
-      -- TypeScript / Vue
-      lspconfig.ts_ls.setup({
+      vim.lsp.config("ts_ls", {
         capabilities = capabilities,
         init_options = {
           plugins = {{
@@ -119,25 +117,23 @@
         filetypes = { "typescript", "javascript", "vue" },
       })
 
-      -- Vue
-      lspconfig.volar.setup({
+      vim.lsp.config("volar", {
         capabilities = capabilities,
       })
 
-      -- C#
-      lspconfig.omnisharp.setup({
+      vim.lsp.config("omnisharp", {
         capabilities = capabilities,
         cmd = { "OmniSharp" },
       })
 
-      -- Python
-      lspconfig.pyright.setup({
+      vim.lsp.config("pyright", {
         capabilities = capabilities,
       })
 
-      -- CSS / Tailwind
-      lspconfig.cssls.setup({ capabilities = capabilities })
-      lspconfig.tailwindcss.setup({ capabilities = capabilities })
+      vim.lsp.config("cssls", { capabilities = capabilities })
+      vim.lsp.config("tailwindcss", { capabilities = capabilities })
+
+      vim.lsp.enable({ "ts_ls", "volar", "omnisharp", "pyright", "cssls", "tailwindcss" })
 
       -- Keymaps LSP
       vim.api.nvim_create_autocmd("LspAttach", {
