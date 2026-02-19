@@ -11,6 +11,7 @@
     ./eww.nix
     ./rofi.nix
     ./wlogout.nix
+    ./swaync.nix
   ];
 
   home.username = "pedro";

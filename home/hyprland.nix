@@ -125,6 +125,7 @@ in
         "$mod, P, pseudo"
         "$mod, J, togglesplit"
         "$mod, M, exec, ${monitorScript}/bin/monitor-switch"
+	"$mod, N, exec, swaync-client -t -sw"
 	"$mod, X, exec, wlogout"
 
         "$mod, left, movefocus, l"
