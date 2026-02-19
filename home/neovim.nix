@@ -1,7 +1,7 @@
 { config, pkgs, ... }:
 
 let
-  vueTypescriptPlugin = pkgs.vue-language-server + "/lib/node_modules/@vue/language-server";
+  vueTypescriptPlugin = pkgs.vue-language-server + "/lib/language-tools/packages/typescript-plugin";
 in
 {
   programs.neovim = {
@@ -22,6 +22,7 @@ in
       luasnip
       cmp_luasnip
       friendly-snippets
+      nvim-lspconfig
       fidget-nvim
 
       # Navegación
@@ -53,6 +54,7 @@ in
       comment-nvim
       nvim-surround
       flash-nvim
+      lspkind-nvim
     ];
 
     initLua = ''
@@ -212,7 +214,8 @@ in
 
       -- ============ AUTOCOMPLETADO ============
 
-      require("luasnip.loaders.from_vscode").lazy_load()	
+      require("luasnip.loaders.from_vscode").lazy_load({ paths = { "~/.config/nvim/snippets" } })
+      require("luasnip.loaders.from_vscode").lazy_load()
       local cmp = require("cmp")
       local luasnip = require("luasnip")
 
@@ -226,10 +229,13 @@ in
           completion = cmp.config.window.bordered(),
           documentation = cmp.config.window.bordered(),
         },
+        },
         mapping = cmp.mapping.preset.insert({
           ["<C-Space>"] = cmp.mapping.complete(),
           ["<C-e>"] = cmp.mapping.abort(),
           ["<CR>"] = cmp.mapping.confirm({ select = true }),
+          ["<Down>"] = cmp.mapping.select_next_item({ behavior = cmp.SelectBehavior.Select }),
+          ["<Up>"] = cmp.mapping.select_prev_item({ behavior = cmp.SelectBehavior.Select }),
           ["<Tab>"] = cmp.mapping(function(fallback)
             if cmp.visible() then
               cmp.select_next_item()
@@ -250,34 +256,47 @@ in
           end, { "i", "s" }),
         }),
         sources = cmp.config.sources({
-          { name = "nvim_lsp" },
-          { name = "luasnip" },
-          { name = "buffer" },
-          { name = "path" },
+          { name = "nvim_lsp", priority = 1000 },
+          { name = "luasnip", priority = 750 },
+          { name = "path", priority = 500 },
+        }, {
+          { name = "buffer", priority = 250 },
         }),
         formatting = {
-          format = function(entry, vim_item)
-            local source_names = {
+          fields = { "kind", "abbr", "menu" },
+          format = require("lspkind").cmp_format({
+            mode = "symbol_text",
+            maxwidth = 40,
+            ellipsis_char = "…",
+            menu = {
               nvim_lsp = "[LSP]",
               luasnip = "[Snip]",
               buffer = "[Buf]",
               path = "[Path]",
-            }
-            vim_item.menu = source_names[entry.source.name] or ""
-            return vim_item
-          end,
+            },
+          }),
+        },
+        sorting = {
+          priority_weight = 2,
+          comparators = {
+            cmp.config.compare.offset,
+            cmp.config.compare.exact,
+            cmp.config.compare.score,
+            cmp.config.compare.kind,
+            cmp.config.compare.sort_text,
+            cmp.config.compare.length,
+            cmp.config.compare.order,
+          },
         },
       })
 
       -- ============ LSP ============
 
       local capabilities = require("cmp_nvim_lsp").default_capabilities()
-      local web_root = { "package.json", "tsconfig.json", ".git" }
+      local lspconfig = require("lspconfig")
 
-      vim.lsp.config("ts_ls", {
-        cmd = { "typescript-language-server", "--stdio" },
+      lspconfig.ts_ls.setup({
         capabilities = capabilities,
-        root_markers = web_root,
         init_options = {
           plugins = {{
             name = "@vue/typescript-plugin",
@@ -288,65 +307,44 @@ in
         filetypes = { "typescript", "javascript", "typescriptreact", "javascriptreact", "vue" },
       })
 
-      vim.lsp.config("volar", {
-        cmd = { "vue-language-server", "--stdio" },
+      lspconfig.volar.setup({
         capabilities = capabilities,
-        root_markers = web_root,
-        filetypes = { "vue" },
+        init_options = {
+          typescript = {
+            tsdk = "${pkgs.nodePackages.typescript}/lib/node_modules/typescript/lib",
+          },
+        },
+        settings = {
+          volar = {
+            completion = {
+              autoImport = true,
+            },
+          },
+        },
       })
 
-      vim.lsp.config("omnisharp", {
-        cmd = { "${pkgs.omnisharp-roslyn}/bin/OmniSharp" },
+      lspconfig.omnisharp.setup({
         capabilities = capabilities,
-        root_markers = { "*.sln", "*.csproj", ".git" },
-        filetypes = { "cs" },
+        cmd = { "${pkgs.omnisharp-roslyn}/bin/OmniSharp" },
         settings = {
           FormattingOptions = { EnableEditorConfigSupport = true },
           RoslynExtensionsOptions = { EnableAnalyzersSupport = true },
         },
       })
 
-      vim.lsp.config("pyright", {
-        cmd = { "pyright-langserver", "--stdio" },
-        capabilities = capabilities,
-        root_markers = { "pyproject.toml", "setup.py", "requirements.txt", ".git" },
-        filetypes = { "python" },
-      })
+      lspconfig.pyright.setup({ capabilities = capabilities })
+      lspconfig.cssls.setup({ capabilities = capabilities })
+      lspconfig.tailwindcss.setup({ capabilities = capabilities })
+      lspconfig.bashls.setup({ capabilities = capabilities })
 
-      vim.lsp.config("cssls", {
-        cmd = { "vscode-css-language-server", "--stdio" },
+      lspconfig.nil_ls.setup({
         capabilities = capabilities,
-        root_markers = web_root,
-        filetypes = { "css", "scss", "less" },
-      })
-
-      vim.lsp.config("tailwindcss", {
-        cmd = { "tailwindcss-language-server", "--stdio" },
-        capabilities = capabilities,
-        root_markers = { "tailwind.config.js", "tailwind.config.ts", "tailwind.config.cjs", "tailwind.config.mjs" },
-        filetypes = { "html", "css", "vue", "javascript", "typescript", "typescriptreact", "javascriptreact" },
-      })
-
-      vim.lsp.config("nil_ls", {
-        cmd = { "nil" },
-        capabilities = capabilities,
-        root_markers = { "flake.nix", "default.nix", ".git" },
-        filetypes = { "nix" },
         settings = {
           ["nil"] = {
             formatting = { command = { "nixpkgs-fmt" } },
           },
         },
       })
-
-      vim.lsp.config("bashls", {
-        cmd = { "bash-language-server", "start" },
-        capabilities = capabilities,
-        root_markers = { ".git" },
-        filetypes = { "sh", "bash", "zsh" },
-      })
-
-      vim.lsp.enable({ "ts_ls", "volar", "omnisharp", "pyright", "cssls", "tailwindcss", "nil_ls", "bashls" })
      
       -- Keymaps LSP
       vim.api.nvim_create_autocmd("LspAttach", {
@@ -428,9 +426,12 @@ in
     nil
     bash-language-server
     nixpkgs-fmt
+    nodePackages.typescript
 
     # Herramientas Telescope
     ripgrep
     fd
   ];
+  xdg.configFile."nvim/snippets/vue.json".source = ./snippets/vue.json;
+  xdg.configFile."nvim/snippets/package.json".source = ./snippets/package.json;
 }
