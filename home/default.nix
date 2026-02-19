@@ -26,6 +26,7 @@
     curl
     wget
     unzip
+    wl-clipboard
 
     nodejs_22
     corepack_22
