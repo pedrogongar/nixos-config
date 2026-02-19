@@ -169,7 +169,9 @@ in
       exec-once = [
         "swww-daemon"
         "swaync"
-	"eww open bar"
+        "eww open bar"
+        "eww open desktop-clock"
+        "eww open desktop-sysmon"
       ];
 
       windowrulev2 = [

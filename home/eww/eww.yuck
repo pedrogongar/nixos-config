@@ -7,7 +7,9 @@
   `bash -c 'hyprctl activeworkspace -j | jq -r ".id"; socat -u UNIX-CONNECT:$XDG_RUNTIME_DIR/hypr/$HYPRLAND_INSTANCE_SIGNATURE/.socket2.sock - | while read -r _; do hyprctl activeworkspace -j | jq -r ".id"; done'`)
 
 (defpoll clock-time :interval "1s" `date +%H:%M`)
+(defpoll clock-seconds :interval "1s" `date +%S`)
 (defpoll clock-date :interval "60s" `date "+%a %d %b"`)
+(defpoll clock-date-long :interval "60s" `date "+%A %d de %B"`)
 
 (defpoll cpu-usage :interval "2s"
   `top -bn1 | grep "Cpu(s)" | awk '{print int($2)}'`)
@@ -18,6 +20,9 @@
 (defpoll ram-used :interval "2s"
   `free -h | awk '/Mem:/ {print $3}'`)
 
+(defpoll disk-usage :interval "30s"
+  `df -h / | awk 'NR==2 {gsub("%",""); print $5}'`)
+
 (defpoll volume :interval "1s"
   `pamixer --get-volume 2>/dev/null || echo 0`)
 
@@ -25,9 +30,18 @@
   `cat /sys/class/power_supply/BAT0/capacity 2>/dev/null || echo 100`)
 
 (defpoll network-name :interval "10s"
-  `nmcli -t -f active,ssid dev wifi | grep '^sí' | cut -d: -f2 || echo "LAN"`)
+  `nmcli -t -f active,ssid dev wifi 2>/dev/null | grep '^sí' | cut -d: -f2 || echo "LAN"`)
 
-;; ============ WIDGETS ============
+(defpoll music-title :interval "2s"
+  `playerctl metadata title 2>/dev/null || echo ""`)
+
+(defpoll music-artist :interval "2s"
+  `playerctl metadata artist 2>/dev/null || echo ""`)
+
+(defpoll music-status :interval "1s"
+  `playerctl status 2>/dev/null || echo "Stopped"`)
+
+;; ============ BAR WIDGETS ============
 
 (defwidget workspaces-widget []
   (box :class "workspaces" :spacing 4
@@ -37,7 +51,7 @@
         :onclick "hyprctl dispatch workspace ${ws.id}"
         {ws.id}))))
 
-(defwidget clock-widget []
+(defwidget bar-clock []
   (box :class "clock" :spacing 8
     (label :class "clock-time" :text clock-time)
     (label :class "clock-date" :text clock-date)))
@@ -76,7 +90,7 @@
 
 (defwidget bar-center []
   (box :halign "center" :class "bar-section"
-    (clock-widget)))
+    (bar-clock)))
 
 (defwidget bar-right []
   (box :halign "end" :class "bar-section" :spacing 4
@@ -92,6 +106,55 @@
     (bar-center)
     (bar-right)))
 
+;; ============ DESKTOP WIDGETS ============
+
+(defwidget big-clock []
+  (box :class "widget-box clock-box" :orientation "v" :spacing 4
+    (box :halign "center" :spacing 0
+      (label :class "big-time" :text clock-time)
+      (label :class "big-seconds" :text ":${clock-seconds}"))
+    (box :class "clock-divider")
+    (label :class "big-date" :text clock-date-long)))
+
+(defwidget music []
+  (box :class "widget-box music-box" :orientation "v" :spacing 10
+    :visible {music-title != ""}
+    (box :spacing 12
+      (box :class "music-art" :halign "start"
+        (label :text "♪"))
+      (box :orientation "v" :valign "center" :hexpand true
+        (label :class "music-title" :halign "start" :limit-width 22 :text music-title)
+        (label :class "music-artist" :halign "start" :text music-artist)))
+    (box :class "music-controls" :halign "center" :spacing 24
+      (button :class "music-btn" :onclick "playerctl previous" "⏮")
+      (button :class "music-btn play" :onclick "playerctl play-pause"
+        {music-status == "Playing" ? "⏸" : "▶"})
+      (button :class "music-btn" :onclick "playerctl next" "⏭"))))
+
+(defwidget sys-ring [value label color]
+  (box :orientation "v" :spacing 6 :halign "center"
+    (overlay
+      (circular-progress
+        :class "ring-bg"
+        :thickness 4
+        :value 100
+        :start-at 75)
+      (circular-progress
+        :class "ring ${color}"
+        :thickness 4
+        :value value
+        :start-at 75)
+      (label :class "ring-value" :text "${value}%"))
+    (label :class "ring-label" :text label)))
+
+(defwidget sysmon []
+  (box :class "widget-box sysmon-box" :orientation "v" :spacing 14
+    (label :class "sysmon-title" :halign "start" :text "SISTEMA")
+    (box :spacing 20 :halign "center"
+      (sys-ring :value cpu-usage :label "CPU" :color "cpu")
+      (sys-ring :value ram-usage :label "RAM" :color "ram")
+      (sys-ring :value disk-usage :label "SSD" :color "disk"))))
+
 ;; ============ WINDOWS ============
 
 (defwindow bar
@@ -106,3 +169,36 @@
   :exclusive true
   :namespace "eww-bar"
   (bar-layout))
+
+(defwindow desktop-clock
+  :monitor 0
+  :geometry (geometry
+    :x "-20px"
+    :y "70px"
+    :anchor "top right")
+  :stacking "bg"
+  :focusable false
+  :namespace "eww-widget"
+  (big-clock))
+
+(defwindow desktop-music
+  :monitor 0
+  :geometry (geometry
+    :x "-20px"
+    :y "220px"
+    :anchor "top right")
+  :stacking "bg"
+  :focusable false
+  :namespace "eww-widget"
+  (music))
+
+(defwindow desktop-sysmon
+  :monitor 0
+  :geometry (geometry
+    :x "-20px"
+    :y "360px"
+    :anchor "top right")
+  :stacking "bg"
+  :focusable false
+  :namespace "eww-widget"
+  (sysmon))
