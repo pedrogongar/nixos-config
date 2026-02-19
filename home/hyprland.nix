@@ -167,6 +167,7 @@ in
       exec-once = [
         "swww-daemon"
         "swaync"
+	"eww open bar"
       ];
 
       windowrulev2 = [
@@ -194,5 +195,7 @@ in
     cmatrix
     yazi
     matugen
+    jq
+    socat
   ];
 }

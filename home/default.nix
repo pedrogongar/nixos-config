@@ -8,6 +8,7 @@
     ./kitty.nix
     ./theme.nix
     ./apps.nix
+    ./eww.nix
   ];
 
   home.username = "pedro";

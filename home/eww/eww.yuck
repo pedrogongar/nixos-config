@@ -1,0 +1,108 @@
+;; ============ VARIABLES ============
+
+(deflisten workspaces
+  `bash -c 'hyprctl workspaces -j | jq -c "sort_by(.id)"; socat -u UNIX-CONNECT:$XDG_RUNTIME_DIR/hypr/$HYPRLAND_INSTANCE_SIGNATURE/.socket2.sock - | while read -r _; do hyprctl workspaces -j | jq -c "sort_by(.id)"; done'`)
+
+(deflisten active-workspace
+  `bash -c 'hyprctl activeworkspace -j | jq -r ".id"; socat -u UNIX-CONNECT:$XDG_RUNTIME_DIR/hypr/$HYPRLAND_INSTANCE_SIGNATURE/.socket2.sock - | while read -r _; do hyprctl activeworkspace -j | jq -r ".id"; done'`)
+
+(defpoll clock-time :interval "1s" `date +%H:%M`)
+(defpoll clock-date :interval "60s" `date "+%a %d %b"`)
+
+(defpoll cpu-usage :interval "2s"
+  `top -bn1 | grep "Cpu(s)" | awk '{print int($2)}'`)
+
+(defpoll ram-usage :interval "2s"
+  `free -m | awk '/Mem:/ {print int($3/$2*100)}'`)
+
+(defpoll ram-used :interval "2s"
+  `free -h | awk '/Mem:/ {print $3}'`)
+
+(defpoll volume :interval "1s"
+  `pamixer --get-volume 2>/dev/null || echo 0`)
+
+(defpoll battery :interval "10s"
+  `cat /sys/class/power_supply/BAT0/capacity 2>/dev/null || echo 100`)
+
+(defpoll network-name :interval "10s"
+  `nmcli -t -f active,ssid dev wifi | grep '^sí' | cut -d: -f2 || echo "LAN"`)
+
+;; ============ WIDGETS ============
+
+(defwidget workspaces-widget []
+  (box :class "workspaces" :spacing 4
+    (for ws in workspaces
+      (button
+        :class {ws.id == active-workspace ? "ws active" : "ws"}
+        :onclick "hyprctl dispatch workspace ${ws.id}"
+        {ws.id}))))
+
+(defwidget clock-widget []
+  (box :class "clock" :spacing 8
+    (label :class "clock-time" :text clock-time)
+    (label :class "clock-date" :text clock-date)))
+
+(defwidget cpu-widget []
+  (box :class "tray-item cpu" :spacing 6
+    (label :class "tray-icon" :text "󰻠")
+    (label :class "tray-value" :text "${cpu-usage}%")))
+
+(defwidget ram-widget []
+  (box :class "tray-item ram" :spacing 6
+    (label :class "tray-icon" :text "󰍛")
+    (label :class "tray-value" :text ram-used)))
+
+(defwidget volume-widget []
+  (eventbox
+    :onclick "pamixer -t"
+    :onscroll "if [ '{}' = 'up' ]; then pamixer -i 5; else pamixer -d 5; fi"
+    (box :class "tray-item volume" :spacing 6
+      (label :class "tray-icon" :text {volume > 50 ? "󰕾" : volume > 0 ? "󰖀" : "󰝟"})
+      (label :class "tray-value" :text "${volume}%"))))
+
+(defwidget battery-widget []
+  (box :class "tray-item battery" :spacing 6
+    (label :class "tray-icon"
+      :text {battery > 80 ? "󰁹" : battery > 60 ? "󰂀" : battery > 40 ? "󰁾" : battery > 20 ? "󰁼" : "󰁺"})
+    (label :class "tray-value" :text "${battery}%")))
+
+(defwidget network-widget []
+  (box :class "tray-item network" :spacing 6
+    (label :class "tray-icon" :text "󰤨")))
+
+(defwidget bar-left []
+  (box :halign "start" :class "bar-section"
+    (workspaces-widget)))
+
+(defwidget bar-center []
+  (box :halign "center" :class "bar-section"
+    (clock-widget)))
+
+(defwidget bar-right []
+  (box :halign "end" :class "bar-section" :spacing 4
+    (cpu-widget)
+    (ram-widget)
+    (battery-widget)
+    (volume-widget)
+    (network-widget)))
+
+(defwidget bar-layout []
+  (centerbox
+    (bar-left)
+    (bar-center)
+    (bar-right)))
+
+;; ============ WINDOWS ============
+
+(defwindow bar
+  :monitor 0
+  :geometry (geometry
+    :x "0px"
+    :y "8px"
+    :width "99%"
+    :height "42px"
+    :anchor "top center")
+  :stacking "fg"
+  :exclusive true
+  :namespace "eww-bar"
+  (bar-layout))

@@ -1,0 +1,103 @@
+// ============ PALETTE ============
+
+$bg: rgba(26, 27, 38, 0.75);
+$bg-hover: rgba(196, 167, 231, 0.1);
+$border: rgba(196, 167, 231, 0.3);
+$text: #c0caf5;
+$text-dim: #565f89;
+$text-bright: #e0e4ff;
+$accent1: #c4a7e7;
+$accent2: #8aadf4;
+$accent3: #a6da95;
+$accent4: #f0c6c6;
+$accent5: #8bd5ca;
+$red: #ed8796;
+$radius: 14px;
+$radius-sm: 8px;
+
+// ============ BAR ============
+
+window.eww-bar {
+  background: transparent;
+}
+
+.bar-section {
+  background: $bg;
+  border: 1px solid $border;
+  border-radius: $radius;
+  padding: 0 8px;
+}
+
+// ============ WORKSPACES ============
+
+.workspaces {
+  padding: 2px;
+}
+
+.ws {
+  min-width: 28px;
+  min-height: 28px;
+  border-radius: $radius-sm;
+  font-size: 11px;
+  font-weight: 500;
+  color: $text-dim;
+  transition: all 200ms ease;
+
+  &:hover {
+    background: $bg-hover;
+    color: $text;
+  }
+
+  &.active {
+    background: $accent1;
+    color: #1a1b26;
+    font-weight: 700;
+    box-shadow: 0 0 12px rgba(196, 167, 231, 0.4);
+  }
+}
+
+// ============ CLOCK ============
+
+.clock {
+  padding: 0 12px;
+
+  .clock-time {
+    font-size: 13px;
+    font-weight: 500;
+    color: $text-bright;
+    letter-spacing: 1px;
+  }
+
+  .clock-date {
+    font-size: 11px;
+    color: $text-dim;
+  }
+}
+
+// ============ TRAY ============
+
+.tray-item {
+  padding: 4px 10px;
+  border-radius: $radius-sm;
+  transition: background 200ms ease;
+
+  &:hover {
+    background: $bg-hover;
+  }
+
+  .tray-icon {
+    font-size: 14px;
+  }
+
+  .tray-value {
+    font-size: 12px;
+    font-family: "JetBrains Mono", monospace;
+    color: $text;
+  }
+}
+
+.cpu .tray-icon { color: $accent2; }
+.ram .tray-icon { color: $accent1; }
+.battery .tray-icon { color: $accent3; }
+.volume .tray-icon { color: $accent5; }
+.network .tray-icon { color: $accent4; }
