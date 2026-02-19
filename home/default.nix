@@ -13,6 +13,7 @@
     ./wlogout.nix
     ./swaync.nix
     ./matugen.nix
+    ./nano.nix
   ];
 
   home.username = "pedro";
