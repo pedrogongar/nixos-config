@@ -14,14 +14,14 @@ in
       # Tema
       catppuccin-nvim
 
-      # LSP
-      nvim-lspconfig
+      # Autocompletado
       nvim-cmp
       cmp-nvim-lsp
       cmp-buffer
       cmp-path
       luasnip
       cmp_luasnip
+      friendly-snippets
       fidget-nvim
 
       # Navegación
@@ -49,6 +49,7 @@ in
 
       # Utilidades
       nvim-autopairs
+      nvim-ts-autotag
       comment-nvim
       nvim-surround
       flash-nvim
@@ -136,7 +137,6 @@ in
             { filetype = "oil", text = "Explorador", highlight = "Directory" },
           },
         },
-        highlights = require("catppuccin.groups.integrations.bufferline").get(),
       })
 
       require("ibl").setup({
@@ -171,6 +171,7 @@ in
       -- ============ UTILIDADES ============
 
       require("nvim-autopairs").setup()
+      require("nvim-ts-autotag").setup()
       require("Comment").setup()
       require("nvim-surround").setup()
       require("todo-comments").setup()
@@ -211,6 +212,7 @@ in
 
       -- ============ AUTOCOMPLETADO ============
 
+      require("luasnip.loaders.from_vscode").lazy_load()	
       local cmp = require("cmp")
       local luasnip = require("luasnip")
 
@@ -270,12 +272,12 @@ in
       -- ============ LSP ============
 
       local capabilities = require("cmp_nvim_lsp").default_capabilities()
+      local web_root = { "package.json", "tsconfig.json", ".git" }
 
-      local lspconfig = require("lspconfig")
-
-      -- TypeScript + Vue
-      lspconfig.ts_ls.setup({
+      vim.lsp.config("ts_ls", {
+        cmd = { "typescript-language-server", "--stdio" },
         capabilities = capabilities,
+        root_markers = web_root,
         init_options = {
           plugins = {{
             name = "@vue/typescript-plugin",
@@ -286,34 +288,50 @@ in
         filetypes = { "typescript", "javascript", "typescriptreact", "javascriptreact", "vue" },
       })
 
-      lspconfig.volar.setup({
+      vim.lsp.config("volar", {
+        cmd = { "vue-language-server", "--stdio" },
         capabilities = capabilities,
+        root_markers = web_root,
+        filetypes = { "vue" },
       })
 
-      -- C#
-      lspconfig.omnisharp.setup({
-        capabilities = capabilities,
+      vim.lsp.config("omnisharp", {
         cmd = { "${pkgs.omnisharp-roslyn}/bin/OmniSharp" },
+        capabilities = capabilities,
+        root_markers = { "*.sln", "*.csproj", ".git" },
+        filetypes = { "cs" },
         settings = {
           FormattingOptions = { EnableEditorConfigSupport = true },
           RoslynExtensionsOptions = { EnableAnalyzersSupport = true },
         },
       })
 
-      -- Python
-      lspconfig.pyright.setup({
+      vim.lsp.config("pyright", {
+        cmd = { "pyright-langserver", "--stdio" },
         capabilities = capabilities,
+        root_markers = { "pyproject.toml", "setup.py", "requirements.txt", ".git" },
+        filetypes = { "python" },
       })
 
-      -- CSS
-      lspconfig.cssls.setup({ capabilities = capabilities })
-
-      -- Tailwind
-      lspconfig.tailwindcss.setup({ capabilities = capabilities })
-
-      -- Nix
-      lspconfig.nil_ls.setup({
+      vim.lsp.config("cssls", {
+        cmd = { "vscode-css-language-server", "--stdio" },
         capabilities = capabilities,
+        root_markers = web_root,
+        filetypes = { "css", "scss", "less" },
+      })
+
+      vim.lsp.config("tailwindcss", {
+        cmd = { "tailwindcss-language-server", "--stdio" },
+        capabilities = capabilities,
+        root_markers = { "tailwind.config.js", "tailwind.config.ts", "tailwind.config.cjs", "tailwind.config.mjs" },
+        filetypes = { "html", "css", "vue", "javascript", "typescript", "typescriptreact", "javascriptreact" },
+      })
+
+      vim.lsp.config("nil_ls", {
+        cmd = { "nil" },
+        capabilities = capabilities,
+        root_markers = { "flake.nix", "default.nix", ".git" },
+        filetypes = { "nix" },
         settings = {
           ["nil"] = {
             formatting = { command = { "nixpkgs-fmt" } },
@@ -321,10 +339,16 @@ in
         },
       })
 
-      -- Bash
-      lspconfig.bashls.setup({ capabilities = capabilities })
+      vim.lsp.config("bashls", {
+        cmd = { "bash-language-server", "start" },
+        capabilities = capabilities,
+        root_markers = { ".git" },
+        filetypes = { "sh", "bash", "zsh" },
+      })
 
-      -- Keymaps LSP (se activan cuando un LSP se conecta)
+      vim.lsp.enable({ "ts_ls", "volar", "omnisharp", "pyright", "cssls", "tailwindcss", "nil_ls", "bashls" })
+     
+      -- Keymaps LSP
       vim.api.nvim_create_autocmd("LspAttach", {
         callback = function(ev)
           local opts = function(desc)
@@ -373,7 +397,7 @@ in
       -- Todo
       map("n", "<leader>xt", "<cmd>TodoTrouble<cr>", { desc = "TODOs" })
 
-      -- Flash (saltar a cualquier sitio)
+      -- Flash
       map({ "n", "x", "o" }, "s", function() require("flash").jump() end, { desc = "Flash jump" })
 
       -- Guardar y salir rápido

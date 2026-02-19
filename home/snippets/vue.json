@@ -1,0 +1,39 @@
+{
+  "Vue SFC base": {
+    "prefix": ["vbase", "vsfc"],
+    "body": [
+      "<script setup lang=\"ts\">",
+      "$0",
+      "</script>",
+      "",
+      "<template>",
+      "  <div>",
+      "    ",
+      "  </div>",
+      "</template>"
+    ],
+    "description": "Vue 3 SFC: script setup + template"
+  },
+  "Vue SFC con props y emits": {
+    "prefix": ["vfull", "vpe"],
+    "body": [
+      "<script setup lang=\"ts\">",
+      "const props = defineProps<{",
+      "  $1",
+      "}>()",
+      "",
+      "const emit = defineEmits<{",
+      "  $2",
+      "}>()",
+      "$0",
+      "</script>",
+      "",
+      "<template>",
+      "  <div>",
+      "    ",
+      "  </div>",
+      "</template>"
+    ],
+    "description": "Vue 3 SFC: script setup con defineProps + defineEmits + template"
+  }
+}
