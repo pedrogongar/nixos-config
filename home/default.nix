@@ -6,6 +6,8 @@
     ./shell.nix
     ./hyprland.nix
     ./kitty.nix
+    ./theme.nix
+    ./apps.nix
   ];
 
   home.username = "pedro";
@@ -24,11 +26,9 @@
   };
 
   home.packages = with pkgs; [
-    htop
     curl
     wget
     unzip
-    wl-clipboard
 
     nodejs_22
     corepack_22
