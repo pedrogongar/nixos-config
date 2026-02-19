@@ -1,5 +1,5 @@
 {
-  description = "NixOS dev VM";
+  description = "NixOS dev VM + escritorio";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
@@ -9,18 +9,31 @@
     };
   };
 
-  outputs = { self, nixpkgs, home-manager }: {
-    nixosConfigurations.nixos-dev = nixpkgs.lib.nixosSystem {
-      system = "x86_64-linux";
-      modules = [
-        ./configuration.nix
-        home-manager.nixosModules.home-manager
-        {
-          home-manager.useGlobalPkgs = true;
-          home-manager.useUserPackages = true;
-          home-manager.users.pedro = import ./home.nix;
-        }
-      ];
+  outputs = { self, nixpkgs, home-manager }: let
+    homeManagerModule = {
+      home-manager.useGlobalPkgs = true;
+      home-manager.useUserPackages = true;
+      home-manager.users.pedro = import ./home;
+    };
+  in {
+    nixosConfigurations = {
+      nixos-dev = nixpkgs.lib.nixosSystem {
+        system = "x86_64-linux";
+        modules = [
+          ./hosts/vm
+          home-manager.nixosModules.home-manager
+          homeManagerModule
+        ];
+      };
+
+      nixos-escritorio = nixpkgs.lib.nixosSystem {
+        system = "x86_64-linux";
+        modules = [
+          ./hosts/escritorio
+          home-manager.nixosModules.home-manager
+          homeManagerModule
+        ];
+      };
     };
   };
 }
