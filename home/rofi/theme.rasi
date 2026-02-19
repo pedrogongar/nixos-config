@@ -1,0 +1,81 @@
+* {
+    bg:           rgba(26, 27, 38, 0.85);
+    bg-alt:       rgba(36, 37, 52, 0.9);
+    fg:           #c0caf5;
+    fg-dim:       #565f89;
+    accent:       #c4a7e7;
+    accent2:      #8aadf4;
+    border-col:   rgba(196, 167, 231, 0.3);
+    urgent:       #ed8796;
+
+    font: "Outfit 12";
+
+    background-color: transparent;
+    text-color: @fg;
+}
+
+window {
+    width: 500px;
+    padding: 0;
+    border: 1px solid;
+    border-color: @border-col;
+    border-radius: 14px;
+    background-color: @bg;
+}
+
+mainbox {
+    spacing: 0;
+    children: [ inputbar, listview ];
+}
+
+inputbar {
+    padding: 14px 18px;
+    spacing: 12px;
+    border: 0 0 1px 0;
+    border-color: @border-col;
+    children: [ prompt, entry ];
+}
+
+prompt {
+    font: "Outfit 14";
+    text-color: @accent;
+}
+
+entry {
+    placeholder: "Buscar...";
+    placeholder-color: @fg-dim;
+    font: "Outfit 13";
+}
+
+listview {
+    lines: 7;
+    padding: 8px;
+    spacing: 2px;
+    fixed-height: true;
+    scrollbar: false;
+}
+
+element {
+    padding: 10px 14px;
+    spacing: 14px;
+    border-radius: 8px;
+}
+
+element selected.normal {
+    background-color: rgba(196, 167, 231, 0.1);
+    border: 0 0 0 2px;
+    border-color: @accent;
+}
+
+element-icon {
+    size: 28px;
+}
+
+element-text {
+    font: "Outfit 13";
+    vertical-align: 0.5;
+}
+
+element-text selected {
+    text-color: @fg;
+}

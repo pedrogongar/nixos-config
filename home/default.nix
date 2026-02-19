@@ -9,6 +9,7 @@
     ./theme.nix
     ./apps.nix
     ./eww.nix
+    ./rofi.nix
   ];
 
   home.username = "pedro";
