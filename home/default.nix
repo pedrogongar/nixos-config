@@ -1,6 +1,10 @@
 { config, pkgs, ... }:
 
 {
+  imports = [
+    ./neovim.nix
+  ];
+
   home.username = "pedro";
   home.homeDirectory = "/home/pedro";
   home.stateVersion = "25.11";
@@ -21,25 +25,18 @@
   };
 
   home.packages = with pkgs; [
-      # Herramientas básicas
-      htop
-      curl
-      wget
-      ripgrep
-      fd
-      unzip
+    htop
+    curl
+    wget
+    unzip
 
-      # Node.js (JS/TS/CSS)
-      nodejs_22
-      corepack_22
+    nodejs_22
+    corepack_22
 
-      # Python
-      python3
+    python3
 
-      # .NET
-      dotnet-sdk_8
+    dotnet-sdk_8
 
-      # Docker
-      docker-compose
+    docker-compose
   ];
 }
