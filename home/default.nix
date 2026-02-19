@@ -10,10 +10,12 @@
     ./apps.nix
     ./eww.nix
     ./rofi.nix
+    ./hyprlock.nix
     ./wlogout.nix
     ./swaync.nix
     ./matugen.nix
     ./nano.nix
+    ./vscode.nix
   ];
 
   home.username = "pedro";
