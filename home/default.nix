@@ -7,8 +7,10 @@
 
   programs.git = {
     enable = true;
-    userName = "Pedro";
-    userEmail = "pedro@nixos-dev";
+    settings.user = {
+      name = "Pedro";
+      email = "pedro@nixos-dev";
+    };
   };
 
   programs.bash = {
