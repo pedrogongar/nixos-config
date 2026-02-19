@@ -20,11 +20,11 @@ let
   starshipModules = ''
     [username]
     show_always = true
-    format = "[  $user ](bold fg:text bg:sec1 )"
+    format = "[   $user ](bold fg:text bg:sec1 )"
 
     [hostname]
     ssh_only = true
-    format = "[  $hostname ](bold fg:text bg:sec1)"
+    format = "[   $hostname ](bold fg:text bg:sec1)"
 
     [directory]
     format = "[ $path ](bold fg:text bg:sec2)"
@@ -143,7 +143,7 @@ in
         export STARSHIP_CONFIG="$HOME/.config/starship/tokyo.toml"
       fi
     '';
-    initExtra = ''
+    initContent = ''
       function theme() {
         local themes_dir="$HOME/.config/starship"
         case "$1" in
@@ -184,7 +184,7 @@ in
 
   programs.bat = {
     enable = true;
-    config.theme = "tokyonight_night";
+    config.theme = "TwoDark";
   };
 
   programs.eza.enable = true;

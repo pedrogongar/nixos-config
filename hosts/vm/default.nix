@@ -5,6 +5,7 @@
     ./hardware-configuration.nix
     ../../modules/base.nix
     ../../modules/docker.nix
+    ../../modules/desktop.nix
   ];
 
   boot.loader.systemd-boot.enable = true;
