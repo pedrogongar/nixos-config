@@ -10,6 +10,7 @@
     ./apps.nix
     ./eww.nix
     ./rofi.nix
+    ./wlogout.nix
   ];
 
   home.username = "pedro";
