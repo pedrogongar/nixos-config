@@ -19,8 +19,25 @@
   };
 
   home.packages = with pkgs; [
-    htop
-    curl
-    wget
+      # Herramientas básicas
+      htop
+      curl
+      wget
+      ripgrep
+      fd
+      unzip
+
+      # Node.js (JS/TS/CSS)
+      nodejs_22
+      corepack_22
+
+      # Python
+      python3
+
+      # .NET
+      dotnet-sdk_8
+
+      # Docker
+      docker-compose
   ];
 }
