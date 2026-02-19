@@ -25,7 +25,10 @@
   users.users.pedro = {
     isNormalUser = true;
     extraGroups = [ "wheel" "docker" ];
+    shell = pkgs.zsh;
   };
+
+  programs.zsh.enable = true;
 
   system.stateVersion = "25.11";
 }

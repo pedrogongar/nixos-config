@@ -3,6 +3,7 @@
 {
   imports = [
     ./neovim.nix
+    ./shell.nix
   ];
 
   home.username = "pedro";
@@ -11,16 +12,12 @@
 
   programs.git = {
     enable = true;
-    settings.user = {
-      name = "Pedro";
-      email = "pedro@nixos-dev";
-    };
-  };
-
-  programs.bash = {
-    enable = true;
-    shellAliases = {
-      rebuild = "sudo nixos-rebuild switch --flake /etc/nixos#nixos-dev";
+    settings = {
+      user = {
+        name = "Pedro";
+        email = "pedro@nixos-dev";
+      };
+      safe.directory = [ "/etc/nixos" ];
     };
   };
 
