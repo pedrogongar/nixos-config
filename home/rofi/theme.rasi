@@ -1,12 +1,12 @@
 * {
-    bg:           rgba(13, 14, 23, 0.95);
+    bg:           rgba(22, 22, 30, 0.92);
     bg-alt:       rgba(26, 27, 38, 0.98);
     fg:           #c0caf5;
     fg-dim:       #565f89;
-    accent:       #7dcfff;
+    accent:       #c4a7e7;
     accent2:      #7aa2f7;
-    border-col:   rgba(125, 207, 255, 0.2);
-    urgent:       #f7768e;
+    border-col:   rgba(196, 167, 231, 0.2);
+    urgent:       #f38ba8;
 
     font: "JetBrains Mono Nerd Font 12";
 
@@ -62,7 +62,7 @@ element {
 }
 
 element selected.normal {
-    background-color: rgba(125, 207, 255, 0.1);
+    background-color: rgba(196, 167, 231, 0.1);
     border: 0 0 0 2px;
     border-color: @accent;
 }

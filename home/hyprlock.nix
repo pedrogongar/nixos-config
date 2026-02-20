@@ -54,8 +54,8 @@
         placeholder_text = "";
         hide_input = false;
         rounding = 14;
-        check_color = "rgba(166, 218, 149, 0.5)";
-        fail_color = "rgba(237, 135, 150, 0.5)";
+        check_color = "rgba(166, 227, 161, 0.5)";
+        fail_color = "rgba(243, 139, 168, 0.5)";
         fail_text = "";
         position = "0, -30";
         halign = "center";

@@ -128,7 +128,7 @@ in
         "$mod, J,           togglesplit"
         "$mod, M,           exec, ${monitorScript}/bin/monitor-switch"
         "$mod, N,           exec, swaync-client -t -sw"
-        "$mod, X,           exec, wlogout"
+        "$mod, X,           exec, wlogout --buttons-per-row 2"
         "$mod, L,           exec, hyprlock"
 
         "$mod, left,  movefocus, l"
