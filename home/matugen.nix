@@ -1,6 +1,8 @@
 { config, pkgs, ... }:
 
 let
+  c = import ./colores.nix;
+
   applyTheme = pkgs.writeShellScriptBin "apply-theme" ''
     WALLPAPER="$1"
 
@@ -44,7 +46,7 @@ let
     swaync-client -rs 2>/dev/null
     pkill -SIGUSR2 waybar 2>/dev/null
 
-    echo "✓ Paleta default aplicada"
+    echo "✓ Paleta Malva Night aplicada"
   '';
 
 in
@@ -78,62 +80,64 @@ in
     output_path = "~/.cache/matugen/colors-btop.theme"
   '';
 
+  # ── Defaults Malva Night ──────────────────────────────────────────────
+
   xdg.configFile."matugen/defaults/colors-hyprland.conf".text = ''
     $accent = rgb(c4a7e7)
-    $accent2 = rgb(8aadf4)
+    $accent2 = rgb(7aa2f7)
     $bg = rgb(1a1b26)
     $bg-surface = rgba(1a1b2699)
     $border = rgba(c4a7e766)
     $text = rgb(c0caf5)
     $text-dim = rgb(565f89)
-    $red = rgb(ed8796)
-    $green = rgb(a6da95)
-    $yellow = rgb(e0af68)
+    $red = rgb(f38ba8)
+    $green = rgb(a6e3a1)
+    $yellow = rgb(f9e2af)
   '';
 
   xdg.configFile."matugen/defaults/colors-kitty.conf".text = ''
-    foreground #c0caf5
-    background #1a1b26
-    selection_foreground #c0caf5
-    selection_background #33467c
-    color0  #15161e
-    color1  #f7768e
-    color2  #9ece6a
-    color3  #e0af68
-    color4  #7aa2f7
-    color5  #bb9af7
-    color6  #7dcfff
-    color7  #a9b1d6
-    color8  #414868
-    color9  #f7768e
-    color10 #9ece6a
-    color11 #e0af68
-    color12 #7aa2f7
-    color13 #bb9af7
-    color14 #7dcfff
-    color15 #c0caf5
+    foreground ${c.text}
+    background ${c.base}
+    selection_foreground ${c.text}
+    selection_background ${c.surface0}
+    color0  ${c.crust}
+    color1  ${c.red}
+    color2  ${c.green}
+    color3  ${c.yellow}
+    color4  ${c.blue}
+    color5  ${c.malva}
+    color6  ${c.cyan}
+    color7  ${c.subtext}
+    color8  ${c.surface2}
+    color9  ${c.red}
+    color10 ${c.green}
+    color11 ${c.yellow}
+    color12 ${c.blue}
+    color13 ${c.fuchsia}
+    color14 ${c.teal}
+    color15 ${c.text}
   '';
 
   xdg.configFile."matugen/defaults/colors-rofi.rasi".text = ''
     * {
-        bg: rgba(26, 27, 38, 0.85);
-        bg-alt: rgba(36, 37, 52, 0.9);
-        fg: #c0caf5;
-        fg-dim: #565f89;
-        accent: #c4a7e7;
-        border-col: rgba(196, 167, 231, 0.3);
-        urgent: #ed8796;
+        bg: rgba(22, 22, 30, 0.92);
+        bg-alt: rgba(26, 27, 38, 0.98);
+        fg: ${c.text};
+        fg-dim: ${c.surface2};
+        accent: ${c.malva};
+        border-col: rgba(196, 167, 231, 0.2);
+        urgent: ${c.red};
     }
   '';
 
   xdg.configFile."matugen/defaults/colors-swaync.css".text = ''
-    @define-color bg rgba(26, 27, 38, 0.85);
-    @define-color bg-alt rgba(36, 37, 52, 0.9);
-    @define-color border rgba(196, 167, 231, 0.3);
-    @define-color text #c0caf5;
-    @define-color text-dim #565f89;
-    @define-color accent #c4a7e7;
-    @define-color urgent #ed8796;
+    @define-color bg rgba(22, 22, 30, 0.92);
+    @define-color bg-alt rgba(26, 27, 38, 0.98);
+    @define-color border rgba(196, 167, 231, 0.18);
+    @define-color text ${c.text};
+    @define-color text-dim ${c.surface2};
+    @define-color accent ${c.malva};
+    @define-color urgent ${c.red};
   '';
 
   xdg.configFile."matugen/defaults/colors-hyprlock.conf".text = ''
@@ -141,59 +145,61 @@ in
     $fg-dim = rgba(86, 95, 137, 1.0)
     $accent = rgba(196, 167, 231, 0.3)
     $bg = rgba(26, 27, 38, 0.75)
-    $green = rgba(166, 218, 149, 0.5)
-    $red = rgba(237, 135, 150, 0.5)
+    $green = rgba(166, 227, 161, 0.5)
+    $red = rgba(243, 139, 168, 0.5)
   '';
 
   xdg.configFile."matugen/defaults/colors-cava.conf".text = ''
     [color]
     gradient = 1
     gradient_count = 4
-    gradient_color_1 = '#8aadf4'
-    gradient_color_2 = '#c4a7e7'
-    gradient_color_3 = '#8bd5ca'
-    gradient_color_4 = '#a6da95'
+    gradient_color_1 = '${c.malva}'
+    gradient_color_2 = '${c.blue}'
+    gradient_color_3 = '${c.teal}'
+    gradient_color_4 = '${c.green}'
   '';
 
   xdg.configFile."matugen/defaults/colors-btop.theme".text = ''
-    theme[main_bg]="#1a1b26"
-    theme[main_fg]="#c0caf5"
-    theme[title]="#c0caf5"
-    theme[hi_fg]="#c4a7e7"
-    theme[selected_bg]="#33467c"
-    theme[selected_fg]="#c0caf5"
-    theme[inactive_fg]="#565f89"
-    theme[proc_misc]="#8aadf4"
-    theme[cpu_box]="#c4a7e7"
-    theme[mem_box]="#8aadf4"
-    theme[net_box]="#a6da95"
-    theme[proc_box]="#8bd5ca"
-    theme[div_line]="#565f89"
-    theme[temp_start]="#8aadf4"
-    theme[temp_mid]="#e0af68"
-    theme[temp_end]="#ed8796"
-    theme[cpu_start]="#c4a7e7"
-    theme[cpu_mid]="#8aadf4"
-    theme[cpu_end]="#8bd5ca"
-    theme[free_start]="#a6da95"
-    theme[free_mid]="#8aadf4"
-    theme[free_end]="#c4a7e7"
-    theme[cached_start]="#8bd5ca"
-    theme[cached_mid]="#8aadf4"
-    theme[cached_end]="#c4a7e7"
-    theme[available_start]="#a6da95"
-    theme[available_mid]="#8aadf4"
-    theme[available_end]="#c4a7e7"
-    theme[used_start]="#c4a7e7"
-    theme[used_mid]="#8aadf4"
-    theme[used_end]="#ed8796"
-    theme[download_start]="#a6da95"
-    theme[download_mid]="#8aadf4"
-    theme[download_end]="#c4a7e7"
-    theme[upload_start]="#f0c6c6"
-    theme[upload_mid]="#c4a7e7"
-    theme[upload_end]="#8aadf4"
+    theme[main_bg]="${c.base}"
+    theme[main_fg]="${c.text}"
+    theme[title]="${c.text}"
+    theme[hi_fg]="${c.malva}"
+    theme[selected_bg]="${c.surface0}"
+    theme[selected_fg]="${c.text}"
+    theme[inactive_fg]="${c.surface2}"
+    theme[proc_misc]="${c.blue}"
+    theme[cpu_box]="${c.malva}"
+    theme[mem_box]="${c.blue}"
+    theme[net_box]="${c.green}"
+    theme[proc_box]="${c.teal}"
+    theme[div_line]="${c.surface2}"
+    theme[temp_start]="${c.blue}"
+    theme[temp_mid]="${c.yellow}"
+    theme[temp_end]="${c.red}"
+    theme[cpu_start]="${c.malva}"
+    theme[cpu_mid]="${c.blue}"
+    theme[cpu_end]="${c.teal}"
+    theme[free_start]="${c.green}"
+    theme[free_mid]="${c.blue}"
+    theme[free_end]="${c.malva}"
+    theme[cached_start]="${c.teal}"
+    theme[cached_mid]="${c.blue}"
+    theme[cached_end]="${c.malva}"
+    theme[available_start]="${c.green}"
+    theme[available_mid]="${c.blue}"
+    theme[available_end]="${c.malva}"
+    theme[used_start]="${c.malva}"
+    theme[used_mid]="${c.blue}"
+    theme[used_end]="${c.red}"
+    theme[download_start]="${c.green}"
+    theme[download_mid]="${c.blue}"
+    theme[download_end]="${c.malva}"
+    theme[upload_start]="${c.rosewater}"
+    theme[upload_mid]="${c.malva}"
+    theme[upload_end]="${c.blue}"
   '';
+
+  # ── Templates matugen (sin cambios) ───────────────────────────────────
 
   xdg.configFile."matugen/templates/hyprland.conf".text = ''
     $accent = rgb({{colors.primary.default.hex_stripped}})
