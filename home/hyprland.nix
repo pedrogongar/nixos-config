@@ -65,6 +65,7 @@ in
           passes = 3;
           new_optimizations = true;
           ignore_opacity = true;
+          xray = false;
         };
         shadow = {
           enabled = true;
@@ -113,6 +114,7 @@ in
         animate_manual_resizes = true;
       };
 
+
       bind = [
         "$mod, Return, exec, $terminal"
         "$mod, Q, killactive"
@@ -125,8 +127,8 @@ in
         "$mod, P, pseudo"
         "$mod, J, togglesplit"
         "$mod, M, exec, ${monitorScript}/bin/monitor-switch"
-	"$mod, N, exec, swaync-client -t -sw"
-	"$mod, X, exec, wlogout"
+        "$mod, N, exec, swaync-client -t -sw"
+        "$mod, X, exec, wlogout"
 
         "$mod, left, movefocus, l"
         "$mod, right, movefocus, r"
@@ -167,18 +169,9 @@ in
       ];
 
       exec-once = [
-        "swww-daemon"
+        "swww-daemon && sleep 1 && swww img ~/wallpapers/default.jpg"
         "swaync"
-        "eww open bar"
-        "eww open desktop-clock"
-        "eww open desktop-sysmon"
-      ];
-
-      windowrulev2 = [
-        "opacity 0.90, class:^(kitty)$"
-        "opacity 0.85, class:^(thunar)$"
-        "float, class:^(pavucontrol)$"
-        "float, title:^(Picture-in-Picture)$"
+        "eww daemon && eww open bar && eww open desktop-clock && eww open desktop-music && eww open desktop-sysmon"
       ];
     };
   };

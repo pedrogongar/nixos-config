@@ -1,243 +1,294 @@
-// ============ PALETTE ============
+// ─────────────────────────────────────────────
+//  VARIABLES — Paleta Malva
+// ─────────────────────────────────────────────
 
-$bg: rgba(26, 27, 38, 0.75);
-$bg-widget: rgba(36, 37, 52, 0.70);
-$bg-hover: rgba(196, 167, 231, 0.1);
-$border: rgba(196, 167, 231, 0.3);
-$text: #c0caf5;
-$text-dim: #565f89;
+$bg:          rgba(26, 27, 38, 0.78);
+$bg-widget:   rgba(36, 37, 52, 0.72);
+$border:      rgba(196, 167, 231, 0.28);
+$text:        #c0caf5;
+$text-dim:    #565f89;
 $text-bright: #e0e4ff;
-$accent1: #c4a7e7;
-$accent2: #8aadf4;
-$accent3: #a6da95;
-$accent4: #f0c6c6;
-$accent5: #8bd5ca;
-$red: #ed8796;
-$radius: 14px;
-$radius-sm: 8px;
+$accent1:     #c4a7e7;   // malva
+$accent2:     #8aadf4;   // azul
+$accent3:     #a6da95;   // verde
+$accent4:     #f0c6c6;   // rosa
+$accent5:     #8bd5ca;   // teal
+$red:         #ed8796;
+$yellow:      #e0af68;
 
-// ============ BAR ============
+$radio:       14px;
+$radio-sm:    8px;
+$blur:        20px;
+$fuente-mono: "JetBrains Mono Nerd Font", monospace;
+$fuente-sans: "Outfit", sans-serif;
 
-window.eww-bar {
-  background: transparent;
+
+// ─────────────────────────────────────────────
+//  RESET GLOBAL
+// ─────────────────────────────────────────────
+
+* {
+  all:           unset;
+  font-family:   $fuente-sans;
+  color:         $text;
 }
 
-.bar-section {
-  background: $bg;
-  border: 1px solid $border;
-  border-radius: $radius;
-  padding: 0 8px;
+
+// ─────────────────────────────────────────────
+//  BARRA SUPERIOR
+// ─────────────────────────────────────────────
+
+.barra-contenedor {
+  background:    transparent;
+  padding:       0;
 }
 
-// ============ WORKSPACES ============
-
-.workspaces {
-  padding: 2px;
+.seccion-barra {
+  background:    $bg;
+  border:        1px solid $border;
+  border-radius: $radio;
+  padding:       0 8px;
+  min-height:    42px;
 }
 
-.ws {
-  min-width: 28px;
-  min-height: 28px;
-  border-radius: $radius-sm;
-  font-size: 11px;
-  font-weight: 500;
-  color: $text-dim;
-  transition: all 200ms ease;
+// Workspaces
+.workspace {
+  font-family:   $fuente-mono;
+  font-size:     11px;
+  font-weight:   500;
+  color:         $text-dim;
+  min-width:     28px;
+  min-height:    28px;
+  border-radius: $radio-sm;
+  padding:       0 4px;
 
   &:hover {
-    background: $bg-hover;
-    color: $text;
-  }
-
-  &.active {
-    background: $accent1;
-    color: #1a1b26;
-    font-weight: 700;
-    box-shadow: 0 0 12px rgba(196, 167, 231, 0.4);
+    background: rgba(196, 167, 231, 0.1);
+    color:      $text;
   }
 }
 
-// ============ BAR CLOCK ============
-
-.clock {
-  padding: 0 12px;
-
-  .clock-time {
-    font-size: 13px;
-    font-weight: 500;
-    color: $text-bright;
-    letter-spacing: 1px;
-  }
-
-  .clock-date {
-    font-size: 11px;
-    color: $text-dim;
-  }
+.workspace-activo {
+  background:    $accent1;
+  color:         #1a1b26;
+  font-weight:   700;
+  box-shadow:    0 0 12px rgba(196, 167, 231, 0.4);
 }
 
-// ============ TRAY ============
+.workspace-ocupado {
+  color: $text;
+}
 
+// Reloj
+.hora-barra {
+  font-family:   $fuente-mono;
+  font-size:     13px;
+  font-weight:   500;
+  color:         $text-bright;
+  letter-spacing: 0.5px;
+}
+
+.fecha-barra {
+  font-family:   $fuente-sans;
+  font-size:     11px;
+  color:         $text-dim;
+}
+
+// Tray
 .tray-item {
-  padding: 4px 10px;
-  border-radius: $radius-sm;
-  transition: background 200ms ease;
+  padding:       4px 9px;
+  border-radius: $radio-sm;
+  font-size:     12px;
+  font-family:   $fuente-mono;
 
   &:hover {
-    background: $bg-hover;
-  }
-
-  .tray-icon {
-    font-size: 14px;
-  }
-
-  .tray-value {
-    font-size: 12px;
-    font-family: "JetBrains Mono", monospace;
-    color: $text;
+    background: rgba(196, 167, 231, 0.08);
   }
 }
 
-.cpu .tray-icon { color: $accent2; }
-.ram .tray-icon { color: $accent1; }
-.battery .tray-icon { color: $accent3; }
-.volume .tray-icon { color: $accent5; }
-.network .tray-icon { color: $accent4; }
-
-// ============ DESKTOP WIDGETS ============
-
-window.eww-widget {
-  background: transparent;
+.tray-icono {
+  font-size: 14px;
 }
 
-.widget-box {
-  background: $bg-widget;
-  border: 1px solid $border;
-  border-radius: $radius;
-  padding: 20px;
-  min-width: 220px;
+.tray-valor {
+  font-family: $fuente-mono;
+  font-size:   12px;
+  color:       $text;
 }
 
-// ============ BIG CLOCK ============
+.tray-cpu    .tray-icono { color: $accent2; }
+.tray-ram    .tray-icono { color: $accent1; }
+.tray-bateria .tray-icono { color: $accent3; }
+.tray-volumen .tray-icono { color: $accent5; }
+.tray-red    .tray-icono { color: $accent4; }
 
-.clock-box {
-  .big-time {
-    font-size: 56px;
-    font-weight: 200;
-    font-family: "Outfit", sans-serif;
-    color: $accent1;
-    letter-spacing: -2px;
+
+// ─────────────────────────────────────────────
+//  PANEL DE ESCRITORIO
+// ─────────────────────────────────────────────
+
+.panel-escritorio {
+  background:    transparent;
+}
+
+// Base de widget
+.widget {
+  background:    $bg-widget;
+  border:        1px solid $border;
+  border-radius: $radio;
+  padding:       18px;
+  min-width:     220px;
+}
+
+
+// ─────────────────────────────────────────────
+//  WIDGET MÚSICA
+// ─────────────────────────────────────────────
+
+.musica-caratula {
+  background:    linear-gradient(135deg, $accent1, $accent2, $accent5);
+  border-radius: $radio-sm;
+  min-width:     48px;
+  min-height:    48px;
+}
+
+.musica-caratula-icono {
+  font-size:  20px;
+  color:      #1a1b26;
+}
+
+.musica-titulo {
+  font-size:   13px;
+  font-weight: 600;
+  color:       $text-bright;
+}
+
+.musica-artista {
+  font-size: 11px;
+  color:     $text-dim;
+}
+
+// Barra de progreso música
+.musica-progreso {
+  min-height: 6px;
+
+  trough {
+    background:    rgba(196, 167, 231, 0.15);
+    border-radius: 3px;
+    min-height:    3px;
   }
 
-  .big-seconds {
-    font-size: 20px;
-    font-weight: 300;
-    font-family: "Outfit", sans-serif;
-    color: $text-dim;
-    margin-top: 24px;
+  highlight,
+  progress {
+    background:    linear-gradient(90deg, $accent1, $accent2);
+    border-radius: 3px;
+    min-height:    3px;
   }
 
-  .clock-divider {
-    min-height: 2px;
-    min-width: 40px;
-    margin: 6px auto;
-    border-radius: 1px;
-    background: $accent1;
-    opacity: 0.4;
-  }
-
-  .big-date {
-    font-size: 13px;
-    font-weight: 300;
-    font-family: "Outfit", sans-serif;
-    color: $text-dim;
-    letter-spacing: 2px;
+  slider {
+    min-width:     0;
+    min-height:    0;
+    background:    transparent;
+    box-shadow:    none;
+    border:        none;
   }
 }
 
-// ============ MUSIC ============
+// Controles
+.musica-controles {
+  padding-top: 2px;
+}
 
-.music-box {
-  .music-art {
-    min-width: 48px;
-    min-height: 48px;
-    border-radius: $radius-sm;
-    background: linear-gradient(135deg, $accent1, $accent2, $accent5);
-    font-size: 20px;
-    box-shadow: 0 4px 12px rgba(196, 167, 231, 0.3);
+.ctrl-btn {
+  font-family: $fuente-mono;
+  font-size:   16px;
+  color:       $text-dim;
+  padding:     4px 8px;
+  border-radius: $radio-sm;
+
+  &:hover {
+    color:      $accent1;
+    background: rgba(196, 167, 231, 0.1);
+  }
+}
+
+.ctrl-play {
+  font-size: 20px;
+  color:     $accent1;
+
+  &:hover {
+    color: $accent2;
+  }
+}
+
+
+// ─────────────────────────────────────────────
+//  WIDGET SISTEMA
+// ─────────────────────────────────────────────
+
+.sistema-titulo {
+  font-family:    $fuente-mono;
+  font-size:      10px;
+  font-weight:    700;
+  color:          $text-dim;
+  letter-spacing: 2.5px;
+}
+
+.metrica-etiqueta {
+  font-family:    $fuente-mono;
+  font-size:      9px;
+  font-weight:    500;
+  color:          $text-dim;
+  letter-spacing: 1.5px;
+}
+
+.metrica-valor {
+  font-family: $fuente-mono;
+  font-size:   11px;
+  font-weight: 500;
+  color:       $text;
+}
+
+// Barras de métricas — base compartida
+.metrica-barra {
+  min-height: 6px;
+
+  trough {
+    background:    rgba(196, 167, 231, 0.07);
+    border-radius: 3px;
+    min-height:    4px;
   }
 
-  .music-title {
-    font-size: 13px;
-    font-weight: 600;
-    color: $text-bright;
-  }
-
-  .music-artist {
-    font-size: 11px;
-    color: $text-dim;
-  }
-
-  .music-controls {
-    padding-top: 4px;
-  }
-
-  .music-btn {
-    font-size: 16px;
-    color: $text-dim;
+  slider {
+    min-width:  0;
+    min-height: 0;
     background: transparent;
-    border: none;
-    padding: 4px 8px;
-    border-radius: $radius-sm;
-    transition: all 200ms ease;
-
-    &:hover {
-      color: $accent1;
-      background: $bg-hover;
-    }
-
-    &.play {
-      color: $accent1;
-      font-size: 20px;
-    }
+    box-shadow: none;
+    border:     none;
+    opacity:    0;
   }
 }
 
-// ============ SYSTEM MONITOR ============
-
-.sysmon-box {
-  .sysmon-title {
-    font-size: 11px;
-    font-weight: 600;
-    color: $text-dim;
-    letter-spacing: 2px;
+.metrica-barra-cpu {
+  highlight, progress {
+    background:    linear-gradient(90deg, $accent2, rgba(138, 173, 244, 0.45));
+    border-radius: 3px;
+    min-height:    4px;
   }
+}
 
-  .ring-bg {
-    color: rgba(196, 167, 231, 0.1);
-    min-width: 52px;
-    min-height: 52px;
+.metrica-barra-ram {
+  highlight, progress {
+    background:    linear-gradient(90deg, $accent1, rgba(196, 167, 231, 0.45));
+    border-radius: 3px;
+    min-height:    4px;
   }
+}
 
-  .ring {
-    min-width: 52px;
-    min-height: 52px;
-
-    &.cpu { color: $accent2; }
-    &.ram { color: $accent1; }
-    &.disk { color: $accent5; }
-  }
-
-  .ring-value {
-    font-family: "JetBrains Mono", monospace;
-    font-size: 11px;
-    font-weight: 500;
-    color: $text;
-  }
-
-  .ring-label {
-    font-size: 10px;
-    font-weight: 500;
-    color: $text-dim;
-    letter-spacing: 1px;
+.metrica-barra-ssd {
+  highlight, progress {
+    background:    linear-gradient(90deg, $accent5, rgba(139, 213, 202, 0.45));
+    border-radius: 3px;
+    min-height:    4px;
   }
 }
