@@ -7,13 +7,23 @@
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    spicetify-nix = {
+      url = "github:Gerg-L/spicetify-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  outputs = { self, nixpkgs, home-manager }: let
+  outputs = { self, nixpkgs, home-manager, spicetify-nix }: let
     homeManagerModule = {
       home-manager.useGlobalPkgs   = true;
       home-manager.useUserPackages = true;
-      home-manager.users.pedro     = import ./home;
+      home-manager.extraSpecialArgs = { inherit spicetify-nix; };
+      home-manager.users.pedro     = { ... }: {
+        imports = [
+          ./home
+          spicetify-nix.homeManagerModules.default
+        ];
+      };
     };
   in {
     nixosConfigurations = {

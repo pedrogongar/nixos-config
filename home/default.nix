@@ -17,6 +17,7 @@
     ./nano.nix
     ./vscode.nix
     ./waybar.nix
+    ./spicetify.nix
   ];
 
   home.username     = "pedro";
