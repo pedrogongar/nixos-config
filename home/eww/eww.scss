@@ -276,3 +276,28 @@ $fuente-sans: "Outfit", sans-serif;
     min-height:    4px;
   }
 }
+
+
+// ─────────────────────────────────────────────
+//  AJUSTES RESOLUCIÓN 1280×800
+// ─────────────────────────────────────────────
+
+.barra-contenedor {
+  padding: 0 12px;
+}
+
+.seccion-barra {
+  min-height: 40px;
+  padding:    0 8px;
+}
+
+.workspace {
+  min-width:  26px;
+  min-height: 26px;
+  font-size:  11px;
+}
+
+.widget {
+  min-width: 210px;
+  padding:   14px;
+}
