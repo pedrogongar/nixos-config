@@ -1,6 +1,8 @@
 { config, pkgs, ... }:
 
 let
+  c = import ./colores.nix;
+
   monitorScript = pkgs.writeShellScriptBin "monitor-switch" ''
     OPTIONS="  Solo portátil\n  Externos (portátil cerrado)\n  Todo activo"
 
@@ -50,7 +52,7 @@ in
         gaps_in     = 6;
         gaps_out    = 12;
         border_size = 2;
-        "col.active_border"   = "rgba(7dcfffff) rgba(7aa2f7ff) 45deg";
+        "col.active_border"   = "rgba(c4a7e7ff) rgba(7aa2f7ff) 45deg";
         "col.inactive_border" = "rgba(414868aa)";
         layout = "dwindle";
       };
@@ -60,13 +62,17 @@ in
         active_opacity   = 1.0;
         inactive_opacity = 0.92;
         blur = {
-          enabled = false;
+          enabled    = true;
+          size       = 6;
+          passes     = 3;
+          new_optimizations = true;
+          xray       = false;
         };
         shadow = {
           enabled      = true;
           range        = 12;
           render_power = 2;
-          color        = "rgba(0d0e1799)";
+          color        = "rgba(12121a99)";
         };
       };
 
@@ -177,7 +183,7 @@ in
       windowrule = size 360 480,          match:class ^(cmatrix-ws1)$
       windowrule = opacity 0.50 0.50,     match:class ^(cmatrix-ws1)$
       windowrule = workspace 1 silent,    match:class ^(cmatrix-ws1)$
-      windowrule = border_size 0,         match:class ^(cmatrix-ws1)$	
+      windowrule = border_size 0,         match:class ^(cmatrix-ws1)$
 
       windowrule = float on,              match:class ^(fastfetch-ws1)$
       windowrule = pin on,                match:class ^(fastfetch-ws1)$
