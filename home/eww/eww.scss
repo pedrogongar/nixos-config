@@ -1,10 +1,10 @@
 // ─────────────────────────────────────────────
-//  VARIABLES — Paleta Malva (extraídas del mockup v5)
+//  VARIABLES — extraídas 1:1 del mockup v5
 // ─────────────────────────────────────────────
 
-$bg-surface:  rgba(26, 27, 38, 0.88);
-$bg-widget:   rgba(20, 21, 36, 0.92);
-$border:      rgba(196, 167, 231, 0.22);
+$bg-surface:  rgba(26, 27, 38, 0.75);
+$bg-widget:   rgba(36, 37, 52, 0.70);
+$border:      rgba(196, 167, 231, 0.3);
 $text:        #c0caf5;
 $text-dim:    #565f89;
 $text-bright: #e0e4ff;
@@ -13,6 +13,7 @@ $accent2:     #8aadf4;
 $accent3:     #a6da95;
 $accent4:     #f0c6c6;
 $accent5:     #8bd5ca;
+$bg-dark:     #1a1b26;
 
 $radio:       14px;
 $radio-sm:    8px;
@@ -21,7 +22,7 @@ $fuente-sans: "Outfit", sans-serif;
 
 
 // ─────────────────────────────────────────────
-//  RESET GLOBAL
+//  RESET
 // ─────────────────────────────────────────────
 
 * {
@@ -32,7 +33,7 @@ $fuente-sans: "Outfit", sans-serif;
 
 
 // ─────────────────────────────────────────────
-//  BARRA SUPERIOR
+//  BARRA — .bar en el mockup
 // ─────────────────────────────────────────────
 
 .barra-contenedor {
@@ -40,37 +41,40 @@ $fuente-sans: "Outfit", sans-serif;
   padding:    0 6px;
 }
 
+// .bar-section del mockup
 .seccion-barra {
   background:    $bg-surface;
-  border:        1px solid rgba(196, 167, 231, 0.25);
+  border:        1px solid $border;
   border-radius: $radio;
-  padding:       0 10px;
+  padding:       0 8px;
   min-height:    42px;
 }
 
-// Workspace pills
+// .workspace del mockup
 .workspace {
   font-family:   $fuente-mono;
   font-size:     11px;
   font-weight:   500;
   color:         $text-dim;
-  min-width:     30px;
-  min-height:    30px;
+  min-width:     28px;
+  min-height:    28px;
   border-radius: $radio-sm;
-  padding:       0 6px;
+  padding:       0 2px;
 }
 
+// .workspace.active del mockup
 .workspace-activo {
-  background:    $accent1;
-  color:         #1a1b26;
-  font-weight:   700;
+  background:  $accent1;
+  color:       $bg-dark;
+  font-weight: 700;
 }
 
+// .workspace.occupied del mockup
 .workspace-ocupado {
-  color: rgba(192, 202, 245, 0.7);
+  color: $text;
 }
 
-// Reloj — exacto del mockup
+// .bar-clock del mockup
 .hora-barra {
   font-family:    $fuente-sans;
   font-size:      13px;
@@ -79,14 +83,14 @@ $fuente-sans: "Outfit", sans-serif;
   letter-spacing: 1px;
 }
 
+// .bar-clock .date del mockup
 .fecha-barra {
   font-family: $fuente-sans;
   font-size:   11px;
   color:       $text-dim;
-  margin-left: 8px;
 }
 
-// Tray items
+// .tray-item del mockup
 .tray-item {
   padding:       4px 10px;
   border-radius: $radio-sm;
@@ -104,6 +108,7 @@ $fuente-sans: "Outfit", sans-serif;
   color:       $text;
 }
 
+// colores del mockup: .cpu svg, .ram svg, etc.
 .tray-cpu     .tray-icono { color: $accent2; }
 .tray-ram     .tray-icono { color: $accent1; }
 .tray-bateria .tray-icono { color: $accent3; }
@@ -112,7 +117,7 @@ $fuente-sans: "Outfit", sans-serif;
 
 
 // ─────────────────────────────────────────────
-//  PANEL ESCRITORIO
+//  WIDGETS — .widget del mockup
 // ─────────────────────────────────────────────
 
 .panel-escritorio {
@@ -123,15 +128,16 @@ $fuente-sans: "Outfit", sans-serif;
   background:    $bg-widget;
   border:        1px solid $border;
   border-radius: $radio;
-  padding:       16px;
-  min-width:     230px;
+  padding:       20px;
+  min-width:     220px;
 }
 
 
 // ─────────────────────────────────────────────
-//  WIDGET MÚSICA
+//  MÚSICA — .music-widget del mockup
 // ─────────────────────────────────────────────
 
+// .music-art del mockup
 .musica-caratula {
   background:    linear-gradient(135deg, $accent1, $accent2, $accent5);
   border-radius: $radio-sm;
@@ -141,27 +147,29 @@ $fuente-sans: "Outfit", sans-serif;
 
 .musica-caratula-icono {
   font-size: 20px;
-  color:     #1a1b26;
+  color:     $bg-dark;
 }
 
+// .music-title del mockup
 .musica-titulo {
   font-size:   13px;
   font-weight: 600;
   color:       $text-bright;
 }
 
+// .music-artist del mockup
 .musica-artista {
   font-size: 11px;
   color:     $text-dim;
 }
 
+// .music-progress del mockup — height:3px, background rgba(196,167,231,.15)
 .musica-progreso {
-  min-height: 8px;
-  margin:     2px 0;
+  min-height: 6px;
 
   trough {
-    background:    rgba(196, 167, 231, 0.12);
-    border-radius: 3px;
+    background:    rgba(196, 167, 231, 0.15);
+    border-radius: 2px;
     min-height:    3px;
     margin:        5px 0;
   }
@@ -169,7 +177,7 @@ $fuente-sans: "Outfit", sans-serif;
   highlight,
   progress {
     background:    linear-gradient(90deg, $accent1, $accent2);
-    border-radius: 3px;
+    border-radius: 2px;
     min-height:    3px;
   }
 
@@ -185,8 +193,9 @@ $fuente-sans: "Outfit", sans-serif;
   }
 }
 
+// .music-controls del mockup
 .musica-controles {
-  padding-top: 4px;
+  padding-top: 2px;
 }
 
 .ctrl-btn {
@@ -197,6 +206,7 @@ $fuente-sans: "Outfit", sans-serif;
   border-radius: $radio-sm;
 }
 
+// .music-controls .play del mockup
 .ctrl-play {
   font-size: 20px;
   color:     $accent1;
@@ -204,15 +214,16 @@ $fuente-sans: "Outfit", sans-serif;
 
 
 // ─────────────────────────────────────────────
-//  WIDGET SISTEMA
+//  SISTEMA — .sysmon-widget del mockup
 // ─────────────────────────────────────────────
 
+// .sysmon-title del mockup
 .sistema-titulo {
-  font-family:    $fuente-mono;
-  font-size:      9px;
-  font-weight:    700;
+  font-family:    $fuente-sans;
+  font-size:      11px;
+  font-weight:    600;
   color:          $text-dim;
-  letter-spacing: 3px;
+  letter-spacing: 2px;
 }
 
 .metrica-etiqueta {
@@ -220,7 +231,7 @@ $fuente-sans: "Outfit", sans-serif;
   font-size:      9px;
   font-weight:    500;
   color:          $text-dim;
-  letter-spacing: 1.5px;
+  letter-spacing: 1px;
 }
 
 .metrica-valor {
@@ -231,13 +242,13 @@ $fuente-sans: "Outfit", sans-serif;
 }
 
 .metrica-barra {
-  min-height: 8px;
+  min-height: 6px;
 
   trough {
-    background:    rgba(196, 167, 231, 0.08);
-    border-radius: 3px;
+    background:    rgba(196, 167, 231, 0.10);
+    border-radius: 2px;
     min-height:    4px;
-    margin:        4px 0;
+    margin:        3px 0;
   }
 
   slider {
@@ -254,49 +265,24 @@ $fuente-sans: "Outfit", sans-serif;
 
 .metrica-barra-cpu {
   highlight, progress {
-    background:    linear-gradient(90deg, $accent2, rgba(138, 173, 244, 0.4));
-    border-radius: 3px;
+    background:    $accent2;
+    border-radius: 2px;
     min-height:    4px;
   }
 }
 
 .metrica-barra-ram {
   highlight, progress {
-    background:    linear-gradient(90deg, $accent1, rgba(196, 167, 231, 0.4));
-    border-radius: 3px;
+    background:    $accent1;
+    border-radius: 2px;
     min-height:    4px;
   }
 }
 
 .metrica-barra-ssd {
   highlight, progress {
-    background:    linear-gradient(90deg, $accent5, rgba(139, 213, 202, 0.4));
-    border-radius: 3px;
+    background:    $accent5;
+    border-radius: 2px;
     min-height:    4px;
   }
-}
-
-
-// ─────────────────────────────────────────────
-//  AJUSTES RESOLUCIÓN 1280×800
-// ─────────────────────────────────────────────
-
-.barra-contenedor {
-  padding: 0 12px;
-}
-
-.seccion-barra {
-  min-height: 40px;
-  padding:    0 8px;
-}
-
-.workspace {
-  min-width:  26px;
-  min-height: 26px;
-  font-size:  11px;
-}
-
-.widget {
-  min-width: 210px;
-  padding:   14px;
 }
