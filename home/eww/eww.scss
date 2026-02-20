@@ -1,7 +1,23 @@
-/* ═══════════════════════════════════════════
-   Eww SCSS — GTK CSS válido únicamente
-   Panel derecho: Música + Pomodoro + Sistema
-   ═══════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════
+   Eww SCSS — GTK CSS
+   Valores extraídos 1:1 del mockup-v5-final.html
+   Variables resueltas a sus valores literales
+   ═══════════════════════════════════════════════════
+
+   --bg-widget:  rgba(36,37,52,0.70)
+   --border:     rgba(196,167,231,0.3)
+   --radius:     14px  →  border-radius: 14px
+   --radius-sm:  8px
+   --text:       #c0caf5
+   --text-dim:   #565f89
+   --text-bright:#e0e4ff
+   --accent1:    #c4a7e7
+   --accent2:    #8aadf4
+   --accent3:    #a6da95
+   --accent5:    #8bd5ca
+   --font-mono:  JetBrains Mono Nerd Font
+   --font-sans:  Outfit
+*/
 
 * {
   all:         unset;
@@ -13,20 +29,28 @@
   background: transparent;
 }
 
-/* ── Base widget ── */
+
+/* ───────────────────────────────────────────────────
+   WIDGET BASE — .widget del mockup
+   background:var(--bg-widget) → rgba(36,37,52,0.70)
+   border:1px solid var(--border) → rgba(196,167,231,0.3)
+   border-radius:var(--radius) → 14px
+   padding:20px
+   ─────────────────────────────────────────────────── */
 .widget {
-  background:    rgba(26, 27, 38, 0.92);
-  border:        1px solid rgba(196, 167, 231, 0.25);
+  background:    rgba(36, 37, 52, 0.95);
+  border:        1px solid rgba(196, 167, 231, 0.30);
   border-radius: 14px;
-  padding:       18px;
+  padding:       20px;
   min-width:     220px;
 }
 
 
-/* ═══════════════════════════════════════════
+/* ───────────────────────────────────────────────────
    MÚSICA
-   ═══════════════════════════════════════════ */
+   ─────────────────────────────────────────────────── */
 
+/* .music-art: gradient, 48x48, radius 8px */
 .musica-caratula {
   background:    linear-gradient(135deg, #c4a7e7, #8aadf4, #8bd5ca);
   border-radius: 8px;
@@ -39,17 +63,26 @@
   color:     #1a1b26;
 }
 
+/* .music-title: font-size:13px; font-weight:600; color:text-bright */
 .musica-titulo {
   font-size:   13px;
   font-weight: 600;
   color:       #e0e4ff;
 }
 
+/* .music-artist: font-size:11px; color:text-dim */
 .musica-artista {
   font-size: 11px;
   color:     #565f89;
 }
 
+.musica-sin-reproduccion {
+  font-size:  12px;
+  color:      #565f89;
+  font-style: italic;
+}
+
+/* .music-progress: height:3px; rgba(196,167,231,.15) */
 .musica-progreso {
   min-height: 6px;
 
@@ -57,7 +90,7 @@
     background:    rgba(196, 167, 231, 0.15);
     border-radius: 2px;
     min-height:    3px;
-    margin:        5px 0;
+    margin:        6px 0;
   }
 
   highlight, progress {
@@ -67,12 +100,21 @@
   }
 
   slider {
-    min-width: 0; min-height: 0; margin: 0; padding: 0;
-    background: transparent; border: none; box-shadow: none; opacity: 0;
+    min-width:  0;
+    min-height: 0;
+    margin:     0;
+    padding:    0;
+    background: transparent;
+    border:     none;
+    box-shadow: none;
+    opacity:    0;
   }
 }
 
-.musica-controles { padding-top: 2px; }
+/* .music-controls: font-size:16px; color:text-dim */
+.musica-controles {
+  padding-top: 4px;
+}
 
 .ctrl-btn {
   font-family:   "JetBrains Mono Nerd Font", monospace;
@@ -82,21 +124,20 @@
   border-radius: 8px;
 }
 
+/* .music-controls .play: color:accent1; font-size:20px */
 .ctrl-play {
   font-size: 20px;
   color:     #c4a7e7;
 }
 
 
-/* ═══════════════════════════════════════════
+/* ───────────────────────────────────────────────────
    POMODORO
-   ═══════════════════════════════════════════ */
+   Sigue la misma estética que sysmon del mockup:
+   .sysmon-title: 11px, 600, text-dim, letter-spacing:2px, uppercase
+   ─────────────────────────────────────────────────── */
 
-.widget-pomodoro {
-  /* Borde izquierdo de color según modo — se alterna en el .yuck dinámicamente */
-}
-
-.pomo-titulo {
+.pomo-cabecera-label {
   font-family:    "JetBrains Mono Nerd Font", monospace;
   font-size:      9px;
   font-weight:    700;
@@ -110,63 +151,75 @@
   color:       #c4a7e7;
 }
 
+/* Número grande — protagonista del widget */
 .pomo-tiempo {
   font-family:    "JetBrains Mono Nerd Font", monospace;
-  font-size:      32px;
+  font-size:      28px;
   font-weight:    300;
   color:          #e0e4ff;
-  letter-spacing: 2px;
+  letter-spacing: 3px;
 }
 
+/* Barra idéntica a música */
 .pomo-barra {
   min-height: 6px;
 
   trough {
-    background:    rgba(196, 167, 231, 0.10);
+    background:    rgba(196, 167, 231, 0.15);
     border-radius: 2px;
-    min-height:    4px;
-    margin:        2px 0;
+    min-height:    3px;
+    margin:        4px 0;
   }
 
   highlight, progress {
     background:    linear-gradient(90deg, #c4a7e7, #8aadf4);
     border-radius: 2px;
-    min-height:    4px;
+    min-height:    3px;
   }
 
   slider {
-    min-width: 0; min-height: 0; margin: 0; padding: 0;
-    background: transparent; border: none; box-shadow: none; opacity: 0;
+    min-width:  0;
+    min-height: 0;
+    margin:     0;
+    padding:    0;
+    background: transparent;
+    border:     none;
+    box-shadow: none;
+    opacity:    0;
   }
+}
+
+/* Controles idénticos a música */
+.pomo-controles {
+  padding-top: 4px;
 }
 
 .pomo-btn {
   font-family:   "JetBrains Mono Nerd Font", monospace;
   font-size:     16px;
   color:         #565f89;
-  padding:       6px 12px;
+  padding:       4px 10px;
   border-radius: 8px;
-  border:        1px solid rgba(196, 167, 231, 0.15);
 }
 
 .pomo-btn-play {
-  color:      #c4a7e7;
-  border:     1px solid rgba(196, 167, 231, 0.35);
-  font-size:  20px;
-  padding:    6px 16px;
+  font-size: 20px;
+  color:     #c4a7e7;
 }
 
 .pomo-btn-activo {
-  background: rgba(196, 167, 231, 0.15);
-  color:      #c4a7e7;
-  font-size:  20px;
-  padding:    6px 16px;
+  font-size:   20px;
+  color:       #c4a7e7;
+  background:  rgba(196, 167, 231, 0.12);
+  border:      1px solid rgba(196, 167, 231, 0.25);
 }
 
 
-/* ═══════════════════════════════════════════
+/* ───────────────────────────────────────────────────
    SISTEMA
-   ═══════════════════════════════════════════ */
+   .sysmon-title: 11px, 600, text-dim, letter-spacing:2px, uppercase
+   .sysmon-label: 10px, text-dim, 500, letter-spacing:1px, uppercase
+   ─────────────────────────────────────────────────── */
 
 .sistema-titulo {
   font-family:    "JetBrains Mono Nerd Font", monospace;
@@ -179,6 +232,7 @@
 .metrica-etiqueta {
   font-family:    "JetBrains Mono Nerd Font", monospace;
   font-size:      9px;
+  font-weight:    500;
   color:          #565f89;
   letter-spacing: 1px;
 }
@@ -194,32 +248,47 @@
   min-height: 6px;
 
   trough {
-    background:    rgba(196, 167, 231, 0.08);
+    background:    rgba(196, 167, 231, 0.10);
     border-radius: 2px;
     min-height:    4px;
-    margin:        3px 0;
+    margin:        4px 0;
   }
 
   slider {
-    min-width: 0; min-height: 0; margin: 0; padding: 0;
-    background: transparent; border: none; box-shadow: none; opacity: 0;
+    min-width:  0;
+    min-height: 0;
+    margin:     0;
+    padding:    0;
+    background: transparent;
+    border:     none;
+    box-shadow: none;
+    opacity:    0;
   }
 }
 
+/* .ring-cpu: stroke:accent2 → #8aadf4 */
 .metrica-barra-cpu {
   highlight, progress {
-    background: #8aadf4; border-radius: 2px; min-height: 4px;
+    background:    #8aadf4;
+    border-radius: 2px;
+    min-height:    4px;
   }
 }
 
+/* .ring-ram: stroke:accent1 → #c4a7e7 */
 .metrica-barra-ram {
   highlight, progress {
-    background: #c4a7e7; border-radius: 2px; min-height: 4px;
+    background:    #c4a7e7;
+    border-radius: 2px;
+    min-height:    4px;
   }
 }
 
+/* .ring-disk: stroke:accent5 → #8bd5ca */
 .metrica-barra-ssd {
   highlight, progress {
-    background: #8bd5ca; border-radius: 2px; min-height: 4px;
+    background:    #8bd5ca;
+    border-radius: 2px;
+    min-height:    4px;
   }
 }

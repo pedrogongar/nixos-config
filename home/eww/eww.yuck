@@ -1,6 +1,5 @@
 ; ─────────────────────────────────────────────
-;  VARIABLES — solo lo que usa el panel derecho
-;  La barra ahora es Waybar
+;  VARIABLES
 ; ─────────────────────────────────────────────
 
 (defpoll cpu-porcentaje
@@ -28,16 +27,15 @@
   :initial "0G / 0G"
   `df -h / | awk 'NR==2 {print $3 " / " $2}'`)
 
-; ── Música ──
 (defpoll musica-titulo
   :interval "2s"
   :initial ""
-  `playerctl metadata title 2>/dev/null | head -c 30 || echo ""`)
+  `playerctl metadata title 2>/dev/null || echo ""`)
 
 (defpoll musica-artista
   :interval "2s"
   :initial ""
-  `playerctl metadata artist 2>/dev/null | head -c 24 || echo ""`)
+  `playerctl metadata artist 2>/dev/null || echo ""`)
 
 (defpoll musica-estado
   :interval "2s"
@@ -49,7 +47,6 @@
   :initial "0"
   `bash ~/.config/eww/scripts/musica-progreso.sh`)
 
-; ── Pomodoro ──
 (defpoll pomo-estado
   :interval "1s"
   :initial `bash ~/.config/eww/scripts/pomodoro.sh status`
@@ -57,93 +54,105 @@
 
 
 ; ─────────────────────────────────────────────
-;  WIDGET MÚSICA
+;  MÚSICA — siempre visible, se adapta al estado
 ; ─────────────────────────────────────────────
 
 (defwidget widget-musica []
-  (revealer
-    :transition "slidedown"
-    :reveal {musica-estado != "Stopped"}
-    :duration "300ms"
+  (box
+    :class "widget widget-musica"
+    :orientation "v"
+    :spacing 10
+    ; Cabecera: carátula + info
     (box
-      :class "widget widget-musica"
-      :orientation "v"
-      :spacing 10
+      :orientation "h"
+      :spacing 12
+      :valign "center"
       (box
-        :orientation "h"
-        :spacing 12
+        :class "musica-caratula"
+        :width 48
+        :height 48
+        (label :class "musica-caratula-icono" :text "♪"))
+      (box
+        :orientation "v"
+        :spacing 2
         :valign "center"
-        (box
-          :class "musica-caratula"
-          :width 48
-          :height 48
-          (label :class "musica-caratula-icono" :text "♪"))
-        (box
-          :orientation "v"
-          :spacing 2
-          :valign "center"
-          :hexpand true
-          (label :class "musica-titulo"
-            :text {musica-titulo == "" ? "Sin reproducción" : musica-titulo}
-            :truncate true
-            :xalign 0)
-          (label :class "musica-artista"
-            :text musica-artista
-            :truncate true
-            :xalign 0)))
-      (scale
-        :class "musica-progreso"
-        :value musica-progreso
-        :min 0 :max 100
-        :draw-value false
-        :onchange "playerctl position $(echo '{}' | awk -v p='{}' -v d=$(playerctl metadata mpris:length 2>/dev/null || echo 0) 'BEGIN{print p/100*d/1000000}')")
-      (box
-        :class "musica-controles"
-        :orientation "h"
-        :halign "center"
-        :spacing 20
-        (button :class "ctrl-btn"
-          :onclick "playerctl previous"
-          (label :text "󰒮"))
-        (button :class "ctrl-btn ctrl-play"
-          :onclick "playerctl play-pause"
-          (label :text {musica-estado == "Playing" ? "󰏤" : "󰐊"}))
-        (button :class "ctrl-btn"
-          :onclick "playerctl next"
-          (label :text "󰒭"))))))
+        :hexpand true
+        (label
+          :class "musica-titulo"
+          :text {musica-titulo != "" ? musica-titulo : "Sin reproducción"}
+          :truncate true
+          :xalign 0)
+        (label
+          :class "musica-artista"
+          :text {musica-artista != "" ? musica-artista : "—"}
+          :truncate true
+          :xalign 0)))
+    ; Barra de progreso — oculta cuando no hay reproducción
+    (scale
+      :class "musica-progreso"
+      :value {musica-estado != "Stopped" ? musica-progreso : 0}
+      :min 0
+      :max 100
+      :draw-value false)
+    ; Controles
+    (box
+      :class "musica-controles"
+      :orientation "h"
+      :halign "center"
+      :spacing 20
+      (button
+        :class "ctrl-btn"
+        :onclick "playerctl previous"
+        (label :text "󰒮"))
+      (button
+        :class "ctrl-btn ctrl-play"
+        :onclick "playerctl play-pause"
+        (label :text {musica-estado == "Playing" ? "󰏤" : "󰐊"}))
+      (button
+        :class "ctrl-btn"
+        :onclick "playerctl next"
+        (label :text "󰒭")))))
 
 
 ; ─────────────────────────────────────────────
-;  WIDGET POMODORO
+;  POMODORO
 ; ─────────────────────────────────────────────
 
 (defwidget widget-pomodoro []
   (box
     :class "widget widget-pomodoro"
     :orientation "v"
-    :spacing 12
-    (box :orientation "h" :spacing 8
+    :spacing 10
+    ; Cabecera — mismo estilo que sysmon-title
+    (box
+      :orientation "h"
+      :spacing 0
       (label
-        :class "pomo-titulo"
+        :class "pomo-cabecera-label"
         :text {pomo-estado.mode == "work" ? "FOCO" : "DESCANSO"}
         :xalign 0
         :hexpand true)
       (label
         :class "pomo-sesiones"
         :text "${pomo-estado.sessions} 󰔟"))
+    ; Tiempo grande
     (label
       :class "pomo-tiempo"
       :text {pomo-estado.time}
       :halign "center")
+    ; Barra progreso
     (scale
       :class "pomo-barra"
       :value {pomo-estado.progress}
-      :min 0 :max 100
+      :min 0
+      :max 100
       :draw-value false)
+    ; Controles
     (box
+      :class "pomo-controles"
       :orientation "h"
       :halign "center"
-      :spacing 8
+      :spacing 4
       (button
         :class "pomo-btn"
         :onclick "bash ~/.config/eww/scripts/pomodoro.sh reset"
@@ -159,15 +168,16 @@
 
 
 ; ─────────────────────────────────────────────
-;  WIDGET SISTEMA
+;  SISTEMA
 ; ─────────────────────────────────────────────
 
 (defwidget widget-sistema []
   (box
     :class "widget widget-sistema"
     :orientation "v"
-    :spacing 14
+    :spacing 12
     (label :class "sistema-titulo" :text "SISTEMA" :xalign 0)
+    ; CPU
     (box :orientation "v" :spacing 4
       (box :orientation "h"
         (label :class "metrica-etiqueta" :text "CPU" :xalign 0 :hexpand true)
@@ -177,6 +187,7 @@
         :value cpu-porcentaje
         :min 0 :max 100
         :draw-value false))
+    ; RAM
     (box :orientation "v" :spacing 4
       (box :orientation "h"
         (label :class "metrica-etiqueta" :text "RAM" :xalign 0 :hexpand true)
@@ -186,6 +197,7 @@
         :value ram-porcentaje
         :min 0 :max 100
         :draw-value false))
+    ; SSD
     (box :orientation "v" :spacing 4
       (box :orientation "h"
         (label :class "metrica-etiqueta" :text "SSD" :xalign 0 :hexpand true)
@@ -198,7 +210,7 @@
 
 
 ; ─────────────────────────────────────────────
-;  PANEL + WINDOW — solo escritorio
+;  PANEL + WINDOW
 ; ─────────────────────────────────────────────
 
 (defwidget panel-escritorio []

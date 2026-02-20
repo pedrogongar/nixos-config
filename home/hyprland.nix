@@ -33,10 +33,10 @@ in
   wayland.windowManager.hyprland = {
     enable = true;
     settings = {
-      "$mod" = "SUPER";
-      "$terminal" = "kitty";
-      "$menu" = "rofi -show drun";
-      "$browser" = "firefox";
+      "$mod"         = "SUPER";
+      "$terminal"    = "kitty";
+      "$menu"        = "rofi -show drun";
+      "$browser"     = "firefox";
       "$fileManager" = "thunar";
 
       monitor = [
@@ -47,31 +47,31 @@ in
       ];
 
       general = {
-        gaps_in = 6;
+        gaps_in  = 6;
         gaps_out = 12;
         border_size = 2;
-        "col.active_border" = "rgba(c4a7e7ff) rgba(8aadf4ff) 45deg";
+        "col.active_border"   = "rgba(c4a7e7ff) rgba(8aadf4ff) 45deg";
         "col.inactive_border" = "rgba(6e738daa)";
         layout = "dwindle";
       };
 
       decoration = {
-        rounding = 12;
-        active_opacity = 0.95;
+        rounding         = 12;
+        active_opacity   = 0.95;
         inactive_opacity = 0.85;
         blur = {
-          enabled = true;
-          size = 8;
-          passes = 3;
+          enabled           = true;
+          size              = 8;
+          passes            = 3;
           new_optimizations = true;
-          ignore_opacity = true;
-          xray = false;
+          ignore_opacity    = true;
+          xray              = false;
         };
         shadow = {
-          enabled = true;
-          range = 20;
+          enabled      = true;
+          range        = 20;
           render_power = 3;
-          color = "rgba(1a1a2eee)";
+          color        = "rgba(1a1a2eee)";
         };
       };
 
@@ -94,26 +94,36 @@ in
       };
 
       dwindle = {
-        pseudotile = true;
+        pseudotile     = true;
         preserve_split = true;
-        smart_split = true;
+        smart_split    = true;
       };
 
       input = {
-        kb_layout = "es";
+        kb_layout    = "es";
         follow_mouse = 1;
-        sensitivity = 0;
+        sensitivity  = 0;
         touchpad = {
           natural_scroll = true;
         };
       };
 
       misc = {
-        disable_hyprland_logo = true;
+        disable_hyprland_logo    = true;
         disable_splash_rendering = true;
-        animate_manual_resizes = true;
+        animate_manual_resizes   = true;
       };
 
+      windowrulev2 = [
+        "float,    class:^(cmatrix-desktop)$"
+        "nofocus,  class:^(cmatrix-desktop)$"
+        "noborder, class:^(cmatrix-desktop)$"
+        "noshadow, class:^(cmatrix-desktop)$"
+        "pin,      class:^(cmatrix-desktop)$"
+        "move 20 66,       class:^(cmatrix-desktop)$"
+        "size 340 460,     class:^(cmatrix-desktop)$"
+        "opacity 0.55 0.55,class:^(cmatrix-desktop)$"
+      ];
 
       bind = [
         "$mod, Return, exec, $terminal"
@@ -130,10 +140,10 @@ in
         "$mod, N, exec, swaync-client -t -sw"
         "$mod, X, exec, wlogout"
 
-        "$mod, left, movefocus, l"
+        "$mod, left,  movefocus, l"
         "$mod, right, movefocus, r"
-        "$mod, up, movefocus, u"
-        "$mod, down, movefocus, d"
+        "$mod, up,    movefocus, u"
+        "$mod, down,  movefocus, d"
 
         "$mod, 1, workspace, 1"
         "$mod, 2, workspace, 2"
@@ -157,7 +167,7 @@ in
         "$mod SHIFT, 9, movetoworkspace, 9"
         "$mod SHIFT, 0, movetoworkspace, 10"
 
-        ", Print, exec, grim -g \"$(slurp)\" - | satty -f -"
+        ", Print,      exec, grim -g \"$(slurp)\" - | satty -f -"
         "SHIFT, Print, exec, grim - | satty -f -"
 
         "$mod, L, exec, hyprlock"
@@ -171,8 +181,9 @@ in
       exec-once = [
         "swww-daemon && sleep 1 && swww img ~/wallpapers/default.jpg"
         "swaync"
-	"waybar"
-	"eww daemon && eww open escritorio"
+        "waybar"
+        "eww daemon && eww open escritorio"
+        "kitty --class cmatrix-desktop --override font_size=9 -e cmatrix -s -C cyan -u 4"
       ];
     };
   };
