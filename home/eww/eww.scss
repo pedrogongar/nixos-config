@@ -2,9 +2,9 @@
 //  VARIABLES — Paleta Malva (extraídas del mockup v5)
 // ─────────────────────────────────────────────
 
-$bg-surface:  rgba(26, 27, 38, 0.75);
-$bg-widget:   rgba(36, 37, 52, 0.70);
-$border:      rgba(196, 167, 231, 0.30);
+$bg-surface:  rgba(26, 27, 38, 0.88);
+$bg-widget:   rgba(20, 21, 36, 0.92);
+$border:      rgba(196, 167, 231, 0.22);
 $text:        #c0caf5;
 $text-dim:    #565f89;
 $text-bright: #e0e4ff;
@@ -42,9 +42,9 @@ $fuente-sans: "Outfit", sans-serif;
 
 .seccion-barra {
   background:    $bg-surface;
-  border:        1px solid $border;
+  border:        1px solid rgba(196, 167, 231, 0.25);
   border-radius: $radio;
-  padding:       0 8px;
+  padding:       0 10px;
   min-height:    42px;
 }
 
@@ -54,21 +54,20 @@ $fuente-sans: "Outfit", sans-serif;
   font-size:     11px;
   font-weight:   500;
   color:         $text-dim;
-  min-width:     28px;
-  min-height:    28px;
+  min-width:     30px;
+  min-height:    30px;
   border-radius: $radio-sm;
-  padding:       0 4px;
+  padding:       0 6px;
 }
 
 .workspace-activo {
-  background:  $accent1;
-  color:       #1a1b26;
-  font-weight: 700;
-  box-shadow:  0 0 12px rgba(196, 167, 231, 0.4);
+  background:    $accent1;
+  color:         #1a1b26;
+  font-weight:   700;
 }
 
 .workspace-ocupado {
-  color: $text;
+  color: rgba(192, 202, 245, 0.7);
 }
 
 // Reloj — exacto del mockup
