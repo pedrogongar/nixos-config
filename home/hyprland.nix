@@ -171,7 +171,7 @@ in
       exec-once = [
         "swww-daemon && sleep 1 && swww img ~/wallpapers/default.jpg"
         "swaync"
-        "eww daemon && eww open bar && eww open desktop-clock && eww open desktop-music && eww open desktop-sysmon"
+	"eww daemon && eww open barra && eww open escritorio"
       ];
     };
   };
