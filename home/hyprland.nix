@@ -47,8 +47,8 @@ in
       ];
 
       general = {
-        gaps_in   = 6;
-        gaps_out  = 12;
+        gaps_in     = 6;
+        gaps_out    = 12;
         border_size = 2;
         "col.active_border"   = "rgba(7dcfffff) rgba(7aa2f7ff) 45deg";
         "col.inactive_border" = "rgba(414868aa)";
@@ -108,30 +108,6 @@ in
         animate_manual_resizes   = true;
         vfr                      = true;
       };
-
-      windowrule = [
-        # cmatrix — decorativo workspace 1
-        "float,              class:(cmatrix-ws1)"
-        "nofocus,            class:(cmatrix-ws1)"
-        "noborder,           class:(cmatrix-ws1)"
-        "noshadow,           class:(cmatrix-ws1)"
-        "pin,                class:(cmatrix-ws1)"
-        "move 20 60,         class:(cmatrix-ws1)"
-        "size 360 480,       class:(cmatrix-ws1)"
-        "opacity 0.50 0.50,  class:(cmatrix-ws1)"
-        "workspace 1 silent, class:(cmatrix-ws1)"
-
-        # fastfetch — decorativo workspace 1
-        "float,              class:(fastfetch-ws1)"
-        "nofocus,            class:(fastfetch-ws1)"
-        "noborder,           class:(fastfetch-ws1)"
-        "noshadow,           class:(fastfetch-ws1)"
-        "pin,                class:(fastfetch-ws1)"
-        "move 400 60,        class:(fastfetch-ws1)"
-        "size 500 340,       class:(fastfetch-ws1)"
-        "opacity 0.80 0.80,  class:(fastfetch-ws1)"
-        "workspace 1 silent, class:(fastfetch-ws1)"
-      ];
 
       bind = [
         "$mod, Return,      exec, $terminal"
@@ -193,6 +169,24 @@ in
         "kitty --class fastfetch-ws1 -e bash -c 'fastfetch --config ~/.config/fastfetch/config.jsonc; sleep infinity'"
       ];
     };
+
+    extraConfig = ''
+      windowrule = float on,              match:class ^(cmatrix-ws1)$
+      windowrule = pin on,                match:class ^(cmatrix-ws1)$
+      windowrule = move 20 60,            match:class ^(cmatrix-ws1)$
+      windowrule = size 360 480,          match:class ^(cmatrix-ws1)$
+      windowrule = opacity 0.50 0.50,     match:class ^(cmatrix-ws1)$
+      windowrule = workspace 1 silent,    match:class ^(cmatrix-ws1)$
+      windowrule = border_size 0,         match:class ^(cmatrix-ws1)$	
+
+      windowrule = float on,              match:class ^(fastfetch-ws1)$
+      windowrule = pin on,                match:class ^(fastfetch-ws1)$
+      windowrule = move 400 60,           match:class ^(fastfetch-ws1)$
+      windowrule = size 500 340,          match:class ^(fastfetch-ws1)$
+      windowrule = opacity 0.80 0.80,     match:class ^(fastfetch-ws1)$
+      windowrule = workspace 1 silent,    match:class ^(fastfetch-ws1)$
+      windowrule = border_size 0,         match:class ^(fastfetch-ws1)$
+    '';
   };
 
   home.packages = with pkgs; [
