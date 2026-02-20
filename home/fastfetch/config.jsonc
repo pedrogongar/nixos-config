@@ -4,7 +4,7 @@
     "type": "builtin",
     "source": "NixOS",
     "color": {
-      "1": "cyan",
+      "1": "magenta",
       "2": "blue"
     },
     "padding": {
@@ -12,9 +12,9 @@
     }
   },
   "display": {
-    "separator": "  →  ",
+    "separator": "  ▸  ",
     "color": {
-      "separator": "cyan"
+      "separator": "white"
     }
   },
   "modules": [
@@ -22,26 +22,33 @@
       "type": "title",
       "format": "{user-name}@{host-name}",
       "color": {
-        "user": "cyan",
-        "at": "blue",
+        "user": "magenta",
+        "at": "white",
         "host": "blue"
       }
     },
-    "break",
-    { "type": "os",       "key": "OS",     "keyColor": "cyan" },
-    { "type": "kernel",   "key": "Kernel", "keyColor": "blue" },
-    { "type": "wm",       "key": "WM",     "keyColor": "cyan" },
-    { "type": "terminal", "key": "Term",   "keyColor": "blue" },
-    { "type": "shell",    "key": "Shell",  "keyColor": "cyan" },
-    { "type": "cpu",      "key": "CPU",    "keyColor": "blue" },
-    { "type": "memory",   "key": "RAM",    "keyColor": "cyan" },
+    {
+      "type": "separator",
+      "string": "──────────────────"
+    },
+    { "type": "os",       "key": " OS",      "keyColor": "magenta" },
+    { "type": "kernel",   "key": " Kernel",  "keyColor": "cyan"    },
+    { "type": "wm",       "key": " WM",      "keyColor": "blue"    },
+    { "type": "shell",    "key": " Shell",   "keyColor": "magenta" },
+    { "type": "terminal", "key": " Term",    "keyColor": "green"   },
+    { "type": "cpu",      "key": " CPU",     "keyColor": "cyan"    },
+    {
+      "type": "memory",
+      "key": "󰍛 RAM",
+      "keyColor": "magenta"
+    },
     {
       "type": "disk",
-      "key": "Disk",
+      "key": "󰋊 Disk",
       "keyColor": "blue",
       "folders": "/"
     },
-    { "type": "uptime",   "key": "Up",     "keyColor": "cyan" },
+    { "type": "uptime",   "key": "󰅐 Up",     "keyColor": "cyan"    },
     "break",
     { "type": "colors",   "symbol": "circle" }
   ]
