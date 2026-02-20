@@ -1,16 +1,7 @@
 ; ─────────────────────────────────────────────
-;  VARIABLES — polling del sistema
+;  VARIABLES — solo lo que usa el panel derecho
+;  La barra ahora es Waybar
 ; ─────────────────────────────────────────────
-
-(defpoll hora
-  :interval "1s"
-  :initial "00:00"
-  `date '+%H:%M'`)
-
-(defpoll fecha-corta
-  :interval "60s"
-  :initial "lun 01 ene"
-  `date '+%a %d %b' | tr '[:upper:]' '[:lower:]'`)
 
 (defpoll cpu-porcentaje
   :interval "3s"
@@ -37,27 +28,7 @@
   :initial "0G / 0G"
   `df -h / | awk 'NR==2 {print $3 " / " $2}'`)
 
-(defpoll bateria-porcentaje
-  :interval "30s"
-  :initial "100"
-  `cat /sys/class/power_supply/BAT0/capacity 2>/dev/null || echo "100"`)
-
-(defpoll bateria-estado
-  :interval "30s"
-  :initial "Charging"
-  `cat /sys/class/power_supply/BAT0/status 2>/dev/null || echo "AC"`)
-
-(defpoll volumen-valor
-  :interval "2s"
-  :initial "65"
-  `wpctl get-volume @DEFAULT_AUDIO_SINK@ | awk '{printf "%.0f", $2*100}'`)
-
-(defpoll red-icono
-  :interval "10s"
-  :initial "󰤨"
-  `bash ~/.config/eww/scripts/red-icono.sh`)
-
-; ── Música vía playerctl ──
+; ── Música ──
 (defpoll musica-titulo
   :interval "2s"
   :initial ""
@@ -78,92 +49,17 @@
   :initial "0"
   `bash ~/.config/eww/scripts/musica-progreso.sh`)
 
-; ── Workspaces vía Hyprland ──
-(defpoll workspaces
-  :interval "0.5s"
-  :initial "[]"
-  `hyprctl workspaces -j 2>/dev/null || echo "[]"`)
-
-(defpoll workspace-activo
-  :interval "0.5s"
-  :initial "1"
-  `hyprctl activeworkspace -j 2>/dev/null | jq '.id' || echo "1"`)
+; ── Pomodoro ──
+(defpoll pomo-estado
+  :interval "1s"
+  :initial `bash ~/.config/eww/scripts/pomodoro.sh status`
+  `bash ~/.config/eww/scripts/pomodoro.sh tick; bash ~/.config/eww/scripts/pomodoro.sh status`)
 
 
 ; ─────────────────────────────────────────────
-;  WIDGETS — BAR
+;  WIDGET MÚSICA
 ; ─────────────────────────────────────────────
 
-(defwidget barra-workspaces []
-  (box
-    :class "seccion-barra seccion-izquierda"
-    :orientation "h"
-    :space-evenly false
-    :spacing 2
-    (for ws in workspaces
-      (button
-        :class {ws.id == workspace-activo ? "workspace workspace-activo" :
-                ws.windows > 0 ? "workspace workspace-ocupado" : "workspace"}
-        :onclick "hyprctl dispatch workspace ${ws.id}"
-        (label
-          :class {ws.id == workspace-activo ? "ws-label ws-label-activo" : "ws-label"}
-          :text {ws.id})))))
-
-(defwidget barra-reloj []
-  (box
-    :class "seccion-barra seccion-centro"
-    :orientation "h"
-    :space-evenly false
-    :spacing 6
-    (label :class "hora-barra" :text hora)
-    (label :class "fecha-barra" :text fecha-corta)))
-
-(defwidget barra-tray []
-  (box
-    :class "seccion-barra seccion-derecha"
-    :orientation "h"
-    :space-evenly false
-    :spacing 0
-    ; CPU
-    (box :class "tray-item tray-cpu" :orientation "h" :spacing 5
-      (label :class "tray-icono" :text "󰻠")
-      (label :class "tray-valor" :text "${cpu-porcentaje}%"))
-    ; RAM
-    (box :class "tray-item tray-ram" :orientation "h" :spacing 5
-      (label :class "tray-icono" :text "󰍛")
-      (label :class "tray-valor" :text ram-usado))
-    ; Batería
-    (box :class "tray-item tray-bateria" :orientation "h" :spacing 5
-      (label :class "tray-icono"
-        :text {bateria-estado == "Charging" ? "󰂄" :
-               bateria-porcentaje > 80 ? "󰁹" :
-               bateria-porcentaje > 50 ? "󰁾" :
-               bateria-porcentaje > 20 ? "󰁼" : "󰁺"})
-      (label :class "tray-valor" :text "${bateria-porcentaje}%"))
-    ; Volumen
-    (box :class "tray-item tray-volumen" :orientation "h" :spacing 5
-      (label :class "tray-icono"
-        :text {volumen-valor > 70 ? "󰕾" :
-               volumen-valor > 30 ? "󰖀" : "󰕿"})
-      (label :class "tray-valor" :text "${volumen-valor}%"))
-    ; Red
-    (box :class "tray-item tray-red" :orientation "h" :spacing 0
-      (label :class "tray-icono" :text red-icono))))
-
-(defwidget barra []
-  (centerbox
-    :orientation "h"
-    :class "barra-contenedor"
-    (box :hexpand false (barra-workspaces))
-    (barra-reloj)
-    (box :halign "end" :hexpand false (barra-tray))))
-
-
-; ─────────────────────────────────────────────
-;  WIDGETS — ESCRITORIO
-; ─────────────────────────────────────────────
-
-; ── Widget Música ──
 (defwidget widget-musica []
   (revealer
     :transition "slidedown"
@@ -173,7 +69,6 @@
       :class "widget widget-musica"
       :orientation "v"
       :spacing 10
-      ; Cabecera: carátula + info
       (box
         :orientation "h"
         :spacing 12
@@ -196,15 +91,12 @@
             :text musica-artista
             :truncate true
             :xalign 0)))
-      ; Barra de progreso
       (scale
         :class "musica-progreso"
         :value musica-progreso
-        :min 0
-        :max 100
+        :min 0 :max 100
         :draw-value false
         :onchange "playerctl position $(echo '{}' | awk -v p='{}' -v d=$(playerctl metadata mpris:length 2>/dev/null || echo 0) 'BEGIN{print p/100*d/1000000}')")
-      ; Controles
       (box
         :class "musica-controles"
         :orientation "h"
@@ -220,14 +112,62 @@
           :onclick "playerctl next"
           (label :text "󰒭"))))))
 
-; ── Widget Sistema ──
+
+; ─────────────────────────────────────────────
+;  WIDGET POMODORO
+; ─────────────────────────────────────────────
+
+(defwidget widget-pomodoro []
+  (box
+    :class "widget widget-pomodoro"
+    :orientation "v"
+    :spacing 12
+    (box :orientation "h" :spacing 8
+      (label
+        :class "pomo-titulo"
+        :text {pomo-estado.mode == "work" ? "FOCO" : "DESCANSO"}
+        :xalign 0
+        :hexpand true)
+      (label
+        :class "pomo-sesiones"
+        :text "${pomo-estado.sessions} 󰔟"))
+    (label
+      :class "pomo-tiempo"
+      :text {pomo-estado.time}
+      :halign "center")
+    (scale
+      :class "pomo-barra"
+      :value {pomo-estado.progress}
+      :min 0 :max 100
+      :draw-value false)
+    (box
+      :orientation "h"
+      :halign "center"
+      :spacing 8
+      (button
+        :class "pomo-btn"
+        :onclick "bash ~/.config/eww/scripts/pomodoro.sh reset"
+        (label :text "󰑐"))
+      (button
+        :class {pomo-estado.status == "running" ? "pomo-btn pomo-btn-activo" : "pomo-btn pomo-btn-play"}
+        :onclick "bash ~/.config/eww/scripts/pomodoro.sh pause"
+        (label :text {pomo-estado.status == "running" ? "󰏤" : "󰐊"}))
+      (button
+        :class "pomo-btn"
+        :onclick "bash ~/.config/eww/scripts/pomodoro.sh skip"
+        (label :text "󰒭")))))
+
+
+; ─────────────────────────────────────────────
+;  WIDGET SISTEMA
+; ─────────────────────────────────────────────
+
 (defwidget widget-sistema []
   (box
     :class "widget widget-sistema"
     :orientation "v"
     :spacing 14
     (label :class "sistema-titulo" :text "SISTEMA" :xalign 0)
-    ; CPU
     (box :orientation "v" :spacing 4
       (box :orientation "h"
         (label :class "metrica-etiqueta" :text "CPU" :xalign 0 :hexpand true)
@@ -237,7 +177,6 @@
         :value cpu-porcentaje
         :min 0 :max 100
         :draw-value false))
-    ; RAM
     (box :orientation "v" :spacing 4
       (box :orientation "h"
         (label :class "metrica-etiqueta" :text "RAM" :xalign 0 :hexpand true)
@@ -247,7 +186,6 @@
         :value ram-porcentaje
         :min 0 :max 100
         :draw-value false))
-    ; SSD
     (box :orientation "v" :spacing 4
       (box :orientation "h"
         (label :class "metrica-etiqueta" :text "SSD" :xalign 0 :hexpand true)
@@ -258,7 +196,11 @@
         :min 0 :max 100
         :draw-value false))))
 
-; ── Panel de widgets del escritorio ──
+
+; ─────────────────────────────────────────────
+;  PANEL + WINDOW — solo escritorio
+; ─────────────────────────────────────────────
+
 (defwidget panel-escritorio []
   (box
     :class "panel-escritorio"
@@ -266,23 +208,8 @@
     :spacing 10
     :valign "start"
     (widget-musica)
+    (widget-pomodoro)
     (widget-sistema)))
-
-
-; ─────────────────────────────────────────────
-;  WINDOWS
-; ─────────────────────────────────────────────
-
-(defwindow barra
-  :monitor 0
-  :geometry (geometry
-    :y "8px"
-    :height "44px"
-    :anchor "top center")
-  :stacking "fg"
-  :exclusive true
-  :namespace "eww-barra"
-  (barra))
 
 (defwindow escritorio
   :monitor 0

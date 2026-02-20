@@ -16,6 +16,7 @@
     ./matugen.nix
     ./nano.nix
     ./vscode.nix
+    ./waybar.nix
   ];
 
   home.username = "pedro";
