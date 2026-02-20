@@ -105,7 +105,9 @@
         :class {ws.id == workspace-activo ? "workspace workspace-activo" :
                 ws.windows > 0 ? "workspace workspace-ocupado" : "workspace"}
         :onclick "hyprctl dispatch workspace ${ws.id}"
-        (label :text {ws.id})))))
+        (label
+          :class {ws.id == workspace-activo ? "ws-label ws-label-activo" : "ws-label"}
+          :text {ws.id})))))
 
 (defwidget barra-reloj []
   (box
