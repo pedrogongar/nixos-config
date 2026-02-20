@@ -41,55 +41,49 @@ in
 
       monitor = [
         "eDP-1, 1920x1080@60, 0x0, 1"
-        "HDMI-A-1, 1920x1080@60, 0x0, 1"
-        "DP-1, 1920x1080@60, 1920x0, 1"
+        "HDMI-A-1, 1920x1080@60, 1920x0, 1"
+        "DP-1, 1920x1080@60, 3840x0, 1"
         ", preferred, auto, 1"
       ];
 
       general = {
-        gaps_in  = 6;
-        gaps_out = 12;
+        gaps_in   = 6;
+        gaps_out  = 12;
         border_size = 2;
-        "col.active_border"   = "rgba(c4a7e7ff) rgba(8aadf4ff) 45deg";
-        "col.inactive_border" = "rgba(6e738daa)";
+        "col.active_border"   = "rgba(7dcfffff) rgba(7aa2f7ff) 45deg";
+        "col.inactive_border" = "rgba(414868aa)";
         layout = "dwindle";
       };
 
       decoration = {
-        rounding         = 12;
-        active_opacity   = 0.95;
-        inactive_opacity = 0.85;
+        rounding         = 10;
+        active_opacity   = 1.0;
+        inactive_opacity = 0.92;
         blur = {
-          enabled           = true;
-          size              = 8;
-          passes            = 3;
-          new_optimizations = true;
-          ignore_opacity    = true;
-          xray              = false;
+          enabled = false;
         };
         shadow = {
           enabled      = true;
-          range        = 20;
-          render_power = 3;
-          color        = "rgba(1a1a2eee)";
+          range        = 12;
+          render_power = 2;
+          color        = "rgba(0d0e1799)";
         };
       };
 
       animations = {
         enabled = true;
         bezier = [
-          "smoothOut, 0.36, 0, 0.66, -0.56"
-          "smoothIn, 0.25, 1, 0.5, 1"
-          "overshot, 0.4, 0.8, 0.2, 1.2"
+          "smoothIn,  0.25, 1,    0.5,   1"
+          "smoothOut, 0.36, 0,    0.66, -0.56"
+          "linear,    0,    0,    1,     1"
         ];
         animation = [
-          "windows, 1, 5, overshot, slide"
-          "windowsOut, 1, 4, smoothOut, slide"
-          "windowsMove, 1, 4, smoothIn, slide"
-          "border, 1, 10, default"
-          "fade, 1, 5, smoothIn"
-          "fadeDim, 1, 5, smoothIn"
-          "workspaces, 1, 6, overshot, slidevert"
+          "windows,     1, 3, smoothIn,  slide"
+          "windowsOut,  1, 3, smoothOut, slide"
+          "windowsMove, 1, 3, smoothIn,  slide"
+          "border,      1, 5, linear"
+          "fade,        1, 3, smoothIn"
+          "workspaces,  1, 4, smoothIn,  slide"
         ];
       };
 
@@ -112,33 +106,48 @@ in
         disable_hyprland_logo    = true;
         disable_splash_rendering = true;
         animate_manual_resizes   = true;
+        vfr                      = true;
       };
 
-      windowrulev2 = [
-        "float,    class:^(cmatrix-desktop)$"
-        "nofocus,  class:^(cmatrix-desktop)$"
-        "noborder, class:^(cmatrix-desktop)$"
-        "noshadow, class:^(cmatrix-desktop)$"
-        "pin,      class:^(cmatrix-desktop)$"
-        "move 20 66,       class:^(cmatrix-desktop)$"
-        "size 340 460,     class:^(cmatrix-desktop)$"
-        "opacity 0.55 0.55,class:^(cmatrix-desktop)$"
+      windowrule = [
+        # cmatrix — decorativo workspace 1
+        "float,              class:(cmatrix-ws1)"
+        "nofocus,            class:(cmatrix-ws1)"
+        "noborder,           class:(cmatrix-ws1)"
+        "noshadow,           class:(cmatrix-ws1)"
+        "pin,                class:(cmatrix-ws1)"
+        "move 20 60,         class:(cmatrix-ws1)"
+        "size 360 480,       class:(cmatrix-ws1)"
+        "opacity 0.50 0.50,  class:(cmatrix-ws1)"
+        "workspace 1 silent, class:(cmatrix-ws1)"
+
+        # fastfetch — decorativo workspace 1
+        "float,              class:(fastfetch-ws1)"
+        "nofocus,            class:(fastfetch-ws1)"
+        "noborder,           class:(fastfetch-ws1)"
+        "noshadow,           class:(fastfetch-ws1)"
+        "pin,                class:(fastfetch-ws1)"
+        "move 400 60,        class:(fastfetch-ws1)"
+        "size 500 340,       class:(fastfetch-ws1)"
+        "opacity 0.80 0.80,  class:(fastfetch-ws1)"
+        "workspace 1 silent, class:(fastfetch-ws1)"
       ];
 
       bind = [
-        "$mod, Return, exec, $terminal"
-        "$mod, Q, killactive"
-        "$mod SHIFT, M, exit"
-        "$mod, E, exec, $fileManager"
-        "$mod, B, exec, $browser"
-        "$mod, Space, exec, $menu"
-        "$mod, F, fullscreen"
-        "$mod, V, togglefloating"
-        "$mod, P, pseudo"
-        "$mod, J, togglesplit"
-        "$mod, M, exec, ${monitorScript}/bin/monitor-switch"
-        "$mod, N, exec, swaync-client -t -sw"
-        "$mod, X, exec, wlogout"
+        "$mod, Return,      exec, $terminal"
+        "$mod, Q,           killactive"
+        "$mod SHIFT, M,     exit"
+        "$mod, E,           exec, $fileManager"
+        "$mod, B,           exec, $browser"
+        "$mod, Space,       exec, $menu"
+        "$mod, F,           fullscreen"
+        "$mod, V,           togglefloating"
+        "$mod, P,           pseudo"
+        "$mod, J,           togglesplit"
+        "$mod, M,           exec, ${monitorScript}/bin/monitor-switch"
+        "$mod, N,           exec, swaync-client -t -sw"
+        "$mod, X,           exec, wlogout"
+        "$mod, L,           exec, hyprlock"
 
         "$mod, left,  movefocus, l"
         "$mod, right, movefocus, r"
@@ -169,8 +178,6 @@ in
 
         ", Print,      exec, grim -g \"$(slurp)\" - | satty -f -"
         "SHIFT, Print, exec, grim - | satty -f -"
-
-        "$mod, L, exec, hyprlock"
       ];
 
       bindm = [
@@ -182,8 +189,8 @@ in
         "swww-daemon && sleep 1 && swww img ~/wallpapers/default.jpg"
         "swaync"
         "waybar"
-        "eww daemon && eww open escritorio"
-        "kitty --class cmatrix-desktop --override font_size=9 -e cmatrix -s -C cyan -u 4"
+        "kitty --class cmatrix-ws1 -e unimatrix -s 96 -f -u Japanese"
+        "kitty --class fastfetch-ws1 -e bash -c 'fastfetch --config ~/.config/fastfetch/config.jsonc; sleep infinity'"
       ];
     };
   };
@@ -201,9 +208,10 @@ in
     cava
     fastfetch
     btop
-    cmatrix
+    unimatrix
     yazi
     matugen
+    thunar
     jq
     socat
   ];

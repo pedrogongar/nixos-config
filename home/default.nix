@@ -8,7 +8,7 @@
     ./kitty.nix
     ./theme.nix
     ./apps.nix
-    ./eww.nix
+    ./fastfetch.nix
     ./rofi.nix
     ./hyprlock.nix
     ./wlogout.nix
@@ -19,16 +19,16 @@
     ./waybar.nix
   ];
 
-  home.username = "pedro";
+  home.username     = "pedro";
   home.homeDirectory = "/home/pedro";
-  home.stateVersion = "25.11";
+  home.stateVersion  = "25.11";
 
   programs.git = {
     enable = true;
     settings = {
       user = {
-        name = "Pedro";
-        email = "pedro@nixos-dev";
+        name  = "Pedro";
+        email = "pedro@nixos-portatil";
       };
       safe.directory = [ "/etc/nixos" ];
     };

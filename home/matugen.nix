@@ -3,32 +3,26 @@
 let
   applyTheme = pkgs.writeShellScriptBin "apply-theme" ''
     WALLPAPER="$1"
-    TEMPLATES="$HOME/.config/matugen/templates"
-    OUTPUT="$HOME/.cache/matugen"
 
     if [ -z "$WALLPAPER" ]; then
       echo "Uso: apply-theme /ruta/al/wallpaper.jpg"
       exit 1
     fi
 
-    mkdir -p "$OUTPUT"
+    mkdir -p "$HOME/.cache/matugen"
 
     ${pkgs.matugen}/bin/matugen image "$WALLPAPER" \
       --config "$HOME/.config/matugen/config.toml"
 
-    # Aplicar wallpaper
     ${pkgs.swww}/bin/swww img "$WALLPAPER" \
       --transition-type grow \
       --transition-duration 2
 
-    # Recargar componentes
     hyprctl reload
-    eww reload
     swaync-client -rs
+    pkill -SIGUSR2 waybar
 
-    # Guardar wallpaper actual
     echo "$WALLPAPER" > "$HOME/.cache/matugen/current-wallpaper"
-
     echo "✓ Tema aplicado desde: $WALLPAPER"
   '';
 
@@ -39,17 +33,16 @@ let
     mkdir -p "$OUTPUT"
 
     cp "$DEFAULTS/colors-hyprland.conf" "$OUTPUT/colors-hyprland.conf"
-    cp "$DEFAULTS/colors-eww.scss" "$OUTPUT/colors-eww.scss"
-    cp "$DEFAULTS/colors-kitty.conf" "$OUTPUT/colors-kitty.conf"
-    cp "$DEFAULTS/colors-rofi.rasi" "$OUTPUT/colors-rofi.rasi"
-    cp "$DEFAULTS/colors-swaync.css" "$OUTPUT/colors-swaync.css"
+    cp "$DEFAULTS/colors-kitty.conf"    "$OUTPUT/colors-kitty.conf"
+    cp "$DEFAULTS/colors-rofi.rasi"     "$OUTPUT/colors-rofi.rasi"
+    cp "$DEFAULTS/colors-swaync.css"    "$OUTPUT/colors-swaync.css"
     cp "$DEFAULTS/colors-hyprlock.conf" "$OUTPUT/colors-hyprlock.conf"
-    cp "$DEFAULTS/colors-cava.conf" "$OUTPUT/colors-cava.conf"
-    cp "$DEFAULTS/colors-btop.theme" "$OUTPUT/colors-btop.theme"
+    cp "$DEFAULTS/colors-cava.conf"     "$OUTPUT/colors-cava.conf"
+    cp "$DEFAULTS/colors-btop.theme"    "$OUTPUT/colors-btop.theme"
 
     hyprctl reload 2>/dev/null
-    eww reload 2>/dev/null
     swaync-client -rs 2>/dev/null
+    pkill -SIGUSR2 waybar 2>/dev/null
 
     echo "✓ Paleta default aplicada"
   '';
@@ -58,7 +51,6 @@ in
 {
   home.packages = [ applyTheme defaultTheme ];
 
-  # Config de Matugen
   xdg.configFile."matugen/config.toml".text = ''
     [config]
     type = "scheme-tonal-spot"
@@ -66,9 +58,6 @@ in
     [templates.hyprland]
     input_path = "~/.config/matugen/templates/hyprland.conf"
     output_path = "~/.cache/matugen/colors-hyprland.conf"
-    [templates.eww]
-    input_path = "~/.config/matugen/templates/eww.scss"
-    output_path = "~/.cache/matugen/colors-eww.scss"
     [templates.kitty]
     input_path = "~/.config/matugen/templates/kitty.conf"
     output_path = "~/.cache/matugen/colors-kitty.conf"
@@ -89,7 +78,6 @@ in
     output_path = "~/.cache/matugen/colors-btop.theme"
   '';
 
-  # Paleta default (malva del mockup)
   xdg.configFile."matugen/defaults/colors-hyprland.conf".text = ''
     $accent = rgb(c4a7e7)
     $accent2 = rgb(8aadf4)
@@ -103,39 +91,21 @@ in
     $yellow = rgb(e0af68)
   '';
 
-  xdg.configFile."matugen/defaults/colors-eww.scss".text = ''
-    $bg: rgba(26, 27, 38, 0.75);
-    $bg-widget: rgba(36, 37, 52, 0.70);
-    $bg-hover: rgba(196, 167, 231, 0.1);
-    $border: rgba(196, 167, 231, 0.3);
-    $text: #c0caf5;
-    $text-dim: #565f89;
-    $text-bright: #e0e4ff;
-    $accent1: #c4a7e7;
-    $accent2: #8aadf4;
-    $accent3: #a6da95;
-    $accent4: #f0c6c6;
-    $accent5: #8bd5ca;
-    $red: #ed8796;
-    $radius: 14px;
-    $radius-sm: 8px;
-  '';
-
   xdg.configFile."matugen/defaults/colors-kitty.conf".text = ''
     foreground #c0caf5
     background #1a1b26
     selection_foreground #c0caf5
     selection_background #33467c
-    color0 #15161e
-    color1 #f7768e
-    color2 #9ece6a
-    color3 #e0af68
-    color4 #7aa2f7
-    color5 #bb9af7
-    color6 #7dcfff
-    color7 #a9b1d6
-    color8 #414868
-    color9 #f7768e
+    color0  #15161e
+    color1  #f7768e
+    color2  #9ece6a
+    color3  #e0af68
+    color4  #7aa2f7
+    color5  #bb9af7
+    color6  #7dcfff
+    color7  #a9b1d6
+    color8  #414868
+    color9  #f7768e
     color10 #9ece6a
     color11 #e0af68
     color12 #7aa2f7
@@ -225,7 +195,6 @@ in
     theme[upload_end]="#8aadf4"
   '';
 
-  # Templates para Matugen (usa {{variables}} que Matugen reemplaza)
   xdg.configFile."matugen/templates/hyprland.conf".text = ''
     $accent = rgb({{colors.primary.default.hex_stripped}})
     $accent2 = rgb({{colors.secondary.default.hex_stripped}})
@@ -239,39 +208,21 @@ in
     $yellow = rgb({{colors.secondary.default.hex_stripped}})
   '';
 
-  xdg.configFile."matugen/templates/eww.scss".text = ''
-    $bg: rgba({{colors.surface.default.red}}, {{colors.surface.default.green}}, {{colors.surface.default.blue}}, 0.75);
-    $bg-widget: rgba({{colors.surface_container.default.red}}, {{colors.surface_container.default.green}}, {{colors.surface_container.default.blue}}, 0.70);
-    $bg-hover: rgba({{colors.primary.default.red}}, {{colors.primary.default.green}}, {{colors.primary.default.blue}}, 0.1);
-    $border: rgba({{colors.primary.default.red}}, {{colors.primary.default.green}}, {{colors.primary.default.blue}}, 0.3);
-    $text: #{{colors.on_surface.default.hex_stripped}};
-    $text-dim: #{{colors.on_surface_variant.default.hex_stripped}};
-    $text-bright: #{{colors.on_surface.default.hex_stripped}};
-    $accent1: #{{colors.primary.default.hex_stripped}};
-    $accent2: #{{colors.secondary.default.hex_stripped}};
-    $accent3: #{{colors.tertiary.default.hex_stripped}};
-    $accent4: #{{colors.error.default.hex_stripped}};
-    $accent5: #{{colors.tertiary_container.default.hex_stripped}};
-    $red: #{{colors.error.default.hex_stripped}};
-    $radius: 14px;
-    $radius-sm: 8px;
-  '';
-
   xdg.configFile."matugen/templates/kitty.conf".text = ''
     foreground #{{colors.on_surface.default.hex_stripped}}
     background #{{colors.surface.default.hex_stripped}}
     selection_foreground #{{colors.on_surface.default.hex_stripped}}
     selection_background #{{colors.surface_container_high.default.hex_stripped}}
-    color0 #{{colors.surface.default.hex_stripped}}
-    color1 #{{colors.error.default.hex_stripped}}
-    color2 #{{colors.tertiary.default.hex_stripped}}
-    color3 #{{colors.secondary.default.hex_stripped}}
-    color4 #{{colors.primary.default.hex_stripped}}
-    color5 #{{colors.primary_container.default.hex_stripped}}
-    color6 #{{colors.tertiary_container.default.hex_stripped}}
-    color7 #{{colors.on_surface.default.hex_stripped}}
-    color8 #{{colors.on_surface_variant.default.hex_stripped}}
-    color9 #{{colors.error.default.hex_stripped}}
+    color0  #{{colors.surface.default.hex_stripped}}
+    color1  #{{colors.error.default.hex_stripped}}
+    color2  #{{colors.tertiary.default.hex_stripped}}
+    color3  #{{colors.secondary.default.hex_stripped}}
+    color4  #{{colors.primary.default.hex_stripped}}
+    color5  #{{colors.primary_container.default.hex_stripped}}
+    color6  #{{colors.tertiary_container.default.hex_stripped}}
+    color7  #{{colors.on_surface.default.hex_stripped}}
+    color8  #{{colors.on_surface_variant.default.hex_stripped}}
+    color9  #{{colors.error.default.hex_stripped}}
     color10 #{{colors.tertiary.default.hex_stripped}}
     color11 #{{colors.secondary.default.hex_stripped}}
     color12 #{{colors.primary.default.hex_stripped}}

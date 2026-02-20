@@ -1,14 +1,14 @@
 window {
-    font-family: "Outfit", sans-serif;
-    font-size: 14px;
+    font-family: "JetBrains Mono Nerd Font", monospace;
+    font-size: 13px;
     color: #c0caf5;
-    background-color: rgba(26, 27, 38, 0.85);
+    background-color: rgba(13, 14, 23, 0.88);
 }
 
 button {
-    background-color: rgba(36, 37, 52, 0.7);
-    border: 1px solid rgba(196, 167, 231, 0.3);
-    border-radius: 14px;
+    background-color: rgba(26, 27, 38, 0.75);
+    border: 1px solid rgba(125, 207, 255, 0.18);
+    border-radius: 10px;
     margin: 8px;
     background-repeat: no-repeat;
     background-position: center;
@@ -17,14 +17,14 @@ button {
 }
 
 button:hover {
-    background-color: rgba(196, 167, 231, 0.15);
-    border-color: #c4a7e7;
+    background-color: rgba(125, 207, 255, 0.12);
+    border-color: #7dcfff;
 }
 
 button:focus {
-    background-color: rgba(196, 167, 231, 0.2);
-    border-color: #c4a7e7;
-    box-shadow: 0 0 12px rgba(196, 167, 231, 0.3);
+    background-color: rgba(125, 207, 255, 0.18);
+    border-color: #7dcfff;
+    box-shadow: 0 0 10px rgba(125, 207, 255, 0.25);
 }
 
 #lock {

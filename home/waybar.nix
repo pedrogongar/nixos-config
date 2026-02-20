@@ -6,13 +6,13 @@
     package = pkgs.waybar;
 
     settings = [{
-      layer          = "top";
-      position       = "top";
-      height         = 44;
-      margin-top     = 8;
-      margin-left    = 12;
-      margin-right   = 12;
-      spacing        = 6;
+      layer        = "top";
+      position     = "top";
+      height       = 40;
+      margin-top   = 8;
+      margin-left  = 12;
+      margin-right = 12;
+      spacing      = 4;
 
       modules-left   = [ "hyprland/workspaces" ];
       modules-center = [ "clock" ];
@@ -20,8 +20,9 @@
         "cpu"
         "memory"
         "battery"
-        "pulseaudio"
         "network"
+        "pulseaudio"
+        "custom/ip"
       ];
 
       "hyprland/workspaces" = {
@@ -32,18 +33,17 @@
       };
 
       "clock" = {
-        format         = "{:%H:%M}";
-        format-alt     = "{:%H:%M  %a %d %b}";
+        format         = "{:%H:%M  %A  %d/%m/%y}";
         tooltip-format = "<big>{:%B %Y}</big>\n<tt><small>{calendar}</small></tt>";
         calendar = {
           mode      = "month";
           on-scroll = 1;
           format = {
-            months   = "<span color='#e0e4ff'><b>{}</b></span>";
-            days     = "<span color='#c0caf5'>{}</span>";
+            months   = "<span color='#c0caf5'><b>{}</b></span>";
+            days     = "<span color='#a9b1d6'>{}</span>";
             weeks    = "<span color='#565f89'><b>W{}</b></span>";
-            weekdays = "<span color='#c4a7e7'><b>{}</b></span>";
-            today    = "<span color='#c4a7e7'><b><u>{}</u></b></span>";
+            weekdays = "<span color='#7dcfff'><b>{}</b></span>";
+            today    = "<span color='#7dcfff'><b><u>{}</u></b></span>";
           };
         };
         actions = {
@@ -69,12 +69,20 @@
         format          = "{icon} {capacity}%";
         format-charging = "󰂄 {capacity}%";
         format-plugged  = "󰚥 {capacity}%";
-        format-icons    = [ "󰁺" "󰁼" "󰁾" "󰁹" "󰁹" ];
+        format-icons    = [ "󰁺" "󰁼" "󰁾" "󰁿" "󰁹" ];
         states = {
           warning  = 30;
           critical = 15;
         };
         tooltip = false;
+      };
+
+      "network" = {
+        format-wifi         = "󰤨 {signalStrength}%";
+        format-ethernet     = "󰈀 eth";
+        format-disconnected = "󰤭 off";
+        tooltip-format-wifi = "{essid} — {signalStrength}%\n{ipaddr}";
+        tooltip             = true;
       };
 
       "pulseaudio" = {
@@ -87,182 +95,193 @@
         tooltip  = false;
       };
 
-      "network" = {
-        format-wifi         = "󰤨 {signalStrength}%";
-        format-ethernet     = "󰈀";
-        format-disconnected = "󰤭";
-        tooltip-format-wifi = "{essid} ({signalStrength}%)";
-        tooltip             = true;
+      "custom/ip" = {
+        exec     = "hostname -I | awk '{print $1}'";
+        interval = 30;
+        format   = "󰩟 {}";
+        tooltip  = false;
       };
     }];
 
     style = ''
+      /* ══════════════════════════════════════════════
+         Waybar — Tokyo Night / Cyberspace
+         Inspirado en la estética terminal cyberpunk
+         ══════════════════════════════════════════════ */
+
       * {
-        border: none;
+        border:        none;
         border-radius: 0;
-        font-family: "JetBrains Mono Nerd Font", "Outfit", monospace;
-        font-size: 12px;
-        min-height: 0;
-        margin: 0;
-        padding: 0;
+        font-family:   "JetBrains Mono Nerd Font", monospace;
+        font-size:     12px;
+        min-height:    0;
+        margin:        0;
+        padding:       0;
       }
 
       window#waybar {
         background: transparent;
-        color: #c0caf5;
+        color:      #c0caf5;
       }
 
+      /* ── Píldoras ── */
       .modules-left,
       .modules-center,
       .modules-right {
-        background: rgba(26, 27, 38, 0.88);
-        border: 1px solid rgba(196, 167, 231, 0.25);
-        border-radius: 14px;
-        padding: 0 6px;
+        background:    rgba(13, 14, 23, 0.92);
+        border:        1px solid rgba(125, 207, 255, 0.15);
+        border-radius: 10px;
+        padding:       0 8px;
       }
 
+      /* ── Workspaces ── */
       #workspaces {
         padding: 0 2px;
       }
 
       #workspaces button {
-        background: transparent;
-        color: #565f89;
-        border-radius: 8px;
-        padding: 0 6px;
-        min-width: 28px;
-        min-height: 28px;
-        font-size: 11px;
-        font-weight: 500;
-        transition: all 0.2s ease;
-        border: none;
-        box-shadow: none;
+        background:    transparent;
+        color:         #565f89;
+        border-radius: 6px;
+        padding:       2px 7px;
+        min-width:     24px;
+        font-size:     11px;
+        font-weight:   500;
+        transition:    all 0.15s ease;
+        border:        none;
+        box-shadow:    none;
+        margin:        4px 1px;
       }
 
       #workspaces button:hover {
-        background: rgba(196, 167, 231, 0.10);
-        color: #c0caf5;
+        background: rgba(125, 207, 255, 0.08);
+        color:      #a9b1d6;
       }
 
       #workspaces button.active {
-        background: #c4a7e7;
-        color: #1a1b26;
+        background:  rgba(125, 207, 255, 0.15);
+        color:       #7dcfff;
         font-weight: 700;
-        box-shadow: 0 0 10px rgba(196, 167, 231, 0.45);
+        border:      1px solid rgba(125, 207, 255, 0.35);
+        box-shadow:  0 0 8px rgba(125, 207, 255, 0.2);
       }
 
       #workspaces button.occupied {
-        color: rgba(192, 202, 245, 0.7);
+        color: #a9b1d6;
       }
 
       #workspaces button.urgent {
-        background: #ed8796;
-        color: #1a1b26;
+        background: rgba(247, 118, 142, 0.2);
+        color:      #f7768e;
+        border:     1px solid rgba(247, 118, 142, 0.4);
       }
 
+      /* ── Reloj ── */
       #clock {
-        font-family: "Outfit", sans-serif;
-        font-size: 13px;
-        font-weight: 500;
-        color: #e0e4ff;
-        letter-spacing: 1px;
-        padding: 0 14px;
-        transition: color 0.2s ease;
+        font-size:      12px;
+        font-weight:    500;
+        color:          #c0caf5;
+        letter-spacing: 0.5px;
+        padding:        0 14px;
       }
 
       #clock:hover {
-        color: #c4a7e7;
+        color: #7dcfff;
       }
 
+      /* ── Módulos tray ── */
       #cpu,
       #memory,
       #battery,
+      #network,
       #pulseaudio,
-      #network {
-        padding: 4px 10px;
-        color: #c0caf5;
-        transition: background 0.2s ease;
+      #custom-ip {
+        padding:    3px 9px;
+        transition: all 0.15s ease;
       }
 
       #cpu:hover,
       #memory:hover,
       #battery:hover,
+      #network:hover,
       #pulseaudio:hover,
-      #network:hover {
-        background: rgba(196, 167, 231, 0.10);
-        border-radius: 8px;
+      #custom-ip:hover {
+        background:    rgba(125, 207, 255, 0.08);
+        border-radius: 6px;
+        color:         #7dcfff;
       }
 
-      #cpu    { color: #8aadf4; }
-      #memory { color: #c4a7e7; }
+      #cpu         { color: #7aa2f7; }
+      #memory      { color: #bb9af7; }
+      #battery     { color: #9ece6a; }
+      #network     { color: #7dcfff; }
+      #pulseaudio  { color: #73daca; }
+      #custom-ip   { color: #e0af68; }
 
-      #battery          { color: #a6da95; }
       #battery.warning  { color: #e0af68; }
       #battery.critical {
-        color: #ed8796;
+        color:     #f7768e;
         animation: blink 1s step-end infinite;
       }
 
-      @keyframes blink {
-        50% { opacity: 0.5; }
-      }
-
-      #pulseaudio         { color: #8bd5ca; }
       #pulseaudio.muted   { color: #565f89; }
-
-      #network              { color: #f0c6c6; }
       #network.disconnected { color: #565f89; }
 
+      @keyframes blink {
+        50% { opacity: 0.4; }
+      }
+
+      /* ── Tooltip / Calendario ── */
       tooltip {
-        background: rgba(26, 27, 38, 0.96);
-        border: 1px solid rgba(196, 167, 231, 0.25);
-        border-radius: 14px;
-        color: #c0caf5;
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-        padding: 8px;
+        background:    rgba(13, 14, 23, 0.98);
+        border:        1px solid rgba(125, 207, 255, 0.20);
+        border-radius: 10px;
+        color:         #c0caf5;
+        box-shadow:    0 4px 20px rgba(0, 0, 0, 0.5);
+        padding:       10px;
       }
 
       tooltip label {
-        color: #c0caf5;
+        color:       #c0caf5;
         font-family: "JetBrains Mono Nerd Font", monospace;
-        font-size: 12px;
+        font-size:   12px;
       }
 
       calendar {
-        background: transparent;
-        color: #c0caf5;
+        background:  transparent;
+        color:       #a9b1d6;
         font-family: "JetBrains Mono Nerd Font", monospace;
-        font-size: 12px;
-        border-radius: 8px;
-        padding: 4px;
+        font-size:   12px;
+        padding:     4px;
       }
 
       calendar:selected {
-        background: #c4a7e7;
-        color: #1a1b26;
-        border-radius: 6px;
+        background:    rgba(125, 207, 255, 0.20);
+        color:         #7dcfff;
+        border-radius: 4px;
       }
 
       calendar.highlight {
-        color: #c4a7e7;
+        color:       #7dcfff;
         font-weight: bold;
       }
 
       calendar header {
-        color: #e0e4ff;
-        font-size: 13px;
-        padding: 4px 0 8px;
+        color:       #c0caf5;
+        font-weight: 600;
+        font-size:   13px;
+        padding:     4px 0 8px;
       }
 
       calendar.button {
         background: transparent;
-        color: #565f89;
-        padding: 2px 6px;
+        color:      #565f89;
+        padding:    2px 6px;
       }
 
       calendar.button:hover {
-        background: rgba(196, 167, 231, 0.10);
-        color: #c4a7e7;
+        background: rgba(125, 207, 255, 0.08);
+        color:      #7dcfff;
       }
     '';
   };

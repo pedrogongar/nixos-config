@@ -1,51 +1,56 @@
 # nixos-config
 
-Configuración personal de NixOS con flakes y Home Manager. Incluye escritorio Hyprland con rice completo en paleta malva, herramientas de desarrollo y configuración reproducible para múltiples máquinas.
+Configuración personal de NixOS con flakes y Home Manager. Escritorio Hyprland con estética Tokyo Night / Cyberspace, herramientas de desarrollo y configuración reproducible.
 
 ## Stack
 
 - **NixOS 25.11** (unstable) con flakes
 - **Home Manager** para configuración de usuario
-- **Hyprland** como compositor Wayland
-- **Eww** para barra y widgets de escritorio
-- **Catppuccin Mocha** como tema base con acento malva
+- **Hyprland** como compositor Wayland (sin blur — optimizado para CPU)
+- **Waybar** como barra de estado
+- **Tokyo Night** como paleta base con acentos cyan
 
 ## Estructura
 
 ```
 nixos-config/
-├── flake.nix                    # Entrypoint — hosts y dependencias
+├── flake.nix                    # Entrypoint — host y dependencias
 ├── flake.lock                   # Versiones fijadas
 ├── hosts/
-│   ├── vm/                      # Host: VM QEMU/KVM (desarrollo)
-│   └── escritorio/              # Host: máquina física (pendiente NVIDIA)
+│   └── portatil/                # Host único (físico)
+│       ├── default.nix
+│       └── hardware-configuration.nix  # generado localmente, no commitear
 ├── modules/
-│   ├── base.nix                 # Configuración base del sistema
+│   ├── base.nix                 # Locale, timezone, git, ssh
 │   ├── desktop.nix              # Hyprland, PipeWire, greetd, fuentes
-│   └── docker.nix               # Docker y virtualización
+│   └── docker.nix               # Docker
 └── home/
     ├── default.nix              # Importa todos los módulos home
-    ├── hyprland.nix             # Compositor, keybinds, animaciones
-    ├── eww.nix                  # Barra flotante y widgets de escritorio
-    ├── kitty.nix                # Terminal con tabs, splits y ligaduras
-    ├── neovim.nix               # IDE completo con LSP (Vue/TS/C#/Nix/Python)
+    ├── hyprland.nix             # Compositor, keybinds, ventanas decorativas ws1
+    ├── waybar.nix               # Barra: workspaces, reloj, métricas, IP
+    ├── kitty.nix                # Terminal
+    ├── fastfetch.nix            # Módulo fastfetch
+    ├── fastfetch/
+    │   └── config.jsonc         # Config fastfetch (ws1 decorativo)
+    ├── neovim.nix               # IDE con LSP (Vue/TS/C#/Nix/Python)
     ├── vscode.nix               # VSCode con extensiones y settings
     ├── shell.nix                # Zsh + Starship (3 temas)
     ├── theme.nix                # GTK dark, cursor Bibata, iconos Papirus
     ├── apps.nix                 # Firefox, Discord, Telegram, Spotify, etc.
-    ├── rofi.nix                 # Lanzador de aplicaciones
+    ├── rofi.nix                 # Lanzador
+    ├── rofi/
+    │   └── theme.rasi
     ├── hyprlock.nix             # Pantalla de bloqueo
     ├── wlogout.nix              # Menú de apagado
+    ├── wlogout/
+    │   └── style.css
     ├── swaync.nix               # Notificaciones
-    └── matugen.nix              # Colores dinámicos desde wallpaper
+    ├── swaync/
+    │   ├── config.json
+    │   └── style.css
+    ├── matugen.nix              # Colores dinámicos desde wallpaper
+    └── nano.nix                 # Config nano
 ```
-
-## Hosts disponibles
-
-| Host | Descripción | Estado |
-|---|---|---|
-| `nixos-dev` | VM QEMU/KVM sobre CachyOS | ✅ Activo |
-| `nixos-escritorio` | Máquina física con RTX 4060 | 🚧 Pendiente NVIDIA |
 
 ## Uso en una máquina nueva
 
@@ -54,25 +59,48 @@ nixos-config/
 # 2. Clonar el repositorio
 git clone git@github.com:pedrogongar/nixos-config.git /etc/nixos
 
-# 3. Ajustar hardware-configuration.nix para la máquina actual
-nixos-generate-config --show-hardware-config
+# 3. Generar hardware-configuration para la máquina actual (NO commitear)
+nixos-generate-config --show-hardware-config > /etc/nixos/hosts/portatil/hardware-configuration.nix
 
-# 4. Aplicar la configuración
-sudo nixos-rebuild switch --flake /etc/nixos#nixos-dev
+# 4. Aplicar
+sudo nixos-rebuild switch --flake /etc/nixos#nixos-portatil
 ```
 
-## Paleta de colores (Malva)
+## Workspace 1 — decorativo
 
-| Variable | Valor | Uso |
-|---|---|---|
-| `--bg` | `#1a1b26` | Fondo principal |
-| `--accent1` | `#c4a7e7` | Malva — color principal |
-| `--accent2` | `#8aadf4` | Azul |
-| `--accent3` | `#a6da95` | Verde |
-| `--accent4` | `#f0c6c6` | Rosa |
-| `--accent5` | `#8bd5ca` | Teal |
+El workspace 1 actúa como presentación del escritorio con dos ventanas Kitty flotantes fijadas:
 
-Los colores pueden reemplazarse dinámicamente desde cualquier wallpaper con `apply-theme /ruta/wallpaper.jpg`.
+- **cmatrix** (unimatrix con katakana) — esquina izquierda, 50% opacidad
+- **fastfetch** — specs del sistema, 80% opacidad
+
+Ambas son `nofocus` y `pin` — no interfieren con el flujo de trabajo.
+
+## Temas de Starship
+
+```bash
+theme tokyo    # Tokyo Night (default)
+theme dracula  # Dracula
+theme malva    # Malva / Macchiato
+```
+
+## Temas dinámicos desde wallpaper
+
+```bash
+apply-theme ~/wallpapers/mi-fondo.jpg   # genera paleta con Matugen
+default-theme                            # restaura paleta Tokyo Night
+```
+
+## Paleta base (Tokyo Night / Cyberspace)
+
+| Variable   | Valor     | Uso                        |
+|------------|-----------|----------------------------|
+| `--bg`     | `#0d0e17` | Fondo profundo             |
+| `--accent` | `#7dcfff` | Cyan — color principal     |
+| `--blue`   | `#7aa2f7` | Azul workspaces activos    |
+| `--purple` | `#bb9af7` | Malva — memoria, secundario|
+| `--green`  | `#9ece6a` | Verde — batería, éxito     |
+| `--teal`   | `#73daca` | Teal — volumen             |
+| `--orange` | `#e0af68` | Naranja — IP local         |
 
 ## Licencia
 

@@ -1,14 +1,14 @@
 * {
-    bg:           rgba(26, 27, 38, 0.85);
-    bg-alt:       rgba(36, 37, 52, 0.9);
+    bg:           rgba(13, 14, 23, 0.95);
+    bg-alt:       rgba(26, 27, 38, 0.98);
     fg:           #c0caf5;
     fg-dim:       #565f89;
-    accent:       #c4a7e7;
-    accent2:      #8aadf4;
-    border-col:   rgba(196, 167, 231, 0.3);
-    urgent:       #ed8796;
+    accent:       #7dcfff;
+    accent2:      #7aa2f7;
+    border-col:   rgba(125, 207, 255, 0.2);
+    urgent:       #f7768e;
 
-    font: "Outfit 12";
+    font: "JetBrains Mono Nerd Font 12";
 
     background-color: transparent;
     text-color: @fg;
@@ -19,7 +19,7 @@ window {
     padding: 0;
     border: 1px solid;
     border-color: @border-col;
-    border-radius: 14px;
+    border-radius: 10px;
     background-color: @bg;
 }
 
@@ -37,14 +37,14 @@ inputbar {
 }
 
 prompt {
-    font: "Outfit 14";
+    font: "JetBrains Mono Nerd Font 13";
     text-color: @accent;
 }
 
 entry {
-    placeholder: "Buscar...";
+    placeholder: "buscar...";
     placeholder-color: @fg-dim;
-    font: "Outfit 13";
+    font: "JetBrains Mono Nerd Font 12";
 }
 
 listview {
@@ -58,11 +58,11 @@ listview {
 element {
     padding: 10px 14px;
     spacing: 14px;
-    border-radius: 8px;
+    border-radius: 6px;
 }
 
 element selected.normal {
-    background-color: rgba(196, 167, 231, 0.1);
+    background-color: rgba(125, 207, 255, 0.1);
     border: 0 0 0 2px;
     border-color: @accent;
 }
@@ -72,7 +72,7 @@ element-icon {
 }
 
 element-text {
-    font: "Outfit 13";
+    font: "JetBrains Mono Nerd Font 12";
     vertical-align: 0.5;
 }
 
