@@ -149,11 +149,15 @@
       (label :class "tray-icono" :text red-icono))))
 
 (defwidget barra []
-  (centerbox
+  (box
     :orientation "h"
     :class "barra-contenedor"
+    :space-evenly false
+    :spacing 8
     (barra-workspaces)
+    (box :hexpand true)
     (barra-reloj)
+    (box :hexpand true)
     (barra-tray)))
 
 
@@ -284,14 +288,14 @@
   :namespace "eww-barra"
   (barra))
 
- (defwindow escritorio
+(defwindow escritorio
   :monitor 0
   :geometry (geometry
-    :x "12px"
+    :x "-12px"
     :y "66px"
-    :width "240px"
+    :width "232px"
     :anchor "top right")
-  :stacking "overlay"
+  :stacking "bg"
   :exclusive false
   :focusable false
   :namespace "eww-escritorio"
