@@ -53,6 +53,10 @@ in
 {
   home.packages = [ applyTheme defaultTheme ];
 
+  home.file.".config/btop/themes/malva-night.theme".source =
+    config.lib.file.mkOutOfStoreSymlink
+      "${config.home.homeDirectory}/.cache/matugen/colors-btop.theme";
+
   xdg.configFile."matugen/config.toml".text = ''
     [config]
     type = "scheme-tonal-spot"
