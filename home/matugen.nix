@@ -2,6 +2,7 @@
 
 let
   c = import ./colores.nix;
+  strip = s: builtins.substring 1 6 s;
 
   applyTheme = pkgs.writeShellScriptBin "apply-theme" ''
     WALLPAPER="$1"
@@ -40,22 +41,17 @@ let
     cp "$DEFAULTS/colors-swaync.css"    "$OUTPUT/colors-swaync.css"
     cp "$DEFAULTS/colors-hyprlock.conf" "$OUTPUT/colors-hyprlock.conf"
     cp "$DEFAULTS/colors-cava.conf"     "$OUTPUT/colors-cava.conf"
-    cp "$DEFAULTS/colors-btop.theme"    "$OUTPUT/colors-btop.theme"
 
     hyprctl reload 2>/dev/null
     swaync-client -rs 2>/dev/null
     pkill -SIGUSR2 waybar 2>/dev/null
 
-    echo "✓ Paleta Malva Night aplicada"
+    echo "✓ Paleta Serpiente aplicada"
   '';
 
 in
 {
   home.packages = [ applyTheme defaultTheme ];
-
-  home.file.".config/btop/themes/malva-night.theme".source =
-    config.lib.file.mkOutOfStoreSymlink
-      "${config.home.homeDirectory}/.cache/matugen/colors-btop.theme";
 
   xdg.configFile."matugen/config.toml".text = ''
     [config]
@@ -79,24 +75,21 @@ in
     [templates.cava]
     input_path = "~/.config/matugen/templates/cava.conf"
     output_path = "~/.cache/matugen/colors-cava.conf"
-    [templates.btop]
-    input_path = "~/.config/matugen/templates/btop.theme"
-    output_path = "~/.cache/matugen/colors-btop.theme"
   '';
 
-  # ── Defaults Malva Night ──────────────────────────────────────────────
+  # ── Defaults Serpiente ────────────────────────────────────────────────
 
   xdg.configFile."matugen/defaults/colors-hyprland.conf".text = ''
-    $accent = rgb(c4a7e7)
-    $accent2 = rgb(7aa2f7)
-    $bg = rgb(1a1b26)
-    $bg-surface = rgba(1a1b2699)
-    $border = rgba(c4a7e766)
-    $text = rgb(c0caf5)
-    $text-dim = rgb(565f89)
-    $red = rgb(f38ba8)
-    $green = rgb(a6e3a1)
-    $yellow = rgb(f9e2af)
+    $accent = rgb(${strip c.oro})
+    $accent2 = rgb(${strip c.ambar})
+    $bg = rgb(${strip c.base})
+    $bg-surface = rgba(${strip c.base}99)
+    $border = rgba(${strip c.oro}66)
+    $text = rgb(${strip c.text})
+    $text-dim = rgb(${strip c.subtext})
+    $red = rgb(${strip c.rojo})
+    $green = rgb(${strip c.oliva})
+    $yellow = rgb(${strip c.oro})
   '';
 
   xdg.configFile."matugen/defaults/colors-kitty.conf".text = ''
@@ -104,106 +97,66 @@ in
     background ${c.base}
     selection_foreground ${c.text}
     selection_background ${c.surface0}
-    color0  ${c.crust}
-    color1  ${c.red}
-    color2  ${c.green}
-    color3  ${c.yellow}
-    color4  ${c.blue}
-    color5  ${c.malva}
-    color6  ${c.cyan}
+    color0  ${c.mantle}
+    color1  ${c.rojo}
+    color2  ${c.oliva}
+    color3  ${c.oro}
+    color4  ${c.cobre}
+    color5  ${c.ambar}
+    color6  ${c.arena}
     color7  ${c.subtext}
     color8  ${c.surface2}
-    color9  ${c.red}
-    color10 ${c.green}
-    color11 ${c.yellow}
-    color12 ${c.blue}
-    color13 ${c.fuchsia}
-    color14 ${c.teal}
+    color9  ${c.rojo}
+    color10 ${c.oliva}
+    color11 ${c.oro}
+    color12 ${c.cobre}
+    color13 ${c.ambar}
+    color14 ${c.arena}
     color15 ${c.text}
   '';
 
   xdg.configFile."matugen/defaults/colors-rofi.rasi".text = ''
     * {
-        bg: rgba(22, 22, 30, 0.92);
-        bg-alt: rgba(26, 27, 38, 0.98);
+        bg: rgba(${c.base_rgb}, 0.92);
+        bg-alt: rgba(${c.mantle_rgb}, 0.98);
         fg: ${c.text};
-        fg-dim: ${c.surface2};
-        accent: ${c.malva};
-        border-col: rgba(196, 167, 231, 0.2);
-        urgent: ${c.red};
+        fg-dim: ${c.subtext};
+        accent: ${c.oro};
+        border-col: rgba(${c.oro_rgb}, 0.2);
+        urgent: ${c.rojo};
     }
   '';
 
   xdg.configFile."matugen/defaults/colors-swaync.css".text = ''
-    @define-color bg rgba(22, 22, 30, 0.92);
-    @define-color bg-alt rgba(26, 27, 38, 0.98);
-    @define-color border rgba(196, 167, 231, 0.18);
+    @define-color bg rgba(${c.base_rgb}, 0.92);
+    @define-color bg-alt rgba(${c.mantle_rgb}, 0.98);
+    @define-color border rgba(${c.oro_rgb}, 0.18);
     @define-color text ${c.text};
-    @define-color text-dim ${c.surface2};
-    @define-color accent ${c.malva};
-    @define-color urgent ${c.red};
+    @define-color text-dim ${c.subtext};
+    @define-color accent ${c.oro};
+    @define-color urgent ${c.rojo};
   '';
 
   xdg.configFile."matugen/defaults/colors-hyprlock.conf".text = ''
-    $fg = rgba(192, 202, 245, 1.0)
-    $fg-dim = rgba(86, 95, 137, 1.0)
-    $accent = rgba(196, 167, 231, 0.3)
-    $bg = rgba(26, 27, 38, 0.75)
-    $green = rgba(166, 227, 161, 0.5)
-    $red = rgba(243, 139, 168, 0.5)
+    $fg = rgba(${c.text_rgb}, 1.0)
+    $fg-dim = rgba(${c.subtext_rgb}, 1.0)
+    $accent = rgba(${c.oro_rgb}, 0.3)
+    $bg = rgba(${c.base_rgb}, 0.75)
+    $green = rgba(${c.oliva_rgb}, 0.5)
+    $red = rgba(${c.rojo_rgb}, 0.5)
   '';
 
   xdg.configFile."matugen/defaults/colors-cava.conf".text = ''
     [color]
     gradient = 1
     gradient_count = 4
-    gradient_color_1 = '${c.malva}'
-    gradient_color_2 = '${c.blue}'
-    gradient_color_3 = '${c.teal}'
-    gradient_color_4 = '${c.green}'
+    gradient_color_1 = '${c.oro}'
+    gradient_color_2 = '${c.ambar}'
+    gradient_color_3 = '${c.rojo}'
+    gradient_color_4 = '${c.sangre}'
   '';
 
-  xdg.configFile."matugen/defaults/colors-btop.theme".text = ''
-    theme[main_bg]="${c.base}"
-    theme[main_fg]="${c.text}"
-    theme[title]="${c.text}"
-    theme[hi_fg]="${c.malva}"
-    theme[selected_bg]="${c.surface0}"
-    theme[selected_fg]="${c.text}"
-    theme[inactive_fg]="${c.surface2}"
-    theme[proc_misc]="${c.blue}"
-    theme[cpu_box]="${c.malva}"
-    theme[mem_box]="${c.blue}"
-    theme[net_box]="${c.green}"
-    theme[proc_box]="${c.teal}"
-    theme[div_line]="${c.surface2}"
-    theme[temp_start]="${c.blue}"
-    theme[temp_mid]="${c.yellow}"
-    theme[temp_end]="${c.red}"
-    theme[cpu_start]="${c.malva}"
-    theme[cpu_mid]="${c.blue}"
-    theme[cpu_end]="${c.teal}"
-    theme[free_start]="${c.green}"
-    theme[free_mid]="${c.blue}"
-    theme[free_end]="${c.malva}"
-    theme[cached_start]="${c.teal}"
-    theme[cached_mid]="${c.blue}"
-    theme[cached_end]="${c.malva}"
-    theme[available_start]="${c.green}"
-    theme[available_mid]="${c.blue}"
-    theme[available_end]="${c.malva}"
-    theme[used_start]="${c.malva}"
-    theme[used_mid]="${c.blue}"
-    theme[used_end]="${c.red}"
-    theme[download_start]="${c.green}"
-    theme[download_mid]="${c.blue}"
-    theme[download_end]="${c.malva}"
-    theme[upload_start]="${c.rosewater}"
-    theme[upload_mid]="${c.malva}"
-    theme[upload_end]="${c.blue}"
-  '';
-
-  # ── Templates matugen (sin cambios) ───────────────────────────────────
+  # ── Templates matugen (placeholders, sin cambios) ─────────────────────
 
   xdg.configFile."matugen/templates/hyprland.conf".text = ''
     $accent = rgb({{colors.primary.default.hex_stripped}})
@@ -280,45 +233,5 @@ in
     gradient_color_2 = '#{{colors.secondary.default.hex_stripped}}'
     gradient_color_3 = '#{{colors.tertiary.default.hex_stripped}}'
     gradient_color_4 = '#{{colors.tertiary_container.default.hex_stripped}}'
-  '';
-
-  xdg.configFile."matugen/templates/btop.theme".text = ''
-    theme[main_bg]="#{{colors.surface.default.hex_stripped}}"
-    theme[main_fg]="#{{colors.on_surface.default.hex_stripped}}"
-    theme[title]="#{{colors.on_surface.default.hex_stripped}}"
-    theme[hi_fg]="#{{colors.primary.default.hex_stripped}}"
-    theme[selected_bg]="#{{colors.surface_container_high.default.hex_stripped}}"
-    theme[selected_fg]="#{{colors.on_surface.default.hex_stripped}}"
-    theme[inactive_fg]="#{{colors.on_surface_variant.default.hex_stripped}}"
-    theme[proc_misc]="#{{colors.secondary.default.hex_stripped}}"
-    theme[cpu_box]="#{{colors.primary.default.hex_stripped}}"
-    theme[mem_box]="#{{colors.secondary.default.hex_stripped}}"
-    theme[net_box]="#{{colors.tertiary.default.hex_stripped}}"
-    theme[proc_box]="#{{colors.tertiary_container.default.hex_stripped}}"
-    theme[div_line]="#{{colors.on_surface_variant.default.hex_stripped}}"
-    theme[temp_start]="#{{colors.secondary.default.hex_stripped}}"
-    theme[temp_mid]="#{{colors.primary.default.hex_stripped}}"
-    theme[temp_end]="#{{colors.error.default.hex_stripped}}"
-    theme[cpu_start]="#{{colors.primary.default.hex_stripped}}"
-    theme[cpu_mid]="#{{colors.secondary.default.hex_stripped}}"
-    theme[cpu_end]="#{{colors.tertiary.default.hex_stripped}}"
-    theme[free_start]="#{{colors.tertiary.default.hex_stripped}}"
-    theme[free_mid]="#{{colors.secondary.default.hex_stripped}}"
-    theme[free_end]="#{{colors.primary.default.hex_stripped}}"
-    theme[cached_start]="#{{colors.tertiary_container.default.hex_stripped}}"
-    theme[cached_mid]="#{{colors.secondary.default.hex_stripped}}"
-    theme[cached_end]="#{{colors.primary.default.hex_stripped}}"
-    theme[available_start]="#{{colors.tertiary.default.hex_stripped}}"
-    theme[available_mid]="#{{colors.secondary.default.hex_stripped}}"
-    theme[available_end]="#{{colors.primary.default.hex_stripped}}"
-    theme[used_start]="#{{colors.primary.default.hex_stripped}}"
-    theme[used_mid]="#{{colors.secondary.default.hex_stripped}}"
-    theme[used_end]="#{{colors.error.default.hex_stripped}}"
-    theme[download_start]="#{{colors.tertiary.default.hex_stripped}}"
-    theme[download_mid]="#{{colors.secondary.default.hex_stripped}}"
-    theme[download_end]="#{{colors.primary.default.hex_stripped}}"
-    theme[upload_start]="#{{colors.error.default.hex_stripped}}"
-    theme[upload_mid]="#{{colors.primary.default.hex_stripped}}"
-    theme[upload_end]="#{{colors.secondary.default.hex_stripped}}"
   '';
 }

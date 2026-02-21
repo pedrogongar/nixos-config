@@ -18,6 +18,7 @@
     ./vscode.nix
     ./waybar.nix
     ./spicetify.nix
+    ./btop.nix
   ];
 
   home.username     = "pedro";

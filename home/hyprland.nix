@@ -2,6 +2,7 @@
 
 let
   c = import ./colores.nix;
+  strip = s: builtins.substring 1 6 s;
 
   monitorScript = pkgs.writeShellScriptBin "monitor-switch" ''
     OPTIONS="  Solo portátil\n  Externos (portátil cerrado)\n  Todo activo"
@@ -49,47 +50,49 @@ in
       ];
 
       general = {
-        gaps_in     = 6;
-        gaps_out    = 12;
-        border_size = 2;
-        "col.active_border"   = "rgba(c4a7e7ff) rgba(7aa2f7ff) 45deg";
-        "col.inactive_border" = "rgba(414868aa)";
+        gaps_in     = 4;
+        gaps_out    = 4;
+        border_size = 0;
+        "col.active_border"   = "rgba(${strip c.oro}ff)";
+        "col.inactive_border" = "rgba(${strip c.surface1}66)";
         layout = "dwindle";
       };
 
       decoration = {
-        rounding         = 10;
+        rounding         = 16;
         active_opacity   = 1.0;
-        inactive_opacity = 0.92;
+        inactive_opacity = 0.85;
         blur = {
-          enabled    = true;
-          size       = 6;
-          passes     = 3;
+          enabled           = true;
+          size              = 4;
+          passes            = 3;
+          noise             = 0.02;
+          brightness        = 1.0;
+          contrast          = 1.0;
           new_optimizations = true;
-          xray       = false;
+          xray              = false;
+          popups            = true;
+          special           = true;
         };
         shadow = {
-          enabled      = true;
-          range        = 12;
-          render_power = 2;
-          color        = "rgba(12121a99)";
+          enabled = true;
+          range   = 8;
+          color   = "rgba(00000066)";
         };
       };
 
       animations = {
         enabled = true;
         bezier = [
-          "smoothIn,  0.25, 1,    0.5,   1"
-          "smoothOut, 0.36, 0,    0.66, -0.56"
-          "linear,    0,    0,    1,     1"
+          "zoom, 0.05, 0.7, 0.1, 1.0"
         ];
         animation = [
-          "windows,     1, 3, smoothIn,  slide"
-          "windowsOut,  1, 3, smoothOut, slide"
-          "windowsMove, 1, 3, smoothIn,  slide"
-          "border,      1, 5, linear"
-          "fade,        1, 3, smoothIn"
-          "workspaces,  1, 4, smoothIn,  slide"
+          "windows,     1, 3,   zoom, popin 90%"
+          "windowsIn,   1, 3,   zoom, popin 90%"
+          "windowsOut,  1, 2.6, zoom, popin 90%"
+          "windowsMove, 1, 3.5, zoom, slide"
+          "fade,        1, 3,   zoom"
+          "workspaces,  1, 3,   zoom, slide"
         ];
       };
 
@@ -192,6 +195,17 @@ in
       windowrule = opacity 0.80 0.80,     match:class ^(fastfetch-ws1)$
       windowrule = workspace 1 silent,    match:class ^(fastfetch-ws1)$
       windowrule = border_size 0,         match:class ^(fastfetch-ws1)$
+
+      windowrule = float on,              match:class ^(mpv)$
+      windowrule = size 640 360,          match:class ^(mpv)$
+      windowrule = center on,             match:class ^(mpv)$
+      windowrule = opacity 1.0 1.0,       match:class ^(mpv)$
+
+      windowrule = opacity 0.88 1,        match:class ^(codium|VSCodium|code|Code)$
+      windowrule = opacity 0.9 1,         match:class ^(thunar|Thunar)$
+
+      layerrule = blur on,                match:namespace swaync-control-center
+      layerrule = blur on,                match:namespace swaync-notification-window
     '';
   };
 
@@ -214,5 +228,7 @@ in
     thunar
     jq
     socat
+    bluez
+    blueman
   ];
 }

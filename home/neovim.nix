@@ -1,6 +1,7 @@
 { config, pkgs, ... }:
 
 let
+  c = import ./colores.nix;
   vueTypescriptPlugin = pkgs.vue-language-server + "/lib/language-tools/packages/typescript-plugin";
 in
 {
@@ -11,10 +12,8 @@ in
     vimAlias = true;
 
     plugins = with pkgs.vimPlugins; [
-      # Tema
       catppuccin-nvim
 
-      # Autocompletado
       nvim-cmp
       cmp-nvim-lsp
       cmp-buffer
@@ -25,18 +24,14 @@ in
       nvim-lspconfig
       fidget-nvim
 
-      # Navegación
       telescope-nvim
       plenary-nvim
       nvim-web-devicons
 
-      # Sintaxis
       nvim-treesitter.withAllGrammars
 
-      # Explorador de archivos
       oil-nvim
 
-      # UI
       lualine-nvim
       bufferline-nvim
       indent-blankline-nvim
@@ -45,10 +40,8 @@ in
       trouble-nvim
       dressing-nvim
 
-      # Git
       gitsigns-nvim
 
-      # Utilidades
       nvim-autopairs
       nvim-ts-autotag
       comment-nvim
@@ -90,6 +83,36 @@ in
       require("catppuccin").setup({
         flavour = "mocha",
         transparent_background = true,
+        color_overrides = {
+          mocha = {
+            rosewater = "${c.text}",
+            flamingo  = "${c.ambar}",
+            pink      = "${c.rojo}",
+            mauve     = "${c.oro}",
+            red       = "${c.rojo}",
+            maroon    = "${c.sangre}",
+            peach     = "${c.ambar}",
+            yellow    = "${c.oro}",
+            green     = "${c.oliva}",
+            teal      = "${c.arena}",
+            sky       = "${c.arena}",
+            sapphire  = "${c.arena}",
+            blue      = "${c.cobre}",
+            lavender  = "${c.oro}",
+            text      = "${c.text}",
+            subtext1  = "${c.subtext}",
+            subtext0  = "${c.subtext}",
+            overlay2  = "#5a4a3a",
+            overlay1  = "#5a4a3a",
+            overlay0  = "#5a4a3a",
+            surface2  = "${c.surface2}",
+            surface1  = "${c.surface1}",
+            surface0  = "${c.surface0}",
+            base      = "${c.base}",
+            mantle    = "${c.mantle}",
+            crust     = "${c.crust}",
+          },
+        },
         integrations = {
           cmp = true,
           gitsigns = true,
@@ -344,7 +367,7 @@ in
           },
         },
       })
-     
+
       -- Keymaps LSP
       vim.api.nvim_create_autocmd("LspAttach", {
         callback = function(ev)
@@ -371,15 +394,12 @@ in
 
       local map = vim.keymap.set
 
-      -- Explorador
       map("n", "<leader>e", "<cmd>Oil<cr>", { desc = "Explorador" })
 
-      -- Buffers
       map("n", "<S-l>", "<cmd>BufferLineCycleNext<cr>", { desc = "Buffer siguiente" })
       map("n", "<S-h>", "<cmd>BufferLineCyclePrev<cr>", { desc = "Buffer anterior" })
       map("n", "<leader>bd", "<cmd>bdelete<cr>", { desc = "Cerrar buffer" })
 
-      -- Splits
       map("n", "<leader>sv", "<cmd>vsplit<cr>", { desc = "Split vertical" })
       map("n", "<leader>sh", "<cmd>split<cr>", { desc = "Split horizontal" })
       map("n", "<C-h>", "<C-w>h", { desc = "Ir split izquierda" })
@@ -387,35 +407,27 @@ in
       map("n", "<C-k>", "<C-w>k", { desc = "Ir split arriba" })
       map("n", "<C-l>", "<C-w>l", { desc = "Ir split derecha" })
 
-      -- Trouble
       map("n", "<leader>xx", "<cmd>Trouble diagnostics toggle<cr>", { desc = "Diagnósticos" })
       map("n", "<leader>xd", "<cmd>Trouble diagnostics toggle filter.buf=0<cr>", { desc = "Diagnósticos buffer" })
 
-      -- Todo
       map("n", "<leader>xt", "<cmd>TodoTrouble<cr>", { desc = "TODOs" })
 
-      -- Flash
       map({ "n", "x", "o" }, "s", function() require("flash").jump() end, { desc = "Flash jump" })
 
-      -- Guardar y salir rápido
       map("n", "<leader>w", "<cmd>w<cr>", { desc = "Guardar" })
       map("n", "<leader>q", "<cmd>q<cr>", { desc = "Salir" })
       map("n", "<leader>wq", "<cmd>wq<cr>", { desc = "Guardar y salir" })
 
-      -- Mover líneas
       map("v", "J", ":m '>+1<cr>gv=gv", { desc = "Mover línea abajo" })
       map("v", "K", ":m '<-2<cr>gv=gv", { desc = "Mover línea arriba" })
 
-      -- Sin yank al pegar en visual
       map("v", "p", '"_dP', { desc = "Pegar sin yank" })
 
-      -- Limpiar búsqueda
       map("n", "<Esc>", "<cmd>nohlsearch<cr>", { desc = "Limpiar búsqueda" })
     '';
   };
 
   home.packages = with pkgs; [
-    # LSP servers
     nodePackages.typescript-language-server
     vue-language-server
     omnisharp-roslyn
@@ -427,7 +439,6 @@ in
     nixpkgs-fmt
     nodePackages.typescript
 
-    # Herramientas Telescope
     ripgrep
     fd
   ];

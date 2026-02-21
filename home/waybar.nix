@@ -2,6 +2,70 @@
 
 let
   c = import ./colores.nix;
+
+  volumenScript = pkgs.writeShellScriptBin "waybar-volumen" ''
+    obtener_volumen() {
+      vol=$(${pkgs.wireplumber}/bin/wpctl get-volume @DEFAULT_AUDIO_SINK@ 2>/dev/null)
+      if echo "$vol" | grep -q "MUTED"; then
+        echo "󰝟 mute"
+      else
+        pct=$(echo "$vol" | ${pkgs.gawk}/bin/awk '{printf "%.0f", $2 * 100}')
+        echo "󰕾 $pct%"
+      fi
+    }
+
+    while true; do
+      obtener_volumen
+      sleep 0.3
+    done
+  '';
+
+  redScript = pkgs.writeShellScriptBin "waybar-red" ''
+    wifi_estado=$(${pkgs.networkmanager}/bin/nmcli -t -f TYPE,STATE device 2>/dev/null | grep "^wifi:" | cut -d: -f2)
+    eth_estado=$(${pkgs.networkmanager}/bin/nmcli -t -f TYPE,STATE device 2>/dev/null | grep "^ethernet:" | cut -d: -f2)
+
+    if [ "$wifi_estado" = "connected" ]; then
+      red="󰤨"
+    elif [ "$eth_estado" = "connected" ]; then
+      red="󰈁"
+    else
+      red="󰤭"
+    fi
+
+    bt="󰂲"
+    if command -v bluetoothctl >/dev/null 2>&1; then
+      bt_power=$(bluetoothctl show 2>/dev/null | grep "Powered:" | ${pkgs.gawk}/bin/awk '{print $2}')
+      if [ "$bt_power" = "yes" ]; then
+        bt="󰂯"
+        dispositivos=$(echo -e 'devices\nquit' | bluetoothctl 2>/dev/null | grep "^Device" | ${pkgs.gawk}/bin/awk '{print $2}')
+        for mac in $dispositivos; do
+          if echo -e "info $mac\nquit" | bluetoothctl 2>/dev/null | grep -q "Connected: yes"; then
+            bt="󰂱"
+            break
+          fi
+        done
+      fi
+    fi
+
+    echo "$red $bt"
+  '';
+
+  microfonoScript = pkgs.writeShellScriptBin "waybar-microfono" ''
+    obtener_micro() {
+      vol=$(${pkgs.wireplumber}/bin/wpctl get-volume @DEFAULT_AUDIO_SOURCE@ 2>/dev/null)
+      if echo "$vol" | grep -q "MUTED"; then
+        echo "󰍭"
+      else
+        echo "󰍬"
+      fi
+    }
+
+    while true; do
+      obtener_micro
+      sleep 0.5
+    done
+  '';
+
 in
 {
   programs.waybar = {
@@ -9,69 +73,83 @@ in
     settings = [{
       layer    = "top";
       position = "top";
-      height   = 36;
-      spacing  = 0;
+      height   = 28;
+      margin-top    = 0;
+      margin-left   = 0;
+      margin-right  = 0;
+      spacing  = 6;
 
-      modules-left   = [ "hyprland/workspaces" ];
-      modules-center = [ "clock" ];
+      modules-left   = [ "custom/nixos" "clock" "hyprland/workspaces" ];
+      modules-center = [ "hyprland/window" ];
       modules-right  = [
-        "cpu"
-        "memory"
-        "disk"
-        "network"
-        "pulseaudio"
-        "custom/power"
+        "battery"
+        "custom/volumen"
+        "custom/microfono"
+        "custom/red"
       ];
 
+      "custom/nixos" = {
+        format         = "󱄅";
+        on-click       = "rofi -show drun";
+        on-click-right = "wlogout --buttons-per-row 2";
+        tooltip        = false;
+      };
+
+      clock = {
+        format         = "󰥔 {:%I:%M %p}";
+        format-alt     = "󰃭 {:%A %d de %B}";
+        tooltip-format = "<tt>{calendar}</tt>";
+        interval       = 60;
+      };
+
       "hyprland/workspaces" = {
-        format         = "{id}";
+        format         = "{name}";
         on-click       = "activate";
         sort-by-number = true;
         all-outputs    = true;
       };
 
-      clock = {
-        format         = "󰅐 {:%H:%M}";
-        format-alt     = "󰃭 {:%A %d de %B}";
-        tooltip-format = "<tt>{calendar}</tt>";
+      "hyprland/window" = {
+        format     = "{title}";
+        max-length = 50;
+        rewrite = {
+          "(.*) — Mozilla Firefox" = "Firefox — $1";
+          "(.*) - kitty"           = "kitty — $1";
+        };
       };
 
-      cpu = {
-        format   = "󰻠 {usage}%";
-        interval = 5;
-      };
-
-      memory = {
-        format   = "󰍛 {percentage}%";
-        interval = 5;
-      };
-
-      disk = {
-        format   = "󰋊 {percentage_used}%";
-        path     = "/";
+      battery = {
+        format           = "󰁹 {capacity}%";
+        format-charging  = "󰂄 {capacity}%";
+        format-plugged   = "󰚥 {capacity}%";
+        format-full      = "󰁹 {capacity}%";
+        format-icons     = [ "󰁺" "󰁻" "󰁼" "󰁽" "󰁾" "󰁿" "󰂀" "󰂁" "󰂂" "󰁹" ];
+        states = {
+          warning  = 30;
+          critical = 15;
+        };
+        tooltip  = false;
         interval = 30;
       };
 
-      network = {
-        format-wifi         = "󰤨 {signalStrength}%";
-        format-ethernet     = "󰈁 {ipaddr}";
-        format-disconnected = "󰤭 ";
-        tooltip-format      = "{ifname}: {ipaddr}/{cidr}";
-        interval            = 10;
+      "custom/volumen" = {
+        exec           = "${volumenScript}/bin/waybar-volumen";
+        on-click       = "${pkgs.wireplumber}/bin/wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle";
+        on-scroll-up   = "${pkgs.wireplumber}/bin/wpctl set-volume @DEFAULT_AUDIO_SINK@ 2%+";
+        on-scroll-down = "${pkgs.wireplumber}/bin/wpctl set-volume @DEFAULT_AUDIO_SINK@ 2%-";
+        tooltip        = false;
       };
 
-      pulseaudio = {
-        format       = "{icon} {volume}%";
-        format-muted = "󰝟 ";
-        format-icons = {
-          default = [ "󰕿" "󰖀" "󰕾" ];
-        };
-        on-click = "pavucontrol";
+      "custom/microfono" = {
+        exec     = "${microfonoScript}/bin/waybar-microfono";
+        on-click = "${pkgs.wireplumber}/bin/wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle";
+        tooltip  = false;
       };
 
-      "custom/power" = {
-        format   = "⏻";
-        on-click = "wlogout --buttons-per-row 2";
+      "custom/red" = {
+        exec     = "${redScript}/bin/waybar-red";
+        interval = 5;
+        on-click = "nm-connection-editor";
         tooltip  = false;
       };
     }];
@@ -79,97 +157,90 @@ in
     style = ''
       * {
         font-family: "JetBrains Mono Nerd Font", monospace;
-        font-size: 12px;
+        font-size: 11px;
+        font-weight: bold;
         min-height: 0;
+        border: none;
+        background: transparent;
+        margin: 0;
+        padding: 0;
       }
 
       window#waybar {
-        background: rgba(22, 22, 30, 0.88);
-        border-bottom: 1px solid rgba(196, 167, 231, 0.15);
-        color: ${c.text};
+        background: ${c.base};
+        color: ${c.oro};
       }
 
       tooltip {
-        background: ${c.mantle};
-        border: 1px solid rgba(196, 167, 231, 0.2);
-        border-radius: 8px;
         color: ${c.text};
+        background: rgba(${c.base_rgb}, 0.8);
+        border-radius: 12px;
+      }
+
+      #custom-nixos,
+      #clock,
+      #workspaces,
+      #window,
+      #battery,
+      #custom-volumen,
+      #custom-microfono,
+      #custom-red {
+        background: transparent;
+        padding: 3px 12px;
+        margin: 0;
+        color: ${c.ambar};
+      }
+
+      #custom-nixos {
+        font-size: 20px;
+        color: ${c.oro};
+      }
+
+      #window {
+        color: rgba(${c.text_rgb}, 0.7);
+        font-weight: 600;
+      }
+
+      #workspaces {
+        padding: 3px 6px;
       }
 
       #workspaces button {
-        padding: 0 10px;
-        margin: 4px 2px;
-        border-radius: 6px;
-        color: ${c.surface2};
         background: transparent;
-        border: none;
-        font-size: 13px;
-        font-weight: 600;
-        transition: all 0.2s ease;
+        color: rgba(${c.text_rgb}, 0.7);
+        padding: 2px 6px;
+        margin: 0 1px;
+        border-radius: 8px;
+        transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
       }
 
       #workspaces button.active {
-        color: ${c.crust};
-        background: ${c.malva};
+        background: rgba(${c.oro_rgb}, 0.75);
+        color: ${c.base};
+        padding: 2px 16px;
+        border-radius: 16px;
+      }
+
+      #workspaces button.visible {
+        color: rgba(${c.text_rgb}, 0.7);
+        transition: all 0.3s ease;
       }
 
       #workspaces button:hover {
+        background: rgba(${c.oro_rgb}, 0.4);
         color: ${c.text};
-        background: rgba(196, 167, 231, 0.15);
       }
 
-      #clock {
-        color: ${c.text};
-        font-weight: 600;
+      #battery.charging {
+        color: ${c.oliva};
       }
 
-      #cpu {
-        color: ${c.teal};
+      #battery.warning:not(.charging) {
+        color: ${c.ambar};
       }
 
-      #memory {
-        color: ${c.malva};
-      }
-
-      #disk {
-        color: ${c.peach};
-      }
-
-      #network {
-        color: ${c.cyan};
-      }
-
-      #network.disconnected {
-        color: ${c.red};
-      }
-
-      #pulseaudio {
-        color: ${c.blue};
-      }
-
-      #pulseaudio.muted {
-        color: ${c.surface2};
-      }
-
-      #custom-power {
-        color: ${c.red};
-        padding: 0 12px 0 8px;
-        margin: 4px 0;
-        font-size: 14px;
-      }
-
-      #custom-power:hover {
-        color: ${c.fuchsia};
-      }
-
-      #cpu,
-      #memory,
-      #disk,
-      #network,
-      #pulseaudio,
-      #clock {
-        padding: 0 10px;
-        margin: 4px 0;
+      #battery.critical:not(.charging) {
+        color: ${c.rojo};
       }
     '';
   };

@@ -18,12 +18,12 @@ in
         font-family: "JetBrains Mono Nerd Font", monospace;
         font-size: 13px;
         color: ${c.text};
-        background-color: rgba(18, 18, 26, 0.88);
+        background-color: rgba(${c.base_rgb}, 0.88);
       }
 
       button {
-        background-color: rgba(26, 27, 38, 0.75);
-        border: 1px solid rgba(196, 167, 231, 0.18);
+        background-color: rgba(${c.mantle_rgb}, 0.75);
+        border: 1px solid rgba(${c.oro_rgb}, 0.18);
         border-radius: 10px;
         margin: 8px;
         background-repeat: no-repeat;
@@ -34,14 +34,14 @@ in
       }
 
       button:hover {
-        background-color: rgba(196, 167, 231, 0.12);
-        border-color: ${c.malva};
+        background-color: rgba(${c.oro_rgb}, 0.12);
+        border-color: ${c.oro};
       }
 
       button:focus {
-        background-color: rgba(196, 167, 231, 0.18);
-        border-color: ${c.malva};
-        box-shadow: 0 0 12px rgba(196, 167, 231, 0.2);
+        background-color: rgba(${c.oro_rgb}, 0.18);
+        border-color: ${c.oro};
+        box-shadow: 0 0 12px rgba(${c.oro_rgb}, 0.2);
       }
 
       #suspend {

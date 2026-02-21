@@ -29,14 +29,11 @@ in
     enable = true;
     settings = {
       format = builtins.concatStringsSep "" [
-        "[](${c.malva})"
+        "$custom"
         "$username"
-        "[](fg:${c.malva} bg:${c.blue})"
         "$directory"
-        "[](fg:${c.blue} bg:${c.surface0})"
         "$git_branch"
         "$git_status"
-        "[](${c.surface0}) "
         "$nodejs"
         "$dotnet"
         "$python"
@@ -45,23 +42,30 @@ in
         "$character"
       ];
 
+      custom.capricorn = {
+        command = "echo 󰪀";
+        when = "true";
+        format = "[($output )](bold ${c.oro})";
+        shell = ["sh"];
+      };
+
       username = {
         show_always = true;
-        format      = "[  $user ](bold fg:${c.crust} bg:${c.malva})";
+        format = "[$user](bold ${c.ambar}) ";
       };
 
       directory = {
-        format            = "[ $path ](bold fg:${c.crust} bg:${c.blue})";
+        format = "[$path](${c.arena}) ";
         truncation_length = 3;
         truncation_symbol = "…/";
       };
 
       git_branch = {
-        format = "[ 󰪀 $branch ](fg:${c.text} bg:${c.surface0})";
+        format = "[$branch](${c.cobre}) ";
       };
 
       git_status = {
-        format     = "[$all_status$ahead_behind ](fg:${c.yellow} bg:${c.surface0})";
+        format = "[$all_status$ahead_behind](${c.rojo}) ";
         ahead      = "⇡";
         behind     = "⇣";
         diverged   = "⇕";
@@ -73,30 +77,30 @@ in
       };
 
       nodejs = {
-        format       = "[ $version ](${c.green})";
+        format       = "[ $version](${c.oliva}) ";
         detect_files = [ "package.json" ".node-version" ];
       };
 
       dotnet = {
-        format = "[󰌛 $version ](${c.blue})";
+        format = "[󰌛 $version](${c.cobre}) ";
       };
 
       python = {
-        format = "[ $version ](${c.yellow})";
+        format = "[ $version](${c.oro}) ";
       };
 
       nix_shell = {
-        format = "[󱄅 nix ](${c.cyan})";
+        format = "[󱄅 nix](${c.arena}) ";
       };
 
       cmd_duration = {
-        format   = "[ $duration ](${c.peach})";
+        format   = "[ $duration](${c.subtext}) ";
         min_time = 2000;
       };
 
       character = {
-        success_symbol = "[❯](bold ${c.malva})";
-        error_symbol   = "[❯](bold ${c.red})";
+        success_symbol = "[❯](bold ${c.oro})";
+        error_symbol   = "[❯](bold ${c.rojo})";
       };
     };
   };
@@ -105,16 +109,16 @@ in
     enable               = true;
     enableZshIntegration = true;
     defaultOptions = [
-      "--color=bg+:${c.surface0},bg:${c.base},spinner:${c.malva},hl:${c.cyan}"
-      "--color=fg:${c.subtext},header:${c.cyan},info:${c.malva},pointer:${c.malva}"
-      "--color=marker:${c.green},fg+:${c.text},prompt:${c.malva},hl+:${c.cyan}"
+      "--color=bg+:${c.surface0},bg:${c.base},spinner:${c.oro},hl:${c.arena}"
+      "--color=fg:${c.subtext},header:${c.arena},info:${c.oro},pointer:${c.oro}"
+      "--color=marker:${c.oliva},fg+:${c.text},prompt:${c.oro},hl+:${c.arena}"
       "--color=border:${c.surface1}"
     ];
   };
 
   programs.bat = {
     enable = true;
-    config.theme = "Catppuccin Mocha";
+    config.theme = "ansi";
   };
 
   programs.eza.enable = true;
