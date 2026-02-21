@@ -63,7 +63,7 @@ in
         active_opacity   = 1.0;
         inactive_opacity = 0.85;
         blur = {
-          enabled           = true;
+          enabled           = false;
           size              = 4;
           passes            = 3;
           noise             = 0.02;
@@ -174,25 +174,34 @@ in
         "swww-daemon && sleep 1 && swww img ~/wallpapers/default.jpg"
         "swaync"
         "waybar"
-        "kitty --class cmatrix-ws1 -e unimatrix -s 96 -f -u Japanese"
-        "kitty --class fastfetch-ws1 -e bash -c 'fastfetch --config ~/.config/fastfetch/config.jsonc; sleep infinity'"
+        "kitty --class bienvenida-ws1 -o background_opacity=0.0"
+        "kitty --class fastfetch-ws1 -o background_opacity=0.75 -e ~/.config/fastfetch/fastfetch-bienvenida.sh"
+        "kitty --class unimatrix-ws1 -o background_opacity=0.75 -e unimatrix -s 96 -c yellow"
       ];
     };
 
     extraConfig = ''
-      windowrule = float on,              match:class ^(cmatrix-ws1)$
-      windowrule = pin on,                match:class ^(cmatrix-ws1)$
-      windowrule = move 20 60,            match:class ^(cmatrix-ws1)$
-      windowrule = size 360 480,          match:class ^(cmatrix-ws1)$
-      windowrule = opacity 0.50 0.50,     match:class ^(cmatrix-ws1)$
-      windowrule = workspace 1 silent,    match:class ^(cmatrix-ws1)$
-      windowrule = border_size 0,         match:class ^(cmatrix-ws1)$
+      # ── Pantalla bienvenida (ws1) ──────────────────────────────────
+      # VM 1280x800 (10px margins) — para 1920x1080:
+      #   bienvenida: move 10 38,   size 940 1032
+      #   unimatrix:  move 960 38,  size 950 511
+      #   fastfetch:  move 960 559, size 950 511
+
+      windowrule = float on,              match:class ^(bienvenida-ws1)$
+      windowrule = move 10 38,            match:class ^(bienvenida-ws1)$
+      windowrule = size 620 752,          match:class ^(bienvenida-ws1)$
+      windowrule = workspace 1 silent,    match:class ^(bienvenida-ws1)$
+      windowrule = border_size 0,         match:class ^(bienvenida-ws1)$
+
+      windowrule = float on,              match:class ^(unimatrix-ws1)$
+      windowrule = move 640 38,           match:class ^(unimatrix-ws1)$
+      windowrule = size 630 371,          match:class ^(unimatrix-ws1)$
+      windowrule = workspace 1 silent,    match:class ^(unimatrix-ws1)$
+      windowrule = border_size 0,         match:class ^(unimatrix-ws1)$
 
       windowrule = float on,              match:class ^(fastfetch-ws1)$
-      windowrule = pin on,                match:class ^(fastfetch-ws1)$
-      windowrule = move 400 60,           match:class ^(fastfetch-ws1)$
-      windowrule = size 500 340,          match:class ^(fastfetch-ws1)$
-      windowrule = opacity 0.80 0.80,     match:class ^(fastfetch-ws1)$
+      windowrule = move 640 419,          match:class ^(fastfetch-ws1)$
+      windowrule = size 630 371,          match:class ^(fastfetch-ws1)$
       windowrule = workspace 1 silent,    match:class ^(fastfetch-ws1)$
       windowrule = border_size 0,         match:class ^(fastfetch-ws1)$
 
