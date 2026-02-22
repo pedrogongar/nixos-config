@@ -22,6 +22,7 @@ in
       cat     = "bat";
       cd      = "z";
       lg      = "lazygit";
+      ld      = "lazydocker";
     };
   };
 
@@ -135,5 +136,12 @@ in
 
   home.packages = with pkgs; [
     lazygit
+    ripgrep
+    fd
+    tldr
+    ncdu
+    duf
+    lazydocker
+    quickemu
   ];
 }

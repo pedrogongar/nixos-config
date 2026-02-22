@@ -16,6 +16,13 @@ in
 
     kdePackages.kcolorchooser
     kdePackages.kate
+
+    xfce.thunar
+    xfce.thunar-archive-plugin
+    xfce.thunar-volman
+
+    bruno
+    wireshark
   ];
 
   programs.firefox = {

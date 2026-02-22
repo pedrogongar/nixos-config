@@ -49,5 +49,11 @@
     dotnet-sdk_8
 
     docker-compose
+
+    jq
+    httpie
+    gh
+    dive
+    nmap
   ];
 }

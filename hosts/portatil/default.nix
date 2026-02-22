@@ -2,10 +2,11 @@
 
 {
   imports = [
-    ./hardware-configuration.nix  # generado con: nixos-generate-config
+    ./hardware-configuration.nix
     ../../modules/base.nix
     ../../modules/docker.nix
     ../../modules/desktop.nix
+    ../../modules/virtualisation.nix
   ];
 
   boot.loader.systemd-boot.enable      = true;
@@ -16,7 +17,7 @@
 
   users.users.pedro = {
     isNormalUser = true;
-    extraGroups  = [ "wheel" "docker" "video" "audio" "networkmanager" ];
+    extraGroups  = [ "wheel" "docker" "video" "audio" "networkmanager" "libvirtd" ];
     shell        = pkgs.zsh;
   };
 
