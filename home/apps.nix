@@ -7,6 +7,7 @@ in
   home.packages = with pkgs; [
     discord
     telegram-desktop
+    zapzap
 
     vlc
 
@@ -25,7 +26,7 @@ in
     wireshark
   ];
 
-  programs.firefox = {
+  programs.zen-browser = {
     enable = true;
     profiles.default = {
       isDefault = true;

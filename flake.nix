@@ -11,17 +11,22 @@
       url = "github:Gerg-L/spicetify-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    zen-browser = {
+      url = "github:0xc000022070/zen-browser-flake";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  outputs = { self, nixpkgs, home-manager, spicetify-nix }: let
+  outputs = { self, nixpkgs, home-manager, spicetify-nix, zen-browser }: let
     homeManagerModule = {
       home-manager.useGlobalPkgs   = true;
       home-manager.useUserPackages = true;
-      home-manager.extraSpecialArgs = { inherit spicetify-nix; };
-      home-manager.users.pedro     = { ... }: {
+      home-manager.extraSpecialArgs = { inherit spicetify-nix zen-browser; };
+      home-manager.users.occulta     = { ... }: {
         imports = [
           ./home
           spicetify-nix.homeManagerModules.default
+          zen-browser.homeModules.beta
         ];
       };
     };

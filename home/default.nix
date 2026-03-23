@@ -21,8 +21,8 @@
     ./btop.nix
   ];
 
-  home.username     = "pedro";
-  home.homeDirectory = "/home/pedro";
+  home.username     = "occulta";
+  home.homeDirectory = "/home/occulta";
   home.stateVersion  = "25.11";
 
   programs.git = {
@@ -30,7 +30,7 @@
     settings = {
       user = {
         name  = "Pedro";
-        email = "pedro@nixos-portatil";
+        email = "pedrogongar91@proton.me";
       };
       safe.directory = [ "/etc/nixos" ];
     };

@@ -12,10 +12,10 @@
   boot.loader.systemd-boot.enable      = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
-  networking.hostName = "nixos-portatil";
+  networking.hostName = "nixos";
   networking.networkmanager.enable = true;
 
-  users.users.pedro = {
+  users.users.occulta = {
     isNormalUser = true;
     extraGroups  = [ "wheel" "docker" "video" "audio" "networkmanager" "libvirtd" ];
     shell        = pkgs.zsh;
@@ -24,4 +24,8 @@
   programs.zsh.enable = true;
 
   system.stateVersion = "25.11";
+
+  hardware.enableRedistributableFirmware = true;
+  hardware.enableAllFirmware = true;
+  hardware.bluetooth.enable = true;
 }

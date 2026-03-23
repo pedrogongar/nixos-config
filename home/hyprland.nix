@@ -20,15 +20,18 @@ let
         ;;
       *"Externos"*)
         hyprctl keyword monitor "eDP-1, disable"
-        hyprctl keyword monitor "HDMI-A-1, 1920x1080@60, 0x0, 1"
-        hyprctl keyword monitor "DP-1, 1920x1080@60, 1920x0, 1"
+        hyprctl keyword monitor "HDMI-A-1, 1920x1080@144, 0x0, 1"
+        hyprctl keyword monitor "DP-1, 1920x1080@165, 1920x0, 1"
         ;;
       *"Todo activo"*)
         hyprctl keyword monitor "eDP-1, 1920x1080@60, 0x0, 1"
-        hyprctl keyword monitor "HDMI-A-1, 1920x1080@60, 1920x0, 1"
-        hyprctl keyword monitor "DP-1, 1920x1080@60, 3840x0, 1"
+        hyprctl keyword monitor "HDMI-A-1, 1920x1080@144, 1920x0, 1"
+        hyprctl keyword monitor "DP-1, 1920x1080@165, 3840x0, 1"
         ;;
     esac
+    sleep 1
+    swww img ~/wallpapers/default.jpg
+    pkill waybar; waybar &
   '';
 
 in
@@ -39,14 +42,13 @@ in
       "$mod"         = "SUPER";
       "$terminal"    = "kitty";
       "$menu"        = "rofi -show drun";
-      "$browser"     = "firefox";
+      "$browser"     = "zen";
       "$fileManager" = "thunar";
 
       monitor = [
-        "eDP-1, 1920x1080@60, 0x0, 1"
-        "HDMI-A-1, 1920x1080@60, 1920x0, 1"
-        "DP-1, 1920x1080@60, 3840x0, 1"
-        ", preferred, auto, 1"
+        "HDMI-A-1, 1920x1080@144, 0x0, 1"
+        "DP-1, 1920x1080@165, 1920x0, 1"
+        "eDP-1, disable"
       ];
 
       general = {
@@ -119,26 +121,37 @@ in
       };
 
       bind = [
-        "$mod, Return,      exec, $terminal"
-        "$mod, Q,           killactive"
-        "$mod SHIFT, M,     exit"
+        # ── Apps ──────────────────────────────────────────────────────
+        "$mod, T,           exec, $terminal"
+        "$mod, A,           exec, $menu"
+        "$mod, F,           exec, $browser"
         "$mod, E,           exec, $fileManager"
-        "$mod, B,           exec, $browser"
-        "$mod, Space,       exec, $menu"
-        "$mod, F,           fullscreen"
-        "$mod, V,           togglefloating"
+        "$mod, V,           exec, codium"
+        "$mod, D,           exec, discord"
+        "$mod, S,           exec, steam"
+        "$mod, O,           exec, obsidian"
+
+        # ── Ventanas ─────────────────────────────────────────────────
+        "$mod, Q,           exec, if ! hyprctl activewindow | grep -qE '(bienvenida|unimatrix|fastfetch)-ws1'; then hyprctl dispatch killactive; fi"
+        "$mod SHIFT, M,     exit"
+        "$mod SHIFT, F,     fullscreen"
+        "$mod SHIFT, V,     togglefloating"
         "$mod, P,           pseudo"
         "$mod, J,           togglesplit"
+
+        # ── Utilidades ───────────────────────────────────────────────
         "$mod, M,           exec, ${monitorScript}/bin/monitor-switch"
         "$mod, N,           exec, swaync-client -t -sw"
         "$mod, X,           exec, wlogout --buttons-per-row 2"
         "$mod, L,           exec, hyprlock"
 
+        # ── Navegación ───────────────────────────────────────────────
         "$mod, left,  movefocus, l"
         "$mod, right, movefocus, r"
         "$mod, up,    movefocus, u"
         "$mod, down,  movefocus, d"
 
+        # ── Workspaces ───────────────────────────────────────────────
         "$mod, 1, workspace, 1"
         "$mod, 2, workspace, 2"
         "$mod, 3, workspace, 3"
@@ -161,6 +174,7 @@ in
         "$mod SHIFT, 9, movetoworkspace, 9"
         "$mod SHIFT, 0, movetoworkspace, 10"
 
+        # ── Capturas ─────────────────────────────────────────────────
         ", Print,      exec, grim -g \"$(slurp)\" - | satty -f -"
         "SHIFT, Print, exec, grim - | satty -f -"
       ];
@@ -181,27 +195,26 @@ in
     };
 
     extraConfig = ''
-      # ── Pantalla bienvenida (ws1) ──────────────────────────────────
-      # VM 1280x800 (10px margins) — para 1920x1080:
-      #   bienvenida: move 10 38,   size 940 1032
-      #   unimatrix:  move 960 38,  size 950 511
-      #   fastfetch:  move 960 559, size 950 511
+      # ── Satty (capturas) ──────────────────────────────────────────
+      windowrule = workspace unset,          match:class ^(satty)$
+      windowrule = float on,                 match:class ^(satty)$
 
+      # ── Pantalla bienvenida (ws1) — 1080p ─────────────────────────
       windowrule = float on,              match:class ^(bienvenida-ws1)$
       windowrule = move 10 38,            match:class ^(bienvenida-ws1)$
-      windowrule = size 620 752,          match:class ^(bienvenida-ws1)$
+      windowrule = size 940 1032,         match:class ^(bienvenida-ws1)$
       windowrule = workspace 1 silent,    match:class ^(bienvenida-ws1)$
       windowrule = border_size 0,         match:class ^(bienvenida-ws1)$
 
       windowrule = float on,              match:class ^(unimatrix-ws1)$
-      windowrule = move 640 38,           match:class ^(unimatrix-ws1)$
-      windowrule = size 630 371,          match:class ^(unimatrix-ws1)$
+      windowrule = move 960 38,           match:class ^(unimatrix-ws1)$
+      windowrule = size 950 511,          match:class ^(unimatrix-ws1)$
       windowrule = workspace 1 silent,    match:class ^(unimatrix-ws1)$
       windowrule = border_size 0,         match:class ^(unimatrix-ws1)$
 
       windowrule = float on,              match:class ^(fastfetch-ws1)$
-      windowrule = move 640 419,          match:class ^(fastfetch-ws1)$
-      windowrule = size 630 371,          match:class ^(fastfetch-ws1)$
+      windowrule = move 960 559,          match:class ^(fastfetch-ws1)$
+      windowrule = size 950 511,          match:class ^(fastfetch-ws1)$
       windowrule = workspace 1 silent,    match:class ^(fastfetch-ws1)$
       windowrule = border_size 0,         match:class ^(fastfetch-ws1)$
 
