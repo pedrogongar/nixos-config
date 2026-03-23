@@ -14,6 +14,9 @@ in
       ignoreDups    = true;
       ignoreAllDups = true;
     };
+    initExtra = ''
+      bindkey -e
+    '';
     shellAliases = {
       rebuild = "sudo nixos-rebuild switch --flake /etc/nixos#nixos-portatil";
       ls      = "eza --icons";

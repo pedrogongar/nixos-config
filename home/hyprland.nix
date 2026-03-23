@@ -30,7 +30,7 @@ let
         ;;
     esac
     sleep 1
-    swww img ~/wallpapers/default.jpg
+    swww img ~/imagenes/wallpapers/default.jpg
     pkill waybar; waybar &
   '';
 
@@ -42,7 +42,7 @@ in
       "$mod"         = "SUPER";
       "$terminal"    = "kitty";
       "$menu"        = "rofi -show drun";
-      "$browser"     = "zen";
+      "$browser"     = "zen-beta";
       "$fileManager" = "thunar";
 
       monitor = [
@@ -185,7 +185,7 @@ in
       ];
 
       exec-once = [
-        "swww-daemon && sleep 1 && swww img ~/wallpapers/default.jpg"
+        "swww-daemon && sleep 1 && swww img ~/imagenes/wallpapers/default.jpg"
         "swaync"
         "waybar"
         "kitty --class bienvenida-ws1 -o background_opacity=0.0"

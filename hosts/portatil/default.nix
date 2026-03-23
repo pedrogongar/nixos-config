@@ -11,6 +11,8 @@
 
   boot.loader.systemd-boot.enable      = true;
   boot.loader.efi.canTouchEfiVariables = true;
+  boot.kernelParams = [ "quiet" "loglevel=3" "splash" ];
+  boot.consoleLogLevel = 0;
 
   networking.hostName = "nixos";
   networking.networkmanager.enable = true;
