@@ -16,7 +16,7 @@ let
       *"Solo portátil"*)
         hyprctl keyword monitor "eDP-1, 1920x1080@60, 0x0, 1"
         hyprctl keyword monitor "HDMI-A-1, disable"
-        hyprctl keyword monitor "DP-1, 1920x1080@60, 3840x0, 1"
+        hyprctl keyword monitor "DP-1, disable"
         ;;
       *"Externos"*)
         hyprctl keyword monitor "eDP-1, disable"
@@ -48,7 +48,7 @@ in
       monitor = [
         "HDMI-A-1, 1920x1080@144, 0x0, 1"
         "DP-1, 1920x1080@165, 1920x0, 1"
-        "eDP-1, disable"
+        "eDP-1, 1920x1080@60, 3840x0, 1"
       ];
 
       general = {
@@ -175,9 +175,15 @@ in
         "$mod SHIFT, 0, movetoworkspace, 10"
 
         # ── Capturas ─────────────────────────────────────────────────
-        ", Print,      exec, grim -g \"$(slurp)\" - | satty -f -"
-        "SHIFT, Print, exec, grim - | satty -f -"
-      
+        # Super+Shift+S → captura área, guarda y copia al portapapeles
+        "$mod SHIFT, S,     exec, grimblast --notify copysave area"
+        # Print → igual que Super+Shift+S
+        ", Print,            exec, grimblast --notify copysave area"
+        # Shift+Print → captura pantalla completa
+        "SHIFT, Print,       exec, grimblast --notify copysave screen"
+        # Super+Shift+A → captura área con editor de anotaciones (flechas, texto, blur)
+        "$mod SHIFT, A,     exec, grim -g \"$(slurp)\" - | satty -f -"
+
         # ── Teclas multimedia / Fn ───────────────────────────────────
         ", XF86AudioRaiseVolume,  exec, pamixer -i 5"
         ", XF86AudioLowerVolume,  exec, pamixer -d 5"
@@ -188,7 +194,7 @@ in
         ", XF86AudioPlay,         exec, playerctl play-pause"
         ", XF86AudioNext,         exec, playerctl next"
         ", XF86AudioPrev,         exec, playerctl previous"
-       ];
+      ];
 
       bindm = [
         "$mod, mouse:272, movewindow"
@@ -207,7 +213,7 @@ in
     };
 
     extraConfig = ''
-      # ── Satty (capturas) ──────────────────────────────────────────
+      # ── Satty (anotaciones) ────────────────────────────────────────
       windowrule = workspace unset,          match:class ^(satty)$
       windowrule = float on,                 match:class ^(satty)$
 
@@ -248,6 +254,7 @@ in
     grim
     slurp
     satty
+    grimblast
     swaynotificationcenter
     hyprlock
     wlogout
@@ -264,5 +271,6 @@ in
     socat
     bluez
     blueman
+    solaar
   ];
 }
