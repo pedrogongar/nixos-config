@@ -22,7 +22,7 @@ in
       ls      = "eza --icons";
       ll      = "eza -la --icons --git";
       lt      = "eza --tree --icons --level=2";
-      cat     = "bat";
+      cat     = "bat --paging=never";
       cd      = "z";
       lg      = "lazygit";
       ld      = "lazydocker";
