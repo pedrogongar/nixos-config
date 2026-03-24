@@ -3,6 +3,49 @@
 let
   c = import ./colores.nix;
   strip = s: builtins.substring 1 6 s;
+  
+  sattyScript = pkgs.writeShellScriptBin "satty-capture" ''
+    # 1. Guardar workspace actual
+    ORIGINAL=$(hyprctl activeworkspace -j | ${pkgs.jq}/bin/jq '.id')
+
+    # 2. Capturar área con grim+slurp (si cancela, salir limpio)
+    TMP=$(mktemp /tmp/satty-XXXXXX.png)
+    grim -g "$(slurp)" "$TMP" 2>/dev/null || { rm -f "$TMP"; exit 0; }
+
+    # 3. Buscar primer workspace libre entre 2 y 10
+    FREE=$(hyprctl workspaces -j | ${pkgs.jq}/bin/jq \
+      '[.[].id] | sort | . as $used |
+       [range(2;11)] | map(select(. as $i | $used | index($i) | not)) | .[0]')
+    [ "$FREE" = "null" ] || [ -z "$FREE" ] && FREE=10
+
+    # 4. Lanzar satty en background
+    satty -f "$TMP" &
+    SATTY_PID=$!
+
+    # 5. Esperar a que la ventana aparezca (clase real: com.gabm.satty)
+    ADDR=""
+    for i in $(seq 1 30); do
+      ADDR=$(hyprctl clients -j | ${pkgs.jq}/bin/jq -r \
+        '.[] | select(.class=="com.gabm.satty") | .address' | head -1)
+      [ -n "$ADDR" ] && break
+      sleep 0.1
+    done
+
+    # 6. Mover satty al workspace libre y cambiar ahí
+    if [ -n "$ADDR" ]; then
+      hyprctl dispatch movetoworkspacesilent "$FREE,address:$ADDR"
+      hyprctl dispatch workspace "$FREE"
+    fi
+
+    # 7. Esperar a que satty se cierre
+    wait $SATTY_PID
+
+    # 8. Volver al workspace original
+    hyprctl dispatch workspace "$ORIGINAL"
+
+    # 9. Limpiar temporal
+    rm -f "$TMP"
+  '';
 
   monitorScript = pkgs.writeShellScriptBin "monitor-switch" ''
     OPTIONS="  Solo portátil\n  Externos (portátil cerrado)\n  Todo activo"
@@ -182,7 +225,7 @@ in
         # Shift+Print → captura pantalla completa
         "SHIFT, Print,       exec, grimblast --notify copysave screen"
         # Super+Shift+A → captura área con editor de anotaciones (flechas, texto, blur)
-        "$mod SHIFT, A,     exec, grim -g \"$(slurp)\" - | satty -f -"
+        "$mod SHIFT, A,     exec, ${sattyScript}/bin/satty-capture"
 
         # ── Teclas multimedia / Fn ───────────────────────────────────
         ", XF86AudioRaiseVolume,  exec, pamixer -i 5"
@@ -214,8 +257,8 @@ in
 
     extraConfig = ''
       # ── Satty (anotaciones) ────────────────────────────────────────
-      windowrule = workspace unset,          match:class ^(satty)$
-      windowrule = float on,                 match:class ^(satty)$
+      windowrule = float on,                 match:class ^(com\.gabm\.satty)$
+      windowrule = fullscreen on,            match:class ^(com\.gabm\.satty)$
 
       # ── Pantalla bienvenida (ws1) — 1080p ─────────────────────────
       windowrule = float on,              match:class ^(bienvenida-ws1)$
