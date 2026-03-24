@@ -16,7 +16,7 @@ let
       *"Solo portátil"*)
         hyprctl keyword monitor "eDP-1, 1920x1080@60, 0x0, 1"
         hyprctl keyword monitor "HDMI-A-1, disable"
-        hyprctl keyword monitor "DP-1, disable"
+        hyprctl keyword monitor "DP-1, 1920x1080@60, 3840x0, 1"
         ;;
       *"Externos"*)
         hyprctl keyword monitor "eDP-1, disable"
@@ -107,7 +107,7 @@ in
       input = {
         kb_layout    = "es";
         follow_mouse = 1;
-        sensitivity  = 0;
+        sensitivity  = 0.8;
         touchpad = {
           natural_scroll = true;
         };
@@ -177,7 +177,18 @@ in
         # ── Capturas ─────────────────────────────────────────────────
         ", Print,      exec, grim -g \"$(slurp)\" - | satty -f -"
         "SHIFT, Print, exec, grim - | satty -f -"
-      ];
+      
+        # ── Teclas multimedia / Fn ───────────────────────────────────
+        ", XF86AudioRaiseVolume,  exec, pamixer -i 5"
+        ", XF86AudioLowerVolume,  exec, pamixer -d 5"
+        ", XF86AudioMute,         exec, pamixer -t"
+        ", XF86AudioMicMute,      exec, pamixer --default-source -t"
+        ", XF86MonBrightnessUp,   exec, brightnessctl set +5%"
+        ", XF86MonBrightnessDown, exec, brightnessctl set 5%-"
+        ", XF86AudioPlay,         exec, playerctl play-pause"
+        ", XF86AudioNext,         exec, playerctl next"
+        ", XF86AudioPrev,         exec, playerctl previous"
+       ];
 
       bindm = [
         "$mod, mouse:272, movewindow"
@@ -185,6 +196,7 @@ in
       ];
 
       exec-once = [
+        "sleep 2 && if hyprctl monitors all | grep -q 'HDMI-A-1' && hyprctl monitors all | grep -q 'DP-1'; then hyprctl keyword monitor 'eDP-1, disable'; fi"
         "swww-daemon && sleep 1 && swww img ~/imagenes/wallpapers/default.jpg"
         "swaync"
         "waybar"

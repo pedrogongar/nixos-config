@@ -24,6 +24,7 @@ in
 
     bruno
     wireshark
+    solaar
   ];
 
   programs.zen-browser = {
