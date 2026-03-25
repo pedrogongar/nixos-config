@@ -1,56 +1,113 @@
 # nixos-config
 
-Configuración personal de NixOS con flakes y Home Manager. Escritorio Hyprland con estética Tokyo Night / Cyberspace, herramientas de desarrollo y configuración reproducible.
+Configuración personal de NixOS con flakes y Home Manager. Escritorio Hyprland con tema "Serpiente" — paleta oscura con acentos rojos, naranjas y oros.
 
 ## Stack
 
-- **NixOS 25.11** (unstable) con flakes
+- **NixOS 26.05** (Yarara, unstable) con flakes
 - **Home Manager** para configuración de usuario
-- **Hyprland** como compositor Wayland (sin blur — optimizado para CPU)
+- **Hyprland 0.54** como compositor Wayland
 - **Waybar** como barra de estado
-- **Tokyo Night** como paleta base con acentos cyan
+- **Tema Serpiente** — paleta propia definida en `home/colores.nix`
+
+## Hardware
+
+- MSI portátil, Intel i7-13620H, Intel UHD Graphics, 32GB RAM, NVMe 1TB
+- Monitores: HDMI-A-1 Acer 1080p@144Hz (izq, principal) + DP-1 ASUS 1080p@165Hz (der) + eDP-1 portátil (desactivado con externos)
+- Audio: PipeWire + WirePlumber, FiiO K11 DAC/AMP USB
 
 ## Estructura
 
 ```
 nixos-config/
-├── flake.nix                    # Entrypoint — host y dependencias
-├── flake.lock                   # Versiones fijadas
+├── flake.nix                    # Inputs: nixpkgs, home-manager, spicetify, zen-browser, claude-code
+├── flake.lock
 ├── hosts/
-│   └── portatil/                # Host único (físico)
-│       ├── default.nix
-│       └── hardware-configuration.nix  # generado localmente, no commitear
+│   └── portatil/
+│       ├── default.nix          # Hardware, boot, usuarios, bluetooth, steam
+│       └── hardware-configuration.nix
 ├── modules/
 │   ├── base.nix                 # Locale, timezone, git, ssh
-│   ├── desktop.nix              # Hyprland, PipeWire, greetd, fuentes
-│   └── docker.nix               # Docker
+│   ├── desktop.nix              # greetd/tuigreet, PipeWire, Hyprland, fuentes, portales XDG
+│   └── docker.nix
 └── home/
-    ├── default.nix              # Importa todos los módulos home
-    ├── hyprland.nix             # Compositor, keybinds, ventanas decorativas ws1
-    ├── waybar.nix               # Barra: workspaces, reloj, métricas, IP
+    ├── default.nix              # Punto de entrada Home Manager
+    ├── colores.nix              # Paleta tema Serpiente (source of truth para colores)
+    ├── hyprland.nix             # Compositor: monitores, keybindings, windowrules, scripts
+    ├── shell.nix                # Zsh, Starship, fzf, bat, eza, zoxide, direnv, Claude Code
+    ├── apps.nix                 # Zen Browser, Discord, Telegram, VLC, Obsidian, ZapZap, etc.
+    ├── waybar.nix               # Barra de estado
     ├── kitty.nix                # Terminal
-    ├── fastfetch.nix            # Módulo fastfetch
-    ├── fastfetch/
-    │   └── config.jsonc         # Config fastfetch (ws1 decorativo)
-    ├── neovim.nix               # IDE con LSP (Vue/TS/C#/Nix/Python)
-    ├── vscode.nix               # VSCode con extensiones y settings
-    ├── shell.nix                # Zsh + Starship (3 temas)
-    ├── theme.nix                # GTK dark, cursor Bibata, iconos Papirus
-    ├── apps.nix                 # Firefox, Discord, Telegram, Spotify, etc.
     ├── rofi.nix                 # Lanzador
-    ├── rofi/
-    │   └── theme.rasi
+    ├── mako.nix                 # Notificaciones (Wayland nativo)
+    ├── theme.nix                # GTK dark, cursor Bibata, iconos Papirus
     ├── hyprlock.nix             # Pantalla de bloqueo
     ├── wlogout.nix              # Menú de apagado
-    ├── wlogout/
-    │   └── style.css
-    ├── swaync.nix               # Notificaciones
-    ├── swaync/
-    │   ├── config.json
-    │   └── style.css
-    ├── matugen.nix              # Colores dinámicos desde wallpaper
-    └── nano.nix                 # Config nano
+    ├── matugen.nix              # Temas dinámicos desde wallpaper
+    ├── spicetify.nix            # Spotify personalizado
+    ├── neovim.nix               # Editor con LSP
+    ├── vscode.nix               # VSCodium con extensiones
+    ├── btop.nix                 # Monitor de recursos
+    ├── nano.nix                 # Config nano
+    ├── fastfetch.nix            # Info del sistema
+    └── fastfetch/               # Config fastfetch
 ```
+
+## Tema Serpiente
+
+Paleta oscura inspirada en tonos de serpiente: rojos profundos, naranjas cálidos y oros sobre fondo casi negro. Definida en `home/colores.nix` y aplicada de forma coherente en todas las apps.
+
+| Variable   | Hex       | Uso                          |
+|------------|-----------|------------------------------|
+| `crust`    | `#080808` | Negro absoluto               |
+| `base`     | `#0a0a0a` | Fondo principal              |
+| `mantle`   | `#121010` | Fondo alternativo            |
+| `surface0` | `#1e1616` | Superficies elevadas         |
+| `text`     | `#d4c4b0` | Texto principal              |
+| `subtext`  | `#b0a090` | Texto secundario             |
+| `oro`      | `#e8c020` | Acento principal             |
+| `ambar`    | `#e08830` | Acento cálido                |
+| `rojo`     | `#c43030` | Alertas, urgencia            |
+| `oliva`    | `#8a8030` | Éxito, confirmación          |
+| `cobre`    | `#a07040` | Acento terciario             |
+| `arena`    | `#907a50` | Acento neutro                |
+
+## Keybindings principales
+
+| Atajo | Acción |
+|---|---|
+| `Super+T` | Terminal kitty |
+| `Super+A` | Rofi (lanzador) |
+| `Super+F` | Zen Browser |
+| `Super+E` | Thunar |
+| `Super+V` | VSCodium |
+| `Super+C` | Claude Code (ws1, mitad derecha) |
+| `Super+Q` | Cerrar ventana (protege terminal-ws1) |
+| `Super+N` | Descartar notificaciones |
+| `Super+X` | Wlogout |
+| `Super+L` | Hyprlock |
+| `Super+M` | Selector de monitores |
+| `Super+Shift+S` | Captura de área |
+| `Super+Shift+B` | Scratchpad btop |
+| `Super+Shift+W` | Scratchpad Spotify |
+| `Super+Shift+Z` | Scratchpad ZapZap |
+
+## Workspace 1
+
+Workspace decorativo con dos terminales flotantes fijadas:
+
+- **Terminal principal** (mitad izquierda) — fondo completamente transparente, sin borde
+- **Claude Code** (mitad derecha) — opacidad 0.75, sin borde, se lanza con `Super+C`
+- **Fastfetch** se ejecuta al abrir cada terminal
+
+## Temas dinámicos desde wallpaper
+
+```bash
+apply-theme ~/imagenes/wallpapers/mi-fondo.jpg   # genera paleta con Matugen
+default-theme                                      # restaura paleta Serpiente
+```
+
+Matugen genera colores para: Hyprland, kitty, rofi, mako, hyprlock, cava.
 
 ## Uso en una máquina nueva
 
@@ -59,48 +116,12 @@ nixos-config/
 # 2. Clonar el repositorio
 git clone git@github.com:pedrogongar/nixos-config.git /etc/nixos
 
-# 3. Generar hardware-configuration para la máquina actual (NO commitear)
+# 3. Generar hardware-configuration para la máquina
 nixos-generate-config --show-hardware-config > /etc/nixos/hosts/portatil/hardware-configuration.nix
 
 # 4. Aplicar
 sudo nixos-rebuild switch --flake /etc/nixos#nixos-portatil
 ```
-
-## Workspace 1 — decorativo
-
-El workspace 1 actúa como presentación del escritorio con dos ventanas Kitty flotantes fijadas:
-
-- **cmatrix** (unimatrix con katakana) — esquina izquierda, 50% opacidad
-- **fastfetch** — specs del sistema, 80% opacidad
-
-Ambas son `nofocus` y `pin` — no interfieren con el flujo de trabajo.
-
-## Temas de Starship
-
-```bash
-theme tokyo    # Tokyo Night (default)
-theme dracula  # Dracula
-theme malva    # Malva / Macchiato
-```
-
-## Temas dinámicos desde wallpaper
-
-```bash
-apply-theme ~/wallpapers/mi-fondo.jpg   # genera paleta con Matugen
-default-theme                            # restaura paleta Tokyo Night
-```
-
-## Paleta base (Tokyo Night / Cyberspace)
-
-| Variable   | Valor     | Uso                        |
-|------------|-----------|----------------------------|
-| `--bg`     | `#0d0e17` | Fondo profundo             |
-| `--accent` | `#7dcfff` | Cyan — color principal     |
-| `--blue`   | `#7aa2f7` | Azul workspaces activos    |
-| `--purple` | `#bb9af7` | Malva — memoria, secundario|
-| `--green`  | `#9ece6a` | Verde — batería, éxito     |
-| `--teal`   | `#73daca` | Teal — volumen             |
-| `--orange` | `#e0af68` | Naranja — IP local         |
 
 ## Licencia
 
