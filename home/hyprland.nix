@@ -200,6 +200,7 @@ in
         # ── Scratchpads (Super+Shift+letra) ──────────────────────────
         "$mod SHIFT, B,     exec, ${scratchpadToggle}/bin/scratchpad-toggle btop btop-scratchpad kitty --class btop-scratchpad -e btop"
         "$mod SHIFT, W,     exec, ${scratchpadToggle}/bin/scratchpad-toggle spotify spotify spotify"
+        "$mod SHIFT, Z,     exec, ${scratchpadToggle}/bin/scratchpad-toggle zapzap com.rtosta.zapzap zapzap"
 
         # ── Navegación ───────────────────────────────────────────────
         "$mod, left,  movefocus, l"
@@ -280,6 +281,11 @@ in
       windowrule = float on,                         match:class ^(Spotify|spotify)$
       windowrule = size 70% 75%,                     match:class ^(Spotify|spotify)$
       windowrule = center on,                        match:class ^(Spotify|spotify)$
+
+      windowrule = workspace special:zapzap silent, match:class ^(com\.rtosta\.zapzap)$
+      windowrule = float on,                        match:class ^(com\.rtosta\.zapzap)$
+      windowrule = size 60% 75%,                    match:class ^(com\.rtosta\.zapzap)$
+      windowrule = center on,                       match:class ^(com\.rtosta\.zapzap)$
 
       # ── Satty (anotaciones) ────────────────────────────────────────
       windowrule = float on,                 match:class ^(com\.gabm\.satty)$
