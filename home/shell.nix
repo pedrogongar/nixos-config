@@ -148,6 +148,7 @@ in
     duf
     lazydocker
     quickemu
+    uv
   ]) ++ [
     claude-code.packages.x86_64-linux.default
   ];

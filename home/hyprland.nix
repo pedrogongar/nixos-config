@@ -183,6 +183,7 @@ in
         "$mod, F,           exec, $browser"
         "$mod, E,           exec, $fileManager"
         "$mod, V,           exec, codium"
+        "$mod, C,           exec, if hyprctl clients -j | ${pkgs.jq}/bin/jq -e '.[] | select(.class==\"claude-ws1\")' > /dev/null 2>&1; then hyprctl dispatch focuswindow class:claude-ws1; else kitty --class claude-ws1 -o background_opacity=0.75 -e bash -c 'cd /etc/nixos && claude'; fi"
 
         # ── Ventanas ─────────────────────────────────────────────────
         "$mod, Q,           exec, if ! hyprctl activewindow -j | ${pkgs.jq}/bin/jq -r '.class' | grep -q '^terminal-ws1$'; then hyprctl dispatch killactive; fi"
@@ -270,6 +271,13 @@ in
       windowrule = move 10 38,               match:class ^(terminal-ws1)$
       windowrule = workspace 1 silent,       match:class ^(terminal-ws1)$
       windowrule = border_size 0,            match:class ^(terminal-ws1)$
+
+      # ── Claude Code ws1 (mitad derecha) ────────────────────────────
+      windowrule = float on,                 match:class ^(claude-ws1)$
+      windowrule = size 950 1032,            match:class ^(claude-ws1)$
+      windowrule = move 960 38,              match:class ^(claude-ws1)$
+      windowrule = workspace 1 silent,       match:class ^(claude-ws1)$
+      windowrule = border_size 0,            match:class ^(claude-ws1)$
 
       # ── Scratchpads ────────────────────────────────────────────────
       windowrule = workspace special:btop silent,    match:class ^(btop-scratchpad)$
