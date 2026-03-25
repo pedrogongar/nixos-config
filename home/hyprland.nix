@@ -47,6 +47,19 @@ let
     rm -f "$TMP"
   '';
 
+  # Script genérico para toggle de scratchpads
+  scratchpadToggle = pkgs.writeShellScriptBin "scratchpad-toggle" ''
+    WS="$1"
+    CLASS="$2"
+    shift 2
+
+    hyprctl dispatch togglespecialworkspace "$WS"
+    sleep 0.1
+    if ! hyprctl clients -j | ${pkgs.jq}/bin/jq -e ".[] | select(.class==\"$CLASS\")" > /dev/null 2>&1; then
+      "$@" &
+    fi
+  '';
+
   monitorScript = pkgs.writeShellScriptBin "monitor-switch" ''
     OPTIONS="  Solo portátil\n  Externos (portátil cerrado)\n  Todo activo"
 
@@ -170,16 +183,12 @@ in
         "$mod, F,           exec, $browser"
         "$mod, E,           exec, $fileManager"
         "$mod, V,           exec, codium"
-        "$mod, D,           exec, discord"
-        "$mod, S,           exec, steam"
-        "$mod, O,           exec, obsidian"
 
         # ── Ventanas ─────────────────────────────────────────────────
-        "$mod, Q,           exec, if ! hyprctl activewindow | grep -qE '(bienvenida|unimatrix|fastfetch)-ws1'; then hyprctl dispatch killactive; fi"
+        "$mod, Q,           exec, if ! hyprctl activewindow -j | ${pkgs.jq}/bin/jq -r '.class' | grep -q '^terminal-ws1$'; then hyprctl dispatch killactive; fi"
         "$mod SHIFT, M,     exit"
         "$mod SHIFT, F,     fullscreen"
         "$mod SHIFT, V,     togglefloating"
-        "$mod, P,           pseudo"
         "$mod, J,           togglesplit"
 
         # ── Utilidades ───────────────────────────────────────────────
@@ -187,6 +196,10 @@ in
         "$mod, N,           exec, swaync-client -t -sw"
         "$mod, X,           exec, wlogout --buttons-per-row 2"
         "$mod, L,           exec, hyprlock"
+
+        # ── Scratchpads (Super+Shift+letra) ──────────────────────────
+        "$mod SHIFT, B,     exec, ${scratchpadToggle}/bin/scratchpad-toggle btop btop-scratchpad kitty --class btop-scratchpad -e btop"
+        "$mod SHIFT, W,     exec, ${scratchpadToggle}/bin/scratchpad-toggle spotify spotify spotify"
 
         # ── Navegación ───────────────────────────────────────────────
         "$mod, left,  movefocus, l"
@@ -218,13 +231,9 @@ in
         "$mod SHIFT, 0, movetoworkspace, 10"
 
         # ── Capturas ─────────────────────────────────────────────────
-        # Super+Shift+S → captura área, guarda y copia al portapapeles
         "$mod SHIFT, S,     exec, grimblast --notify copysave area"
-        # Print → igual que Super+Shift+S
         ", Print,            exec, grimblast --notify copysave area"
-        # Shift+Print → captura pantalla completa
         "SHIFT, Print,       exec, grimblast --notify copysave screen"
-        # Super+Shift+A → captura área con editor de anotaciones (flechas, texto, blur)
         "$mod SHIFT, A,     exec, ${sattyScript}/bin/satty-capture"
 
         # ── Teclas multimedia / Fn ───────────────────────────────────
@@ -249,36 +258,34 @@ in
         "swww-daemon && sleep 1 && swww img ~/imagenes/wallpapers/default.jpg"
         "swaync"
         "waybar"
-        "kitty --class bienvenida-ws1 -o background_opacity=0.0"
-        "kitty --class fastfetch-ws1 -o background_opacity=0.75 -e ~/.config/fastfetch/fastfetch-bienvenida.sh"
-        "kitty --class unimatrix-ws1 -o background_opacity=0.75 -e unimatrix -s 96 -c yellow"
+        "kitty --class terminal-ws1 -o background_opacity=0.0"
       ];
     };
 
     extraConfig = ''
+      # ── Terminal principal ws1 (fondo transparente, mitad izquierda) ─
+      windowrule = float on,                 match:class ^(terminal-ws1)$
+      windowrule = size 940 1032,            match:class ^(terminal-ws1)$
+      windowrule = move 10 38,               match:class ^(terminal-ws1)$
+      windowrule = workspace 1 silent,       match:class ^(terminal-ws1)$
+      windowrule = border_size 0,            match:class ^(terminal-ws1)$
+
+      # ── Scratchpads ────────────────────────────────────────────────
+      windowrule = workspace special:btop silent,    match:class ^(btop-scratchpad)$
+      windowrule = float on,                         match:class ^(btop-scratchpad)$
+      windowrule = size 60% 70%,                     match:class ^(btop-scratchpad)$
+      windowrule = center on,                        match:class ^(btop-scratchpad)$
+
+      windowrule = workspace special:spotify silent, match:class ^(Spotify|spotify)$
+      windowrule = float on,                         match:class ^(Spotify|spotify)$
+      windowrule = size 70% 75%,                     match:class ^(Spotify|spotify)$
+      windowrule = center on,                        match:class ^(Spotify|spotify)$
+
       # ── Satty (anotaciones) ────────────────────────────────────────
       windowrule = float on,                 match:class ^(com\.gabm\.satty)$
       windowrule = fullscreen on,            match:class ^(com\.gabm\.satty)$
 
-      # ── Pantalla bienvenida (ws1) — 1080p ─────────────────────────
-      windowrule = float on,              match:class ^(bienvenida-ws1)$
-      windowrule = move 10 38,            match:class ^(bienvenida-ws1)$
-      windowrule = size 940 1032,         match:class ^(bienvenida-ws1)$
-      windowrule = workspace 1 silent,    match:class ^(bienvenida-ws1)$
-      windowrule = border_size 0,         match:class ^(bienvenida-ws1)$
-
-      windowrule = float on,              match:class ^(unimatrix-ws1)$
-      windowrule = move 960 38,           match:class ^(unimatrix-ws1)$
-      windowrule = size 950 511,          match:class ^(unimatrix-ws1)$
-      windowrule = workspace 1 silent,    match:class ^(unimatrix-ws1)$
-      windowrule = border_size 0,         match:class ^(unimatrix-ws1)$
-
-      windowrule = float on,              match:class ^(fastfetch-ws1)$
-      windowrule = move 960 559,          match:class ^(fastfetch-ws1)$
-      windowrule = size 950 511,          match:class ^(fastfetch-ws1)$
-      windowrule = workspace 1 silent,    match:class ^(fastfetch-ws1)$
-      windowrule = border_size 0,         match:class ^(fastfetch-ws1)$
-
+      # ── Apps ───────────────────────────────────────────────────────
       windowrule = float on,              match:class ^(mpv)$
       windowrule = size 640 360,          match:class ^(mpv)$
       windowrule = center on,             match:class ^(mpv)$

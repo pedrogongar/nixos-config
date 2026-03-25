@@ -16,13 +16,14 @@ in
     };
     initExtra = ''
       bindkey -e
+      fastfetch
     '';
     shellAliases = {
       rebuild = "sudo nixos-rebuild switch --flake /etc/nixos#nixos-portatil";
       ls      = "eza --icons";
       ll      = "eza -la --icons --git";
       lt      = "eza --tree --icons --level=2";
-      cat     = "bat --paging=never";
+      cat     = "bat -P";
       cd      = "z";
       lg      = "lazygit";
       ld      = "lazydocker";
