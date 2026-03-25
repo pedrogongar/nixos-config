@@ -16,6 +16,7 @@ in
     };
     initExtra = ''
       bindkey -e
+      export PATH="$HOME/.local/bin:$PATH"
       fastfetch
     '';
     shellAliases = {
