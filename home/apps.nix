@@ -18,9 +18,10 @@ in
     kdePackages.kcolorchooser
     kdePackages.kate
 
-    xfce.thunar
-    xfce.thunar-archive-plugin
-    xfce.thunar-volman
+    file-roller
+    unzip
+    p7zip
+    unrar
 
     bruno
     wireshark

@@ -330,7 +330,6 @@ in
     unimatrix
     yazi
     matugen
-    thunar
     jq
     socat
     bluez
