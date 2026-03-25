@@ -12,7 +12,6 @@ COMMAND="$(echo "$INPUT" | jq -r '.tool_input.command // empty')"
 
 # Patterns to block
 BLOCKED_PATTERNS=(
-  'git\s+push'
   'git\s+reset\s+--hard'
   'git\s+clean\s+-[fd]'
   'git\s+branch\s+-D'
