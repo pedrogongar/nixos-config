@@ -15,13 +15,17 @@
       url = "github:0xc000022070/zen-browser-flake";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    claude-code = {
+      url = "github:sadjow/claude-code-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  outputs = { self, nixpkgs, home-manager, spicetify-nix, zen-browser }: let
+  outputs = { self, nixpkgs, home-manager, spicetify-nix, zen-browser, claude-code }: let
     homeManagerModule = {
       home-manager.useGlobalPkgs   = true;
       home-manager.useUserPackages = true;
-      home-manager.extraSpecialArgs = { inherit spicetify-nix zen-browser; };
+      home-manager.extraSpecialArgs = { inherit spicetify-nix zen-browser claude-code; };
       home-manager.users.occulta     = { ... }: {
         imports = [
           ./home

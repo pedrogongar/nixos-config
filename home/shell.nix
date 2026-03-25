@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, pkgs, claude-code, ... }:
 
 let
   c = import ./colores.nix;
@@ -138,7 +138,7 @@ in
     nix-direnv.enable = true;
   };
 
-  home.packages = with pkgs; [
+  home.packages = (with pkgs; [
     lazygit
     ripgrep
     fd
@@ -147,5 +147,7 @@ in
     duf
     lazydocker
     quickemu
+  ]) ++ [
+    claude-code.packages.x86_64-linux.default
   ];
 }
