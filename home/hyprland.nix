@@ -194,7 +194,7 @@ in
 
         # ── Utilidades ───────────────────────────────────────────────
         "$mod, M,           exec, ${monitorScript}/bin/monitor-switch"
-        "$mod, N,           exec, swaync-client -t -sw"
+        "$mod, N,           exec, makoctl dismiss -a"
         "$mod, X,           exec, wlogout --buttons-per-row 2"
         "$mod, L,           exec, hyprlock"
 
@@ -258,7 +258,7 @@ in
       exec-once = [
         "sleep 2 && if hyprctl monitors all | grep -q 'HDMI-A-1' && hyprctl monitors all | grep -q 'DP-1'; then hyprctl keyword monitor 'eDP-1, disable'; fi"
         "swww-daemon && sleep 1 && swww img ~/imagenes/wallpapers/default.jpg"
-        "env ADW_DEBUG_COLOR_SCHEME=prefer-dark swaync"
+        "mako"
         "waybar"
         "kitty --class terminal-ws1 -o background_opacity=0.0"
       ];
@@ -308,8 +308,8 @@ in
       windowrule = opacity 0.88 1,        match:class ^(codium|VSCodium|code|Code)$
       windowrule = opacity 0.9 1,         match:class ^(thunar|Thunar)$
 
-      layerrule = blur on,                match:namespace swaync-control-center
-      layerrule = blur on,                match:namespace swaync-notification-window
+      layerrule = blur on,                match:namespace notifications
+      layerrule = ignore_alpha 0.3,      match:namespace notifications
     '';
   };
 

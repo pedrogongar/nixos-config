@@ -12,7 +12,7 @@
     ./rofi.nix
     ./hyprlock.nix
     ./wlogout.nix
-    ./swaync.nix
+    ./mako.nix
     ./matugen.nix
     ./nano.nix
     ./vscode.nix

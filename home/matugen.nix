@@ -22,7 +22,7 @@ let
       --transition-duration 2
 
     hyprctl reload
-    swaync-client -rs
+    makoctl reload 2>/dev/null
     pkill -SIGUSR2 waybar
 
     echo "$WALLPAPER" > "$HOME/.cache/matugen/current-wallpaper"
@@ -38,12 +38,12 @@ let
     cp "$DEFAULTS/colors-hyprland.conf" "$OUTPUT/colors-hyprland.conf"
     cp "$DEFAULTS/colors-kitty.conf"    "$OUTPUT/colors-kitty.conf"
     cp "$DEFAULTS/colors-rofi.rasi"     "$OUTPUT/colors-rofi.rasi"
-    cp "$DEFAULTS/colors-swaync.css"    "$OUTPUT/colors-swaync.css"
+    cp "$DEFAULTS/colors-mako.conf"     "$OUTPUT/colors-mako.conf"
     cp "$DEFAULTS/colors-hyprlock.conf" "$OUTPUT/colors-hyprlock.conf"
     cp "$DEFAULTS/colors-cava.conf"     "$OUTPUT/colors-cava.conf"
 
     hyprctl reload 2>/dev/null
-    swaync-client -rs 2>/dev/null
+    makoctl reload 2>/dev/null
     pkill -SIGUSR2 waybar 2>/dev/null
 
     echo "✓ Paleta Serpiente aplicada"
@@ -66,9 +66,9 @@ in
     [templates.rofi]
     input_path = "~/.config/matugen/templates/rofi.rasi"
     output_path = "~/.cache/matugen/colors-rofi.rasi"
-    [templates.swaync]
-    input_path = "~/.config/matugen/templates/swaync.css"
-    output_path = "~/.cache/matugen/colors-swaync.css"
+    [templates.mako]
+    input_path = "~/.config/matugen/templates/mako.conf"
+    output_path = "~/.cache/matugen/colors-mako.conf"
     [templates.hyprlock]
     input_path = "~/.config/matugen/templates/hyprlock.conf"
     output_path = "~/.cache/matugen/colors-hyprlock.conf"
@@ -127,14 +127,10 @@ in
     }
   '';
 
-  xdg.configFile."matugen/defaults/colors-swaync.css".text = ''
-    @define-color bg rgba(${c.base_rgb}, 0.92);
-    @define-color bg-alt rgba(${c.mantle_rgb}, 0.98);
-    @define-color border rgba(${c.oro_rgb}, 0.18);
-    @define-color text ${c.text};
-    @define-color text-dim ${c.subtext};
-    @define-color accent ${c.oro};
-    @define-color urgent ${c.rojo};
+  xdg.configFile."matugen/defaults/colors-mako.conf".text = ''
+    background-color=${c.mantle}FA
+    text-color=${c.text}
+    border-color=${c.oro}2E
   '';
 
   xdg.configFile."matugen/defaults/colors-hyprlock.conf".text = ''
@@ -206,14 +202,10 @@ in
     }
   '';
 
-  xdg.configFile."matugen/templates/swaync.css".text = ''
-    @define-color bg rgba({{colors.surface.default.red}}, {{colors.surface.default.green}}, {{colors.surface.default.blue}}, 0.85);
-    @define-color bg-alt rgba({{colors.surface_container.default.red}}, {{colors.surface_container.default.green}}, {{colors.surface_container.default.blue}}, 0.9);
-    @define-color border rgba({{colors.primary.default.red}}, {{colors.primary.default.green}}, {{colors.primary.default.blue}}, 0.3);
-    @define-color text #{{colors.on_surface.default.hex_stripped}};
-    @define-color text-dim #{{colors.on_surface_variant.default.hex_stripped}};
-    @define-color accent #{{colors.primary.default.hex_stripped}};
-    @define-color urgent #{{colors.error.default.hex_stripped}};
+  xdg.configFile."matugen/templates/mako.conf".text = ''
+    background-color=#{{colors.surface_container.default.hex_stripped}}E6
+    text-color=#{{colors.on_surface.default.hex_stripped}}
+    border-color=#{{colors.primary.default.hex_stripped}}4D
   '';
 
   xdg.configFile."matugen/templates/hyprlock.conf".text = ''
