@@ -258,7 +258,7 @@ in
       exec-once = [
         "sleep 2 && if hyprctl monitors all | grep -q 'HDMI-A-1' && hyprctl monitors all | grep -q 'DP-1'; then hyprctl keyword monitor 'eDP-1, disable'; fi"
         "swww-daemon && sleep 1 && swww img ~/imagenes/wallpapers/default.jpg"
-        "swaync"
+        "env ADW_DEBUG_COLOR_SCHEME=prefer-dark swaync"
         "waybar"
         "kitty --class terminal-ws1 -o background_opacity=0.0"
       ];
