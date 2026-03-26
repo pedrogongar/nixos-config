@@ -1,8 +1,5 @@
 { config, pkgs, ... }:
 
-let
-  c = import ./colores.nix;
-in
 {
   home.file.".config/nano/nanorc".text = ''
     set autoindent
@@ -15,17 +12,17 @@ in
     set atblanks
     set softwrap
     set stateflags
-    set titlecolor bold,${c.text},${c.base}
-    set promptcolor ${c.text},${c.surface0}
-    set statuscolor bold,${c.base},${c.oro}
-    set errorcolor bold,${c.base},${c.rojo}
-    set spotlightcolor ${c.base},${c.cobre}
-    set selectedcolor ${c.base},${c.arena}
-    set stripecolor ,${c.surface0}
-    set scrollercolor ${c.oro}
-    set numbercolor ${c.surface2}
-    set keycolor ${c.cobre}
-    set functioncolor ${c.oro}
+    set titlecolor bold,brightwhite,black
+    set promptcolor brightwhite,brightblack
+    set statuscolor bold,black,yellow
+    set errorcolor bold,black,red
+    set spotlightcolor black,blue
+    set selectedcolor black,cyan
+    set stripecolor ,brightblack
+    set scrollercolor yellow
+    set numbercolor brightblack
+    set keycolor blue
+    set functioncolor yellow
     include "${pkgs.nano}/share/nano/*.nanorc"
   '';
 }

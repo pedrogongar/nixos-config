@@ -7,8 +7,8 @@ let
   gtkCss = ''
     /* ── Paleta Serpiente — GTK overrides ──────────────────────────── */
 
-    /* Ventanas y fondos */
-    window, .background { background-color: ${c.base}; color: ${c.text}; }
+    /* Ventanas y fondos (opacidad sólida para GTK) */
+    window, .background { background-color: ${c.mantle}; color: ${c.text}; }
 
     /* Barras de título (headerbar) */
     headerbar { background-color: ${c.mantle}; color: ${c.text}; border-bottom: 1px solid ${c.surface0}; }
