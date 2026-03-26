@@ -117,9 +117,6 @@ SVGEOF
     ${pkgs.mako}/bin/makoctl reload 2>/dev/null
     hyprctl dispatch exec "${pkgs.procps}/bin/pkill -SIGUSR2 waybar" 2>/dev/null
     hyprctl dispatch exec "${pkgs.procps}/bin/pkill -USR1 kitty" 2>/dev/null
-    # Forzar redibujado del prompt (starship re-lee config al redibujar)
-    sleep 0.3
-    hyprctl dispatch exec "${pkgs.procps}/bin/pkill -SIGWINCH zsh" 2>/dev/null
 
     # Proteger eDP-1: si hay monitores externos, mantener deshabilitado
     if hyprctl monitors -j | ${pkgs.jq}/bin/jq -e '[.[].name] | any(. == "HDMI-A-1" or . == "DP-1")' > /dev/null 2>&1; then
