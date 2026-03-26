@@ -53,13 +53,14 @@ let
       cat "$WLOGOUT_COLORS" "$WLOGOUT_BASE" > "$WLOGOUT_CSS"
     fi
 
-    # Starship: cat base + colores → starship.toml (re-lee cada prompt, sin reload)
+    # Starship: cat base + colores → starship.toml (mv atómico para forzar re-lectura)
     STARSHIP_COLORS="$HOME/.cache/matugen/colors-starship.toml"
     STARSHIP_BASE="$HOME/.config/starship-base.toml"
     STARSHIP_CONF="$HOME/.config/starship.toml"
     if [ -f "$STARSHIP_COLORS" ] && [ -f "$STARSHIP_BASE" ]; then
       [ -L "$STARSHIP_CONF" ] && rm "$STARSHIP_CONF"
-      cat "$STARSHIP_BASE" "$STARSHIP_COLORS" > "$STARSHIP_CONF"
+      cat "$STARSHIP_BASE" "$STARSHIP_COLORS" > "''${STARSHIP_CONF}.tmp"
+      mv "''${STARSHIP_CONF}.tmp" "$STARSHIP_CONF"
     fi
 
     # Generar SVGs de wlogout con el accent del tema activo
@@ -104,10 +105,21 @@ SVGEOF
 </svg>
 SVGEOF
 
-    # Recargar apps
-    makoctl reload 2>/dev/null
-    pkill -SIGUSR2 waybar 2>/dev/null
-    pkill -USR1 kitty 2>/dev/null
+    # Obsidian: copiar CSS snippet al vault (crear snippets si no existe)
+    OBSIDIAN_CSS="$HOME/.cache/matugen/colors-obsidian.css"
+    OBSIDIAN_VAULT="$HOME/obsidian/dev/.obsidian"
+    if [ -f "$OBSIDIAN_CSS" ] && [ -d "$OBSIDIAN_VAULT" ]; then
+      mkdir -p "$OBSIDIAN_VAULT/snippets"
+      cp "$OBSIDIAN_CSS" "$OBSIDIAN_VAULT/snippets/matugen-theme.css"
+    fi
+
+    # Recargar apps (hyprctl exec asegura contexto correcto desde waybar/selector)
+    ${pkgs.mako}/bin/makoctl reload 2>/dev/null
+    hyprctl dispatch exec "${pkgs.procps}/bin/pkill -SIGUSR2 waybar" 2>/dev/null
+    hyprctl dispatch exec "${pkgs.procps}/bin/pkill -USR1 kitty" 2>/dev/null
+    # Forzar redibujado del prompt (starship re-lee config al redibujar)
+    sleep 0.3
+    hyprctl dispatch exec "${pkgs.procps}/bin/pkill -SIGWINCH zsh" 2>/dev/null
 
     # Proteger eDP-1: si hay monitores externos, mantener deshabilitado
     if hyprctl monitors -j | ${pkgs.jq}/bin/jq -e '[.[].name] | any(. == "HDMI-A-1" or . == "DP-1")' > /dev/null 2>&1; then
@@ -120,10 +132,18 @@ SVGEOF
 
   applyTheme = pkgs.writeShellScriptBin "apply-theme" ''
     WALLPAPER="$1"
+    DEFAULT_WP="$HOME/imagenes/wallpapers/default.jpg"
 
     if [ -z "$WALLPAPER" ]; then
       echo "Uso: apply-theme /ruta/al/wallpaper.jpg"
       exit 1
+    fi
+
+    # Si es el wallpaper default → usar paleta Serpiente curada
+    REAL_PATH=$(realpath "$WALLPAPER" 2>/dev/null || echo "$WALLPAPER")
+    REAL_DEFAULT=$(realpath "$DEFAULT_WP" 2>/dev/null || echo "$DEFAULT_WP")
+    if [ "$REAL_PATH" = "$REAL_DEFAULT" ]; then
+      exec default-theme "$WALLPAPER"
     fi
 
     mkdir -p "$HOME/.cache/matugen"
@@ -154,6 +174,9 @@ SVGEOF
     install -m 644 "$DEFAULTS/colors-starship.toml" "$OUTPUT/colors-starship.toml"
     install -m 644 "$DEFAULTS/colors-hyprlock.conf" "$OUTPUT/colors-hyprlock.conf"
     install -m 644 "$DEFAULTS/colors-cava.conf"     "$OUTPUT/colors-cava.conf"
+    install -m 644 "$DEFAULTS/colors-neovim.lua"   "$OUTPUT/colors-neovim.lua"
+    install -m 644 "$DEFAULTS/colors-zen.css"      "$OUTPUT/colors-zen.css"
+    install -m 644 "$DEFAULTS/colors-obsidian.css" "$OUTPUT/colors-obsidian.css"
 
     ${applyColors}
     echo "✓ Paleta Serpiente restaurada"
@@ -194,6 +217,15 @@ in
     [templates.cava]
     input_path = "~/.config/matugen/templates/cava.conf"
     output_path = "~/.cache/matugen/colors-cava.conf"
+    [templates.neovim]
+    input_path = "~/.config/matugen/templates/neovim.lua"
+    output_path = "~/.cache/matugen/colors-neovim.lua"
+    [templates.zen]
+    input_path = "~/.config/matugen/templates/zen.css"
+    output_path = "~/.cache/matugen/colors-zen.css"
+    [templates.obsidian]
+    input_path = "~/.config/matugen/templates/obsidian.css"
+    output_path = "~/.cache/matugen/colors-obsidian.css"
   '';
 
   # ── Defaults Serpiente ────────────────────────────────────────────────
@@ -218,6 +250,11 @@ in
     cursor_text_color ${c.base}
     selection_foreground ${c.text}
     selection_background ${c.surface0}
+    url_color ${c.arena}
+    active_tab_foreground ${c.base}
+    active_tab_background ${c.oro}
+    inactive_tab_foreground ${c.surface2}
+    inactive_tab_background ${c.mantle}
     color0  ${c.mantle}
     color1  ${c.rojo}
     color2  ${c.oliva}
@@ -302,6 +339,90 @@ in
     gradient_color_4 = '${c.sangre}'
   '';
 
+  xdg.configFile."matugen/defaults/colors-neovim.lua".text = ''
+    return {
+      rosewater = "${c.text}",
+      flamingo  = "${c.ambar}",
+      pink      = "${c.rojo}",
+      mauve     = "${c.oro}",
+      red       = "${c.rojo}",
+      maroon    = "${c.sangre}",
+      peach     = "${c.ambar}",
+      yellow    = "${c.oro}",
+      green     = "${c.oliva}",
+      teal      = "${c.arena}",
+      sky       = "${c.arena}",
+      sapphire  = "${c.arena}",
+      blue      = "${c.cobre}",
+      lavender  = "${c.oro}",
+      text      = "${c.text}",
+      subtext1  = "${c.subtext}",
+      subtext0  = "${c.subtext}",
+      overlay2  = "${c.overlay}",
+      overlay1  = "${c.overlay}",
+      overlay0  = "${c.overlay}",
+      surface2  = "${c.surface2}",
+      surface1  = "${c.surface1}",
+      surface0  = "${c.surface0}",
+      base      = "${c.base}",
+      mantle    = "${c.mantle}",
+      crust     = "${c.crust}",
+    }
+  '';
+
+  xdg.configFile."matugen/defaults/colors-zen.css".text = ''
+    :root {
+      --serp-crust:    ${c.crust};
+      --serp-mantle:   ${c.mantle};
+      --serp-base:     ${c.base};
+      --serp-surface0: ${c.surface0};
+      --serp-surface1: ${c.surface1};
+      --serp-surface2: ${c.surface2};
+      --serp-text:     ${c.text};
+      --serp-subtext:  ${c.subtext};
+      --serp-oro:      ${c.oro};
+      --serp-ambar:    ${c.ambar};
+      --serp-rojo:     ${c.rojo};
+      --serp-oliva:    ${c.oliva};
+      --serp-cobre:    ${c.cobre};
+      --serp-arena:    ${c.arena};
+      --serp-oro-glow: rgba(${c.oro_rgb}, 0.15);
+      --serp-rojo-bg:  rgba(${c.rojo_rgb}, 0.15);
+    }
+  '';
+
+  xdg.configFile."matugen/defaults/colors-obsidian.css".text = ''
+    body {
+      --background-primary:          ${c.base};
+      --background-primary-alt:      ${c.mantle};
+      --background-secondary:        ${c.mantle};
+      --background-secondary-alt:    ${c.crust};
+      --background-modifier-border:  ${c.surface1};
+      --background-modifier-form-field: ${c.surface0};
+      --background-modifier-hover:   ${c.surface0};
+      --background-modifier-success: ${c.oliva};
+      --background-modifier-error:   ${c.rojo};
+      --text-normal:                 ${c.text};
+      --text-muted:                  ${c.subtext};
+      --text-faint:                  ${c.arena};
+      --text-accent:                 ${c.oro};
+      --text-accent-hover:           ${c.ambar};
+      --text-on-accent:              ${c.crust};
+      --interactive-normal:          ${c.surface0};
+      --interactive-hover:           ${c.surface1};
+      --interactive-accent:          ${c.oro};
+      --interactive-accent-hover:    ${c.ambar};
+      --scrollbar-bg:                ${c.base};
+      --scrollbar-thumb-bg:          ${c.surface1};
+      --scrollbar-active-thumb-bg:   ${c.surface2};
+      --titlebar-background:         ${c.crust};
+      --titlebar-background-focused: ${c.mantle};
+      --graph-line:                  ${c.arena};
+      --graph-node:                  ${c.oro};
+      --graph-node-focused:          ${c.ambar};
+    }
+  '';
+
   # ── Templates matugen (placeholders, sin cambios) ─────────────────────
 
   xdg.configFile."matugen/templates/hyprland.conf".text = ''
@@ -324,6 +445,11 @@ in
     cursor_text_color #{{colors.surface.default.hex_stripped}}
     selection_foreground #{{colors.on_surface.default.hex_stripped}}
     selection_background #{{colors.surface_container_high.default.hex_stripped}}
+    url_color #{{colors.tertiary_container.default.hex_stripped}}
+    active_tab_foreground #{{colors.surface.default.hex_stripped}}
+    active_tab_background #{{colors.primary.default.hex_stripped}}
+    inactive_tab_foreground #{{colors.surface_container_highest.default.hex_stripped}}
+    inactive_tab_background #{{colors.surface_container_low.default.hex_stripped}}
     color0  #{{colors.surface.default.hex_stripped}}
     color1  #{{colors.error.default.hex_stripped}}
     color2  #{{colors.tertiary.default.hex_stripped}}
@@ -396,6 +522,90 @@ in
     $bg = rgba({{colors.surface.default.red}}, {{colors.surface.default.green}}, {{colors.surface.default.blue}}, 0.75)
     $green = rgba({{colors.tertiary.default.red}}, {{colors.tertiary.default.green}}, {{colors.tertiary.default.blue}}, 0.5)
     $red = rgba({{colors.error.default.red}}, {{colors.error.default.green}}, {{colors.error.default.blue}}, 0.5)
+  '';
+
+  xdg.configFile."matugen/templates/obsidian.css".text = ''
+    body {
+      --background-primary:          #{{colors.surface.default.hex_stripped}};
+      --background-primary-alt:      #{{colors.surface_container_low.default.hex_stripped}};
+      --background-secondary:        #{{colors.surface_container_low.default.hex_stripped}};
+      --background-secondary-alt:    #{{colors.surface_dim.default.hex_stripped}};
+      --background-modifier-border:  #{{colors.surface_container_high.default.hex_stripped}};
+      --background-modifier-form-field: #{{colors.surface_container.default.hex_stripped}};
+      --background-modifier-hover:   #{{colors.surface_container.default.hex_stripped}};
+      --background-modifier-success: #{{colors.tertiary.default.hex_stripped}};
+      --background-modifier-error:   #{{colors.error.default.hex_stripped}};
+      --text-normal:                 #{{colors.on_surface.default.hex_stripped}};
+      --text-muted:                  #{{colors.on_surface_variant.default.hex_stripped}};
+      --text-faint:                  #{{colors.tertiary_container.default.hex_stripped}};
+      --text-accent:                 #{{colors.primary.default.hex_stripped}};
+      --text-accent-hover:           #{{colors.secondary.default.hex_stripped}};
+      --text-on-accent:              #{{colors.surface_dim.default.hex_stripped}};
+      --interactive-normal:          #{{colors.surface_container.default.hex_stripped}};
+      --interactive-hover:           #{{colors.surface_container_high.default.hex_stripped}};
+      --interactive-accent:          #{{colors.primary.default.hex_stripped}};
+      --interactive-accent-hover:    #{{colors.secondary.default.hex_stripped}};
+      --scrollbar-bg:                #{{colors.surface.default.hex_stripped}};
+      --scrollbar-thumb-bg:          #{{colors.surface_container_high.default.hex_stripped}};
+      --scrollbar-active-thumb-bg:   #{{colors.surface_container_highest.default.hex_stripped}};
+      --titlebar-background:         #{{colors.surface_dim.default.hex_stripped}};
+      --titlebar-background-focused: #{{colors.surface_container_low.default.hex_stripped}};
+      --graph-line:                  #{{colors.tertiary_container.default.hex_stripped}};
+      --graph-node:                  #{{colors.primary.default.hex_stripped}};
+      --graph-node-focused:          #{{colors.secondary.default.hex_stripped}};
+    }
+  '';
+
+  xdg.configFile."matugen/templates/zen.css".text = ''
+    :root {
+      --serp-crust:    #{{colors.surface_dim.default.hex_stripped}};
+      --serp-mantle:   #{{colors.surface_container_low.default.hex_stripped}};
+      --serp-base:     #{{colors.surface.default.hex_stripped}};
+      --serp-surface0: #{{colors.surface_container.default.hex_stripped}};
+      --serp-surface1: #{{colors.surface_container_high.default.hex_stripped}};
+      --serp-surface2: #{{colors.surface_container_highest.default.hex_stripped}};
+      --serp-text:     #{{colors.on_surface.default.hex_stripped}};
+      --serp-subtext:  #{{colors.on_surface_variant.default.hex_stripped}};
+      --serp-oro:      #{{colors.primary.default.hex_stripped}};
+      --serp-ambar:    #{{colors.secondary.default.hex_stripped}};
+      --serp-rojo:     #{{colors.error.default.hex_stripped}};
+      --serp-oliva:    #{{colors.tertiary.default.hex_stripped}};
+      --serp-cobre:    #{{colors.primary_container.default.hex_stripped}};
+      --serp-arena:    #{{colors.tertiary_container.default.hex_stripped}};
+      --serp-oro-glow: rgba({{colors.primary.default.red}},{{colors.primary.default.green}},{{colors.primary.default.blue}}, 0.15);
+      --serp-rojo-bg:  rgba({{colors.error.default.red}},{{colors.error.default.green}},{{colors.error.default.blue}}, 0.15);
+    }
+  '';
+
+  xdg.configFile."matugen/templates/neovim.lua".text = ''
+    return {
+      rosewater = "#{{colors.on_surface.default.hex_stripped}}",
+      flamingo  = "#{{colors.secondary.default.hex_stripped}}",
+      pink      = "#{{colors.error.default.hex_stripped}}",
+      mauve     = "#{{colors.primary.default.hex_stripped}}",
+      red       = "#{{colors.error.default.hex_stripped}}",
+      maroon    = "#{{colors.error_container.default.hex_stripped}}",
+      peach     = "#{{colors.secondary.default.hex_stripped}}",
+      yellow    = "#{{colors.primary.default.hex_stripped}}",
+      green     = "#{{colors.tertiary.default.hex_stripped}}",
+      teal      = "#{{colors.tertiary_container.default.hex_stripped}}",
+      sky       = "#{{colors.tertiary_container.default.hex_stripped}}",
+      sapphire  = "#{{colors.tertiary_container.default.hex_stripped}}",
+      blue      = "#{{colors.primary_container.default.hex_stripped}}",
+      lavender  = "#{{colors.primary.default.hex_stripped}}",
+      text      = "#{{colors.on_surface.default.hex_stripped}}",
+      subtext1  = "#{{colors.on_surface_variant.default.hex_stripped}}",
+      subtext0  = "#{{colors.on_surface_variant.default.hex_stripped}}",
+      overlay2  = "#{{colors.outline.default.hex_stripped}}",
+      overlay1  = "#{{colors.outline.default.hex_stripped}}",
+      overlay0  = "#{{colors.outline_variant.default.hex_stripped}}",
+      surface2  = "#{{colors.surface_container_highest.default.hex_stripped}}",
+      surface1  = "#{{colors.surface_container_high.default.hex_stripped}}",
+      surface0  = "#{{colors.surface_container.default.hex_stripped}}",
+      base      = "#{{colors.surface.default.hex_stripped}}",
+      mantle    = "#{{colors.surface_container_low.default.hex_stripped}}",
+      crust     = "#{{colors.surface_dim.default.hex_stripped}}",
+    }
   '';
 
   xdg.configFile."matugen/templates/cava.conf".text = ''

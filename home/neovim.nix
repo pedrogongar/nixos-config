@@ -1,7 +1,6 @@
 { config, pkgs, ... }:
 
 let
-  c = import ./colores.nix;
   vueTypescriptPlugin = pkgs.vue-language-server + "/lib/language-tools/packages/typescript-plugin";
 in
 {
@@ -80,39 +79,14 @@ in
 
       -- ============ TEMA ============
 
+      -- Cargar colores dinámicos desde matugen cache (generados por apply-theme/default-theme)
+      local _ok, _colors = pcall(dofile, os.getenv("HOME") .. "/.cache/matugen/colors-neovim.lua")
+      if not _ok then _colors = nil end
+
       require("catppuccin").setup({
         flavour = "mocha",
         transparent_background = true,
-        color_overrides = {
-          mocha = {
-            rosewater = "${c.text}",
-            flamingo  = "${c.ambar}",
-            pink      = "${c.rojo}",
-            mauve     = "${c.oro}",
-            red       = "${c.rojo}",
-            maroon    = "${c.sangre}",
-            peach     = "${c.ambar}",
-            yellow    = "${c.oro}",
-            green     = "${c.oliva}",
-            teal      = "${c.arena}",
-            sky       = "${c.arena}",
-            sapphire  = "${c.arena}",
-            blue      = "${c.cobre}",
-            lavender  = "${c.oro}",
-            text      = "${c.text}",
-            subtext1  = "${c.subtext}",
-            subtext0  = "${c.subtext}",
-            overlay2  = "#5a4a3a",
-            overlay1  = "#5a4a3a",
-            overlay0  = "#5a4a3a",
-            surface2  = "${c.surface2}",
-            surface1  = "${c.surface1}",
-            surface0  = "${c.surface0}",
-            base      = "${c.base}",
-            mantle    = "${c.mantle}",
-            crust     = "${c.crust}",
-          },
-        },
+        color_overrides = _colors and { mocha = _colors } or {},
         integrations = {
           cmp = true,
           gitsigns = true,

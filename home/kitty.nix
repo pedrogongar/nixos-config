@@ -1,8 +1,5 @@
 { config, pkgs, ... }:
 
-let
-  c = import ./colores.nix;
-in
 {
   programs.kitty = {
     enable = true;
@@ -31,7 +28,6 @@ in
 
       detect_urls = true;
       url_style   = "curly";
-      url_color   = c.arena;
 
       tab_bar_edge         = "top";
       tab_bar_style        = "powerline";
@@ -39,38 +35,10 @@ in
       tab_bar_min_tabs     = 2;
       active_tab_font_style   = "bold";
       inactive_tab_font_style = "normal";
-      active_tab_foreground   = c.base;
-      active_tab_background   = c.oro;
-      inactive_tab_foreground = c.surface2;
-      inactive_tab_background = c.mantle;
 
       repaint_delay    = 10;
       input_delay      = 3;
       sync_to_monitor  = true;
-
-      foreground          = c.text;
-      background          = c.base;
-      selection_foreground = c.text;
-      selection_background = c.surface1;
-      cursor              = c.oro;
-      cursor_text_color   = c.base;
-
-      color0  = c.mantle;
-      color1  = c.rojo;
-      color2  = c.oliva;
-      color3  = c.oro;
-      color4  = c.cobre;
-      color5  = c.ambar;
-      color6  = c.arena;
-      color7  = c.subtext;
-      color8  = c.surface2;
-      color9  = c.rojo;
-      color10 = c.oliva;
-      color11 = c.oro;
-      color12 = c.cobre;
-      color13 = c.ambar;
-      color14 = c.arena;
-      color15 = c.text;
     };
 
     extraConfig = ''
