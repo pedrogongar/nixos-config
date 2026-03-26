@@ -19,6 +19,7 @@
     ./waybar.nix
     ./spicetify.nix
     ./btop.nix
+    ./wallpaper-selector.nix
   ];
 
   home.username     = "occulta";
@@ -48,10 +49,17 @@
       "application/x-bzip2"          = "org.gnome.FileRoller.desktop";
       "application/x-xz"             = "org.gnome.FileRoller.desktop";
       "application/x-compressed-tar" = "org.gnome.FileRoller.desktop";
+
+      "text/html"                    = "zen-beta.desktop";
+      "x-scheme-handler/http"        = "zen-beta.desktop";
+      "x-scheme-handler/https"       = "zen-beta.desktop";
+      "x-scheme-handler/about"       = "zen-beta.desktop";
+      "x-scheme-handler/unknown"     = "zen-beta.desktop";
     };
   };
 
   home.sessionVariables = {
+    BROWSER = "zen-beta";
     XDG_SCREENSHOTS_DIR = "${config.home.homeDirectory}/imagenes/capturas";
   };
 

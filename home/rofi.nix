@@ -4,14 +4,9 @@ let
   c = import ./colores.nix;
 
   rofiTheme = pkgs.writeText "serpiente.rasi" ''
+    @import "~/.cache/matugen/colors-rofi.rasi"
+
     * {
-        bg:           rgba(${c.base_rgb}, 0.92);
-        bg-alt:       rgba(${c.mantle_rgb}, 0.98);
-        fg:           ${c.text};
-        fg-dim:       ${c.subtext};
-        accent:       ${c.oro};
-        border-col:   rgba(${c.oro_rgb}, 0.2);
-        urgent:       ${c.rojo};
 
         font: "JetBrains Mono Nerd Font 12";
 
@@ -67,7 +62,7 @@ let
     }
 
     element selected.normal {
-        background-color: rgba(${c.oro_rgb}, 0.1);
+        background-color: @accent-dim;
         border: 0 0 0 2px;
         border-color: @accent;
     }

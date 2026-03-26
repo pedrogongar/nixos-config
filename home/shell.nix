@@ -2,6 +2,77 @@
 
 let
   c = import ./colores.nix;
+
+  # ── Starship: base + colores separados para theming dinámico ──────────
+  #    Starship re-lee config en cada prompt, no necesita reload
+  starshipBase = ''
+    palette = "active"
+
+    format = "$custom$username$directory$git_branch$git_status$nodejs$dotnet$python$nix_shell$cmd_duration$character"
+
+    [custom.capricorn]
+    command = "echo 󰪀"
+    when = "true"
+    format = "[($output )](bold sp_oro)"
+    shell = ["sh"]
+
+    [username]
+    show_always = true
+    format = "[$user](bold sp_ambar) "
+
+    [directory]
+    format = "[$path](sp_arena) "
+    truncation_length = 3
+    truncation_symbol = "…/"
+
+    [git_branch]
+    format = "[$branch](sp_cobre) "
+
+    [git_status]
+    format = "[$all_status$ahead_behind](sp_rojo) "
+    ahead = "⇡"
+    behind = "⇣"
+    diverged = "⇕"
+    modified = "!"
+    staged = "+"
+    untracked = "?"
+    deleted = "✗"
+    conflicted = "="
+
+    [nodejs]
+    format = "[ $version](sp_oliva) "
+    detect_files = ["package.json", ".node-version"]
+
+    [dotnet]
+    format = "[󰌛 $version](sp_cobre) "
+
+    [python]
+    format = "[ $version](sp_oro) "
+
+    [nix_shell]
+    format = "[󱄅 nix](sp_arena) "
+
+    [cmd_duration]
+    format = "[ $duration](sp_subtext) "
+    min_time = 2000
+
+    [character]
+    success_symbol = "[❯](bold sp_oro)"
+    error_symbol = "[❯](bold sp_rojo)"
+  '';
+
+  starshipColors = ''
+
+    [palettes.active]
+    sp_oro = "${c.oro}"
+    sp_ambar = "${c.ambar}"
+    sp_arena = "${c.arena}"
+    sp_cobre = "${c.cobre}"
+    sp_rojo = "${c.rojo}"
+    sp_oliva = "${c.oliva}"
+    sp_subtext = "${c.subtext}"
+  '';
+
 in
 {
   programs.zsh = {
@@ -31,85 +102,15 @@ in
     };
   };
 
-  programs.starship = {
-    enable = true;
-    settings = {
-      format = builtins.concatStringsSep "" [
-        "$custom"
-        "$username"
-        "$directory"
-        "$git_branch"
-        "$git_status"
-        "$nodejs"
-        "$dotnet"
-        "$python"
-        "$nix_shell"
-        "$cmd_duration"
-        "$character"
-      ];
+  # Starship: shell integration sin settings (config gestionada via xdg.configFile)
+  programs.starship.enable = true;
 
-      custom.capricorn = {
-        command = "echo 󰪀";
-        when = "true";
-        format = "[($output )](bold ${c.oro})";
-        shell = ["sh"];
-      };
-
-      username = {
-        show_always = true;
-        format = "[$user](bold ${c.ambar}) ";
-      };
-
-      directory = {
-        format = "[$path](${c.arena}) ";
-        truncation_length = 3;
-        truncation_symbol = "…/";
-      };
-
-      git_branch = {
-        format = "[$branch](${c.cobre}) ";
-      };
-
-      git_status = {
-        format = "[$all_status$ahead_behind](${c.rojo}) ";
-        ahead      = "⇡";
-        behind     = "⇣";
-        diverged   = "⇕";
-        modified   = "!";
-        staged     = "+";
-        untracked  = "?";
-        deleted    = "✗";
-        conflicted = "=";
-      };
-
-      nodejs = {
-        format       = "[ $version](${c.oliva}) ";
-        detect_files = [ "package.json" ".node-version" ];
-      };
-
-      dotnet = {
-        format = "[󰌛 $version](${c.cobre}) ";
-      };
-
-      python = {
-        format = "[ $version](${c.oro}) ";
-      };
-
-      nix_shell = {
-        format = "[󱄅 nix](${c.arena}) ";
-      };
-
-      cmd_duration = {
-        format   = "[ $duration](${c.subtext}) ";
-        min_time = 2000;
-      };
-
-      character = {
-        success_symbol = "[❯](bold ${c.oro})";
-        error_symbol   = "[❯](bold ${c.rojo})";
-      };
-    };
+  # Config inicial = base + paleta Serpiente (force=true permite sobreescritura por scripts)
+  xdg.configFile."starship.toml" = {
+    text = starshipBase + starshipColors;
+    force = true;
   };
+  xdg.configFile."starship-base.toml".text = starshipBase;
 
   programs.fzf = {
     enable               = true;

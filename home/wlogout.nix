@@ -3,52 +3,104 @@
 let
   c = import ./colores.nix;
 
-  mkIcon = { paths, viewBox ? "0 0 24 24" }: ''
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="${viewBox}" fill="none"
-         stroke="${c.oro}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+  mkSvg = paths: ''
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none"
+         stroke="${c.oro}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
       ${paths}
     </svg>
   '';
 
-  iconSuspend = mkIcon {
-    paths = ''
-      <line x1="10" y1="6" x2="10" y2="18"/>
-      <line x1="14" y1="6" x2="14" y2="18"/>
-    '';
-  };
-
-  iconLogout = mkIcon {
-    paths = ''
-      <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/>
-      <polyline points="16 17 21 12 16 7"/>
-      <line x1="21" y1="12" x2="9" y2="12"/>
-    '';
-  };
-
-  iconReboot = mkIcon {
-    paths = ''
-      <polyline points="23 4 23 10 17 10"/>
-      <path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/>
-    '';
-  };
-
-  iconShutdown = mkIcon {
-    paths = ''
-      <line x1="12" y1="2" x2="12" y2="12"/>
-      <path d="M16.24 7.76a6 6 0 010 8.49 6 6 0 01-8.49 0 6 6 0 010-8.49"/>
-    '';
-  };
-
   iconDir = "${config.xdg.configHome}/wlogout/icons";
+
+  # ── Colores (se reutilizan en defaults + CSS inicial) ────────────────
+  wlogoutColors = ''
+    @define-color wl_base ${c.base};
+    @define-color wl_mantle ${c.mantle};
+    @define-color wl_accent ${c.oro};
+    @define-color wl_text ${c.text};
+  '';
+
+  # ── Estructura CSS (sin colores hardcodeados) ────────────────────────
+  wlogoutBase = ''
+    window {
+      font-family: "JetBrains Mono Nerd Font", monospace;
+      font-size: 14px;
+      color: @wl_text;
+      background-color: alpha(@wl_base, 0.85);
+    }
+
+    button {
+      background-color: alpha(@wl_mantle, 0.8);
+      border: 2px solid alpha(@wl_accent, 0.15);
+      border-radius: 16px;
+      margin: 12px;
+      background-repeat: no-repeat;
+      background-position: center 35%;
+      background-size: 64px;
+      color: @wl_text;
+      transition: all 0.3s ease;
+    }
+
+    button:focus {
+      background-color: alpha(@wl_mantle, 0.8);
+      border-color: alpha(@wl_accent, 0.15);
+      box-shadow: none;
+      outline: none;
+    }
+
+    button:hover {
+      background-color: alpha(@wl_accent, 0.1);
+      border-color: @wl_accent;
+      box-shadow: 0 0 20px alpha(@wl_accent, 0.15);
+    }
+
+    #suspend {
+      background-image: url("${iconDir}/suspend.svg");
+    }
+
+    #logout {
+      background-image: url("${iconDir}/logout.svg");
+    }
+
+    #reboot {
+      background-image: url("${iconDir}/reboot.svg");
+    }
+
+    #shutdown {
+      background-image: url("${iconDir}/shutdown.svg");
+    }
+  '';
 
 in
 {
+  # SVGs iniciales con accent Serpiente (se sobreescriben por scripts al cambiar tema)
   xdg.configFile = {
-    "wlogout/icons/suspend.svg".text  = iconSuspend;
-    "wlogout/icons/logout.svg".text   = iconLogout;
-    "wlogout/icons/reboot.svg".text   = iconReboot;
-    "wlogout/icons/shutdown.svg".text = iconShutdown;
+    "wlogout/icons/suspend.svg" = { force = true; text = mkSvg ''
+      <path d="M42 26.68A18 18 0 1121.32 6 14 14 0 0042 26.68z"/>
+    ''; };
+    "wlogout/icons/logout.svg" = { force = true; text = mkSvg ''
+      <path d="M18 42H10a4 4 0 01-4-4V10a4 4 0 014-4h8"/>
+      <polyline points="32 34 42 24 32 14"/>
+      <line x1="42" y1="24" x2="18" y2="24"/>
+    ''; };
+    "wlogout/icons/reboot.svg" = { force = true; text = mkSvg ''
+      <path d="M4 10v10h10"/>
+      <path d="M38.66 30A16 16 0 0010.34 13.34L4 20"/>
+      <path d="M44 38V28H34"/>
+      <path d="M9.34 18A16 16 0 0037.66 34.66L44 28"/>
+    ''; };
+    "wlogout/icons/shutdown.svg" = { force = true; text = mkSvg ''
+      <path d="M24 4v16"/>
+      <path d="M36.73 12.27A16 16 0 1111.27 12.27"/>
+    ''; };
   };
+
+  # CSS inicial = colores Serpiente + base (force=true permite sobreescritura por scripts)
+  xdg.configFile."wlogout/style.css" = {
+    text = wlogoutColors + wlogoutBase;
+    force = true;
+  };
+  xdg.configFile."wlogout/style-base.css".text = wlogoutBase;
 
   programs.wlogout = {
     enable = true;
@@ -58,53 +110,6 @@ in
       { label = "reboot";   action = "systemctl reboot";       text = "Reiniciar";     keybind = "r"; }
       { label = "shutdown"; action = "systemctl poweroff";     text = "Apagar";        keybind = "p"; }
     ];
-    style = ''
-      window {
-        font-family: "JetBrains Mono Nerd Font", monospace;
-        font-size: 13px;
-        color: ${c.text};
-        background-color: rgba(${c.base_rgb}, 0.88);
-      }
-
-      button {
-        background-color: rgba(${c.mantle_rgb}, 0.75);
-        border: 1px solid rgba(${c.oro_rgb}, 0.18);
-        border-radius: 10px;
-        margin: 8px;
-        background-repeat: no-repeat;
-        background-position: center;
-        background-size: 36px;
-        color: ${c.text};
-        transition: all 0.2s ease;
-      }
-
-      button:focus {
-        background-color: rgba(${c.mantle_rgb}, 0.75);
-        border-color: rgba(${c.oro_rgb}, 0.18);
-        box-shadow: none;
-        outline: none;
-      }
-
-      button:hover {
-        background-color: rgba(${c.oro_rgb}, 0.12);
-        border-color: ${c.oro};
-      }
-
-      #suspend {
-        background-image: url("${iconDir}/suspend.svg");
-      }
-
-      #logout {
-        background-image: url("${iconDir}/logout.svg");
-      }
-
-      #reboot {
-        background-image: url("${iconDir}/reboot.svg");
-      }
-
-      #shutdown {
-        background-image: url("${iconDir}/shutdown.svg");
-      }
-    '';
+    # CSS gestionado via xdg.configFile (colores dinámicos + base)
   };
 }

@@ -86,7 +86,20 @@ let
         ;;
     esac
     sleep 1
-    swww img ~/imagenes/wallpapers/default.jpg
+
+    # Reaplicar el wallpaper actual (no resetear a default)
+    CURRENT_WP="$HOME/.cache/matugen/current-wallpaper"
+    if [ -f "$CURRENT_WP" ]; then
+      WP=$(cat "$CURRENT_WP")
+    else
+      WP="$HOME/imagenes/wallpapers/default.jpg"
+    fi
+    MONITORS=$(hyprctl monitors -j | ${pkgs.jq}/bin/jq -r '.[].name')
+    for mon in $MONITORS; do
+      ${pkgs.swww}/bin/swww img "$WP" --outputs "$mon" --transition-type fade --transition-duration 1 &
+    done
+    wait
+
     pkill waybar; waybar &
   '';
 
@@ -107,6 +120,11 @@ in
         "eDP-1, 1920x1080@60, 3840x0, 1"
       ];
 
+      workspace = [
+        "1, monitor:HDMI-A-1, default:true"
+        "2, monitor:DP-1, default:true"
+      ];
+
       general = {
         gaps_in     = 4;
         gaps_out    = 4;
@@ -119,7 +137,7 @@ in
       decoration = {
         rounding         = 16;
         active_opacity   = 1.0;
-        inactive_opacity = 0.85;
+        inactive_opacity = 0.92;
         blur = {
           enabled           = false;
           size              = 4;
@@ -183,10 +201,10 @@ in
         "$mod, F,           exec, $browser"
         "$mod, E,           exec, $fileManager"
         "$mod, V,           exec, codium"
-        "$mod, C,           exec, if hyprctl clients -j | ${pkgs.jq}/bin/jq -e '.[] | select(.class==\"claude-ws1\")' > /dev/null 2>&1; then hyprctl dispatch focuswindow class:claude-ws1; else kitty --class claude-ws1 -o background_opacity=0.75 -e bash -c 'cd /etc/nixos && claude'; fi"
+        "$mod, C,           exec, if hyprctl clients -j | ${pkgs.jq}/bin/jq -e '.[] | select(.class==\"claude-ws1\")' > /dev/null 2>&1; then hyprctl dispatch focuswindow class:claude-ws1; else kitty --class claude-ws1 -e bash -c 'cd /etc/nixos && claude'; fi"
 
         # ── Ventanas ─────────────────────────────────────────────────
-        "$mod, Q,           exec, if ! hyprctl activewindow -j | ${pkgs.jq}/bin/jq -r '.class' | grep -q '^terminal-ws1$'; then hyprctl dispatch killactive; fi"
+        "$mod, Q,           killactive"
         "$mod SHIFT, M,     exit"
         "$mod SHIFT, F,     fullscreen"
         "$mod SHIFT, V,     togglefloating"
@@ -256,28 +274,25 @@ in
       ];
 
       exec-once = [
+        "mkdir -p ~/.cache/matugen && [ -f ~/.cache/matugen/colors-hyprland.conf ] || default-theme"
         "sleep 2 && if hyprctl monitors all | grep -q 'HDMI-A-1' && hyprctl monitors all | grep -q 'DP-1'; then hyprctl keyword monitor 'eDP-1, disable'; fi"
-        "swww-daemon && sleep 1 && swww img ~/imagenes/wallpapers/default.jpg"
+        "swww-daemon && sleep 1 && swww img $(cat ~/.cache/matugen/current-wallpaper 2>/dev/null || echo ~/imagenes/wallpapers/default.jpg)"
         "mako"
         "waybar"
-        "kitty --class terminal-ws1 -o background_opacity=0.0"
+        "zapzap"
+        "kitty --class terminal-ws1"
+        "sleep 0.5 && kitty --class claude-ws1 -e bash -c 'cd /etc/nixos && claude'"
+        "sleep 1 && zen-beta"
       ];
     };
 
     extraConfig = ''
-      # ── Terminal principal ws1 (fondo transparente, mitad izquierda) ─
-      windowrule = float on,                 match:class ^(terminal-ws1)$
-      windowrule = size 940 1032,            match:class ^(terminal-ws1)$
-      windowrule = move 10 38,               match:class ^(terminal-ws1)$
+      # ── Workspace 1: terminal + claude ────────────────────────────
       windowrule = workspace 1 silent,       match:class ^(terminal-ws1)$
-      windowrule = border_size 0,            match:class ^(terminal-ws1)$
-
-      # ── Claude Code ws1 (mitad derecha) ────────────────────────────
-      windowrule = float on,                 match:class ^(claude-ws1)$
-      windowrule = size 950 1032,            match:class ^(claude-ws1)$
-      windowrule = move 960 38,              match:class ^(claude-ws1)$
       windowrule = workspace 1 silent,       match:class ^(claude-ws1)$
-      windowrule = border_size 0,            match:class ^(claude-ws1)$
+
+      # ── Workspace 2: browser ─────────────────────────────────────
+      windowrule = workspace 2 silent,       match:class ^(zen-beta)$
 
       # ── Scratchpads ────────────────────────────────────────────────
       windowrule = workspace special:btop silent,    match:class ^(btop-scratchpad)$
@@ -307,6 +322,12 @@ in
 
       windowrule = opacity 0.88 1,        match:class ^(codium|VSCodium|code|Code)$
       windowrule = opacity 0.9 1,         match:class ^(thunar|Thunar)$
+
+      # ── Wallpaper Selector ──────────────────────────────────────────
+      windowrule = float on,           match:class ^(com\.serpiente\.wallpaper-selector)$
+      windowrule = center on,          match:class ^(com\.serpiente\.wallpaper-selector)$
+      windowrule = border_size 0,      match:class ^(com\.serpiente\.wallpaper-selector)$
+      windowrule = opacity 1.0 1.0,    match:class ^(com\.serpiente\.wallpaper-selector)$
 
       layerrule = blur on,                match:namespace notifications
       layerrule = ignore_alpha 0.3,      match:namespace notifications

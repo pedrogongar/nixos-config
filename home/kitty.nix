@@ -73,6 +73,11 @@ in
       color15 = c.text;
     };
 
+    extraConfig = ''
+      # Colores dinámicos (matugen) — sobreescriben los de arriba
+      include ~/.cache/matugen/colors-kitty.conf
+    '';
+
     keybindings = {
       "ctrl+shift+t"       = "new_tab";
       "ctrl+shift+w"       = "close_tab";

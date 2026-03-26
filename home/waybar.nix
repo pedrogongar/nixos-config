@@ -66,8 +66,117 @@ let
     done
   '';
 
+  # ── Colores (se definen una vez, se reutilizan en defaults + CSS inicial) ──
+  waybarColors = ''
+    @define-color wb_base ${c.base};
+    @define-color wb_oro ${c.oro};
+    @define-color wb_ambar ${c.ambar};
+    @define-color wb_text ${c.text};
+    @define-color wb_oliva ${c.oliva};
+    @define-color wb_rojo ${c.rojo};
+  '';
+
+  # ── Estructura CSS (sin colores hardcodeados, usa @wb_* ) ────────────
+  waybarBase = ''
+    * {
+      font-family: "JetBrains Mono Nerd Font", monospace;
+      font-size: 11px;
+      font-weight: bold;
+      min-height: 0;
+      border: none;
+      background: transparent;
+      margin: 0;
+      padding: 0;
+    }
+
+    window#waybar {
+      background: @wb_base;
+      color: @wb_oro;
+    }
+
+    tooltip {
+      color: @wb_text;
+      background: alpha(@wb_base, 0.8);
+      border-radius: 12px;
+    }
+
+    #custom-nixos,
+    #clock,
+    #workspaces,
+    #window,
+    #battery,
+    #custom-volumen,
+    #custom-microfono,
+    #custom-red,
+    #custom-wallpaper {
+      background: transparent;
+      padding: 3px 12px;
+      margin: 0;
+      color: @wb_ambar;
+    }
+
+    #custom-nixos {
+      font-size: 20px;
+      color: @wb_oro;
+    }
+
+    #window {
+      color: alpha(@wb_text, 0.7);
+      font-weight: 600;
+    }
+
+    #workspaces {
+      padding: 3px 6px;
+    }
+
+    #workspaces button {
+      background: transparent;
+      color: alpha(@wb_text, 0.7);
+      padding: 2px 6px;
+      margin: 0 1px;
+      border-radius: 8px;
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    #workspaces button.active {
+      background: alpha(@wb_oro, 0.75);
+      color: @wb_base;
+      padding: 2px 16px;
+      border-radius: 16px;
+    }
+
+    #workspaces button.visible {
+      color: alpha(@wb_text, 0.7);
+      transition: all 0.3s ease;
+    }
+
+    #workspaces button:hover {
+      background: alpha(@wb_oro, 0.4);
+      color: @wb_text;
+    }
+
+    #battery.charging {
+      color: @wb_oliva;
+    }
+
+    #battery.warning:not(.charging) {
+      color: @wb_ambar;
+    }
+
+    #battery.critical:not(.charging) {
+      color: @wb_rojo;
+    }
+  '';
+
 in
 {
+  # CSS inicial = colores Serpiente + base (force=true permite sobreescritura por scripts)
+  xdg.configFile."waybar/style.css" = {
+    text = waybarColors + waybarBase;
+    force = true;
+  };
+  xdg.configFile."waybar/style-base.css".text = waybarBase;
+
   programs.waybar = {
     enable = true;
     settings = [{
@@ -82,6 +191,7 @@ in
       modules-left   = [ "custom/nixos" "clock" "hyprland/workspaces" ];
       modules-center = [ "hyprland/window" ];
       modules-right  = [
+        "custom/wallpaper"
         "battery"
         "custom/volumen"
         "custom/microfono"
@@ -146,6 +256,12 @@ in
         tooltip  = false;
       };
 
+      "custom/wallpaper" = {
+        format   = "󰋩";
+        on-click = "wallpaper-selector";
+        tooltip  = false;
+      };
+
       "custom/red" = {
         exec     = "${redScript}/bin/waybar-red";
         interval = 5;
@@ -154,94 +270,6 @@ in
       };
     }];
 
-    style = ''
-      * {
-        font-family: "JetBrains Mono Nerd Font", monospace;
-        font-size: 11px;
-        font-weight: bold;
-        min-height: 0;
-        border: none;
-        background: transparent;
-        margin: 0;
-        padding: 0;
-      }
-
-      window#waybar {
-        background: ${c.base};
-        color: ${c.oro};
-      }
-
-      tooltip {
-        color: ${c.text};
-        background: rgba(${c.base_rgb}, 0.8);
-        border-radius: 12px;
-      }
-
-      #custom-nixos,
-      #clock,
-      #workspaces,
-      #window,
-      #battery,
-      #custom-volumen,
-      #custom-microfono,
-      #custom-red {
-        background: transparent;
-        padding: 3px 12px;
-        margin: 0;
-        color: ${c.ambar};
-      }
-
-      #custom-nixos {
-        font-size: 20px;
-        color: ${c.oro};
-      }
-
-      #window {
-        color: rgba(${c.text_rgb}, 0.7);
-        font-weight: 600;
-      }
-
-      #workspaces {
-        padding: 3px 6px;
-      }
-
-      #workspaces button {
-        background: transparent;
-        color: rgba(${c.text_rgb}, 0.7);
-        padding: 2px 6px;
-        margin: 0 1px;
-        border-radius: 8px;
-        transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-      }
-
-      #workspaces button.active {
-        background: rgba(${c.oro_rgb}, 0.75);
-        color: ${c.base};
-        padding: 2px 16px;
-        border-radius: 16px;
-      }
-
-      #workspaces button.visible {
-        color: rgba(${c.text_rgb}, 0.7);
-        transition: all 0.3s ease;
-      }
-
-      #workspaces button:hover {
-        background: rgba(${c.oro_rgb}, 0.4);
-        color: ${c.text};
-      }
-
-      #battery.charging {
-        color: ${c.oliva};
-      }
-
-      #battery.warning:not(.charging) {
-        color: ${c.ambar};
-      }
-
-      #battery.critical:not(.charging) {
-        color: ${c.rojo};
-      }
-    '';
+    # CSS gestionado via xdg.configFile (colores dinámicos + base)
   };
 }

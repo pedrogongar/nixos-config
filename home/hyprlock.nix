@@ -7,6 +7,8 @@ in
   programs.hyprlock = {
     enable = true;
     settings = {
+      source = "~/.cache/matugen/colors-hyprlock.conf";
+
       general = {
         hide_cursor = true;
         grace = 5;
@@ -24,7 +26,7 @@ in
         {
           monitor = "";
           text = "$TIME";
-          color = "rgba(${c.text_rgb}, 1.0)";
+          color = "$fg";
           font_size = 72;
           font_family = "Outfit Light";
           position = "0, 120";
@@ -34,7 +36,7 @@ in
         {
           monitor = "";
           text = "cmd[update:60000] date '+%A %d de %B'";
-          color = "rgba(${c.subtext_rgb}, 1.0)";
+          color = "$fg-dim";
           font_size = 14;
           font_family = "Outfit";
           position = "0, 50";
@@ -50,15 +52,15 @@ in
         dots_size = 0.25;
         dots_spacing = 0.3;
         dots_center = true;
-        outer_color = "rgba(${c.oro_rgb}, 0.3)";
-        inner_color = "rgba(${c.base_rgb}, 0.75)";
-        font_color = "rgba(${c.text_rgb}, 1.0)";
+        outer_color = "$accent";
+        inner_color = "$bg";
+        font_color = "$fg";
         fade_on_empty = true;
         placeholder_text = "";
         hide_input = false;
         rounding = 14;
-        check_color = "rgba(${c.oliva_rgb}, 0.5)";
-        fail_color = "rgba(${c.rojo_rgb}, 0.5)";
+        check_color = "$green";
+        fail_color = "$red";
         fail_text = "";
         position = "0, -30";
         halign = "center";
