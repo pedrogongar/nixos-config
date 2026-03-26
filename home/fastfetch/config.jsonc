@@ -6,25 +6,25 @@
   "display": {
     "separator": "  ",
     "color": {
-      "separator": "white"
+      "separator": "90;74;58"
     },
     "key": {
       "width": 12
     }
   },
   "modules": [
-    { "type": "title",    "key": "󰀄 user",     "keyColor": "yellow", "format": "{1}@{2}" },
-    { "type": "os",       "key": "󰣇 distro",   "keyColor": "red",    "format": "{3} {12}" },
-    { "type": "kernel",   "key": "󰒋 kernel",   "keyColor": "yellow", "format": "{1} {2}" },
+    { "type": "title",    "key": "󰀄 user",     "keyColor": "232;192;32",  "format": "{1}@{2}" },
+    { "type": "os",       "key": "󰣇 distro",   "keyColor": "224;136;48",  "format": "{3} {12}" },
+    { "type": "kernel",   "key": "󰒋 kernel",   "keyColor": "232;192;32",  "format": "{1} {2}" },
     "break",
-    { "type": "cpu",      "key": "󰻠 cpu",      "keyColor": "red",    "format": "{1}" },
-    { "type": "gpu",      "key": "󰢮 gpu",      "keyColor": "yellow", "format": "{2}" },
-    { "type": "memory",   "key": "󰍛 memory",   "keyColor": "red",    "format": "{1} / {2} ({3})" },
-    { "type": "disk",     "key": "󰋊 disk",     "keyColor": "yellow", "folders": "/", "format": "{1} / {2} ({9})" },
+    { "type": "cpu",      "key": "󰻠 cpu",      "keyColor": "196;48;48",   "format": "{1}" },
+    { "type": "gpu",      "key": "󰢮 gpu",      "keyColor": "232;192;32",  "format": "{2}" },
+    { "type": "memory",   "key": "󰍛 memory",   "keyColor": "224;136;48",  "format": "{1} / {2} ({3})" },
+    { "type": "disk",     "key": "󰋊 disk",     "keyColor": "232;192;32",  "format": "{1} / {2} ({9})" },
     "break",
-    { "type": "shell",    "key": "󰆍 shell",    "keyColor": "red",    "format": "{3} {4}" },
-    { "type": "packages", "key": "󰏗 pkgs",     "keyColor": "yellow" },
-    { "type": "localip",  "key": "󰈀 ip",       "keyColor": "red",    "format": "{1}" },
-    { "type": "colors",   "key": "󰏘 colors",   "keyColor": "yellow", "symbol": "circle" }
+    { "type": "shell",    "key": "󰆍 shell",    "keyColor": "196;48;48",   "format": "{3} {4}" },
+    { "type": "packages", "key": "󰏗 pkgs",     "keyColor": "232;192;32" },
+    { "type": "localip",  "key": "󰈀 ip",       "keyColor": "224;136;48",  "format": "{1}" },
+    { "type": "colors",   "key": "󰏘 colors",   "keyColor": "232;192;32",  "symbol": "circle" }
   ]
 }
