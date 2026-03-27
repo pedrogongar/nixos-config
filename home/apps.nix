@@ -10,6 +10,7 @@ in
     zapzap
 
     vlc
+    loupe
 
     obsidian
     libreoffice
@@ -129,7 +130,7 @@ in
     enable = true;
     options = {
       selection-clipboard = "clipboard";
-      recolor = true;
+      recolor = false;
       default-bg              = c.base;
       default-fg              = c.text;
       statusbar-bg            = c.mantle;
