@@ -1,33 +1,52 @@
 {
   "$schema": "https://github.com/fastfetch-cli/fastfetch/raw/dev/doc/json_schema.json",
   "logo": {
-    "type": "none"
+    "type": "kitty",
+    "source": "~/.config/fastfetch/logo.png",
+    "width": 32,
+    "height": 16,
+    "padding": { "top": 2, "right": 2 }
   },
   "display": {
     "separator": "  ",
     "color": {
-      "separator": "58;40;40"
+      "keys": "yellow",
+      "output": "bright_white",
+      "separator": "bright_white"
     },
     "key": {
-      "width": 12
-    }
+      "width": 10
+    },
+    "percent": { "type": 9 }
   },
   "modules": [
-    // ── Identidad (oro — protagonista)
-    { "type": "title",    "key": "󰀄 user",     "keyColor": "232;192;32",  "format": "{1}@{2}" },
-    { "type": "os",       "key": "󰣇 distro",   "keyColor": "196;48;48",   "format": "{3} {12}" },
-    { "type": "kernel",   "key": "󰒋 kernel",   "keyColor": "232;192;32",  "format": "{1} {2}" },
+    {
+      "type": "custom",
+      "format": "                {#magenta}occulta{#bright_white}@{#magenta}nixos"
+    },
+    {
+      "type": "custom",
+      "format": "{#bright_white}──────────────────────────────────────────────"
+    },
+    { "type": "os",       "key": "󰣇 distro",  "keyColor": "yellow",  "format": "{pretty-name}" },
+    { "type": "kernel",   "key": "󰒋 kernel",  "keyColor": "yellow",  "format": "{release}" },
+    { "type": "uptime",   "key": "󰅐 uptime",  "keyColor": "yellow",  "format": "{days}d {hours}h {minutes}m" },
     "break",
-    // ── Hardware (rojo/ambar — urgencia, recursos)
-    { "type": "cpu",      "key": "󰻠 cpu",      "keyColor": "196;48;48",   "format": "{1}" },
-    { "type": "gpu",      "key": "󰢮 gpu",      "keyColor": "224;136;48",  "format": "{2}" },
-    { "type": "memory",   "key": "󰍛 memory",   "keyColor": "196;48;48",   "format": "{1} / {2} ({3})" },
-    { "type": "disk",     "key": "󰋊 disk",     "keyColor": "224;136;48",  "format": "{1} / {2} ({9})" },
+    { "type": "cpu",      "key": "󰻠 cpu",     "keyColor": "red",     "format": "{name}" },
+    { "type": "gpu",      "key": "󰢮 gpu",     "keyColor": "red",     "format": "{name}" },
+    { "type": "memory",   "key": "󰍛 mem",     "keyColor": "red",     "format": "{used} / {total} ({percentage})" },
+    { "type": "disk",     "key": "󰋊 disk",    "keyColor": "red",     "format": "{size-used} / {size-total} ({size-percentage})" },
     "break",
-    // ── Software (oliva/cobre — terciario, info)
-    { "type": "shell",    "key": "󰆍 shell",    "keyColor": "138;128;48",  "format": "{3} {4}" },
-    { "type": "packages", "key": "󰏗 pkgs",     "keyColor": "160;112;64" },
-    { "type": "localip",  "key": "󰈀 ip",       "keyColor": "138;128;48",  "format": "{1}" },
-    { "type": "colors",   "key": "󰏘 colors",   "keyColor": "232;192;32",  "symbol": "circle" }
+    { "type": "shell",    "key": "󰆍 shell",   "keyColor": "magenta", "format": "{pretty-name}" },
+    { "type": "terminal", "key": "󰞷 term",    "keyColor": "magenta", "format": "{pretty-name}" },
+    { "type": "wm",       "key": "󰖲 wm",      "keyColor": "magenta", "format": "{pretty-name}" },
+    { "type": "packages", "key": "󰏗 pkgs",    "keyColor": "magenta" },
+    "break",
+    { "type": "localip",  "key": "󰈀 ip",      "keyColor": "magenta", "format": "{ipv4}" },
+    {
+      "type": "custom",
+      "format": "{#bright_white}──────────────────────────────────────────────"
+    },
+    { "type": "colors", "symbol": "circle", "paddingLeft": 15 }
   ]
 }
